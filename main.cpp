@@ -1,25 +1,18 @@
-#include <GLFW/glfw3.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #include <iostream>
 
-int main(int argc, char* argv[]) {
-
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
-    if (window == nullptr)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
+int main(int argc, char* argv[])
+{
+    glutInit(&argc, argv);
+    glutCreateWindow("GLEW test");
+    GLenum err = glewInit();
+    if(GLEW_OK != err) {
+        // Problem with init of glew
+        std::cout << "Error: " << glewGetErrorString(err) << std::endl;
         return -1;
     }
-    glfwMakeContextCurrent(window);
-
-    int i;
-    std::cin >> i;
+    std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
     return 0;
 }
 
