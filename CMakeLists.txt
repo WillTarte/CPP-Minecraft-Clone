@@ -17,6 +17,7 @@ project(COMP-371-Project
 
 add_executable(${PROJECT_NAME} main.cpp)
 
+#glfw
 CPMAddPackage(
         NAME glfw
         VERSION 3.3.2
@@ -27,7 +28,7 @@ CPMAddPackage(
         "GLFW_BUILD_TESTS OFF"
 )
 
-
+#glew
 add_definitions(-DGLEW_STATIC)
 CPMAddPackage(
         NAME glew
@@ -39,6 +40,7 @@ CPMAddPackage(
         "glew-cmake_BUILD_SHARED OFF"
 )
 
+#glm
 CPMAddPackage(
         NAME glm
         VERSION 0.9.9.8
@@ -58,6 +60,5 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC
             glfw
             libglew_static
-            glut
             glm
 )
