@@ -15,7 +15,12 @@ project(COMP-371-Project
         DESCRIPTION "Project for COMP 371"
         LANGUAGES CXX)
 
-add_executable(${PROJECT_NAME} main.cpp)
+# set everything up for c++ 17 features
+set(CMAKE_CXX_STANDARD 17)
+# Don't add this line if you will try_compile with boost.
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(${PROJECT_NAME} main.cpp shader.h camera.h)
 
 #glfw
 CPMAddPackage(
@@ -62,3 +67,6 @@ target_link_libraries(${PROJECT_NAME}
             libglew_static
             glm
 )
+
+message(STATUS test)
+file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
