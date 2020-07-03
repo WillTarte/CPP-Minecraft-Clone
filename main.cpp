@@ -81,30 +81,39 @@ void error_callback(int error, const char* description)
 void drawGrid()
 {
 
-    std::vector<glm::vec3> vertices{};
-    vertices.reserve(400);
-    for(int i = 0; i<100; i++) //draw 100 horizontal and 100 vertical lines - 2 vertices per line
+   float vertices[2400];
+    size_t size = 0;
+    for (int i = 0; i < 100; i++) //draw 100 horizontal and 100 vertical lines - 2 vertices per line
     {
-        // horizontal
-        vertices.emplace_back(-50, 0, i);
-        vertices.emplace_back(50, 0.0f, i);
 
-        // vertical
-        vertices.emplace_back(i, 0, -50);
-        vertices.emplace_back(i, 0, 50);
+        // horizontal
+        vertices[size++] = -50;
+        vertices[size++] = 0;
+        vertices[size++] = i - 50;
+        vertices[size++] = 50;
+        vertices[size++] = 0;
+        vertices[size++] = i - 50;
+
+        // vertical 
+        vertices[size++] = i - 50;
+        vertices[size++] = 0;
+        vertices[size++] = 50;
+        vertices[size++] = i - 50;
+        vertices[size++] = 0;
+        vertices[size++] = -50;
     }
 
-     /*   float vertices[] = {
-            -1.0f, 0.0f, -1.0f,
-            -1.0f, 0.0f,  1.0f,
-            1.0f, 0.0f,  1.0f,
-            1.0f, 0.0f, -1.0f
-    };*/
+    /*   float vertices[] = {
+           -1.0f, 0.0f, -1.0f,
+           -1.0f, 0.0f,  1.0f,
+           1.0f, 0.0f,  1.0f,
+           1.0f, 0.0f, -1.0f
+   };*/
 
-    /*unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3
-    };*/
+   /*unsigned int indices[] = {
+           0, 1, 3,
+           1, 2, 3
+   };*/
 
     GLuint VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -114,17 +123,17 @@ void drawGrid()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     /*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);*/
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 3*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(float) * 3, (void*)0);
     glEnableVertexAttribArray(0);
 
     glBindVertexArray(VAO);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glDrawArrays(GL_LINES, 0, 500);
+    glDrawArrays(GL_LINES, 0, 400);
 }
 
 
