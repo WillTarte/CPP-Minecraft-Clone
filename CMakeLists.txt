@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Don't add this line if you will try_compile with boost.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(${PROJECT_NAME} main.cpp shader.h camera.h)
+add_executable(${PROJECT_NAME} main.cpp shader.h camera.h axis.cpp axis.h)
 
 #glfw
 CPMAddPackage(

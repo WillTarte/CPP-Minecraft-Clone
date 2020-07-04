@@ -6,12 +6,14 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
+#include "axis.h"
+
 
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -134,6 +136,8 @@ void drawGrid()
     glBindVertexArray(VAO);
     //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glDrawArrays(GL_LINES, 0, 400);
+
+    glBindVertexArray(0);
 }
 
 
@@ -176,6 +180,10 @@ int main(int argc, char* argv[])
     //Grid shader
     Shader gridShader = Shader("resources/shaders/GridVertexShader.vs", "resources/shaders/GridFragmentShader.fs");
 
+
+    //Axis shader
+    Shader axisShader = Shader("resources/shaders/BasicVertexShader.vs","resources/shaders/BasicFragmentShader.fs");
+
     std::cout << "Test\n";
 
     // MVP matrices
@@ -183,6 +191,7 @@ int main(int argc, char* argv[])
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    Axis *axis = new Axis();
     // Render loop
     while(!glfwWindowShouldClose(window))
     {
@@ -210,6 +219,14 @@ int main(int argc, char* argv[])
         gridShader.setMat4("Projection", projection);
 
         drawGrid();
+
+
+        axisShader.use();
+        axisShader.setMat4("Model", model);
+        axisShader.setMat4("View", view);
+        axisShader.setMat4("Projection", projection);
+
+        axis->Draw(axisShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
