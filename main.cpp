@@ -23,7 +23,7 @@ bool firstMouse = true;
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void processInput(GLFWwindow* window, float deltaTime) {
+void processInput(GLFWwindow* window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -132,8 +132,8 @@ int main(int argc, char* argv[]) {
     // Necessary variables
 
     // timing
-    float deltaTime = 0.0f;    // time between current frame and last frame
-    float lastFrame = 0.0f;
+    double deltaTime = 0.0f;    // time between current frame and last frame
+    double lastFrame = 0.0f;
 
     // *********************
 
@@ -179,12 +179,13 @@ int main(int argc, char* argv[]) {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    //glEnable(GL_CULL_FACE);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
         // per-frame time logic
         // --------------------
-        float currentFrame = glfwGetTime();
+        double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 

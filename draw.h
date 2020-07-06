@@ -13,7 +13,8 @@
 class L8 {
 public:
         GLuint vbo{}, vao{}, ebo{};
-        Shader shader{};
+    GLsizei size{};
+    Shader shader{};
     L8()
     {
         std::vector<glm::vec3> vertices{};
@@ -49,6 +50,7 @@ public:
                 3, 2, 6,
                 6, 7, 3
         };
+        this->size = sizeof(cubeFaces) / sizeof(unsigned short);
 
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
@@ -56,9 +58,12 @@ public:
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeFaces), cubeFaces, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+        glEnableVertexAttribArray(0);
     }
 
     ~L8()
@@ -69,10 +74,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(glm::mat4 base_mvp)
-    {
-        int size;
-        glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+    void draw(const glm::mat4& base_mvp) {
         glm::mat4 unitmat4(1);
 
         shader.use();
@@ -80,31 +82,24 @@ public:
         shader.setMat4("transform_m", unitmat4);
 
         glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
-        glEnableVertexAttribArray(0);
-
-        glDrawElements(GL_TRIANGLES, size/sizeof(unsigned short), GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
         glm::mat4 transformations = glm::translate(unitmat4, glm::vec3(1.0f, 0.0f, 0.0f));
         shader.setMat4("transform_m", transformations);
-        glDrawElements(GL_TRIANGLES, size/sizeof(unsigned short), GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
         transformations = glm::translate(unitmat4, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.setMat4("transform_m", transformations);
-        glDrawElements(GL_TRIANGLES, size/sizeof(unsigned short), GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
         transformations = glm::translate(unitmat4, glm::vec3(0.0f, 2.0f, 0.0f));
         shader.setMat4("transform_m", transformations);
-        glDrawElements(GL_TRIANGLES, size/sizeof(unsigned short), GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
         transformations = glm::translate(unitmat4, glm::vec3(0.0f, 3.0f, 0.0f));
         shader.setMat4("transform_m", transformations);
-        glDrawElements(GL_TRIANGLES, size/sizeof(unsigned short), GL_UNSIGNED_SHORT, nullptr);
-
-
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
     }
 };
 
@@ -112,6 +107,7 @@ class GroundGrid
 {
 private:
     GLuint vao{}, vbo{};
+    GLsizei size;
     Shader shader{};
 public:
     GroundGrid()
@@ -130,6 +126,7 @@ public:
             vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, -50));
             vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, 50.0f));
         }
+        this->size = vertices.size();
 
         // Set up and bind VBO and VAO
         glGenVertexArrays(1, &vao);
@@ -139,6 +136,9 @@ public:
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+        glEnableVertexAttribArray(0);
     }
 
     ~GroundGrid()
@@ -148,18 +148,11 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(glm::mat4 base_mvp)
-    {
+    void draw(const glm::mat4& base_mvp) {
         shader.use();
         shader.setMat4("base_mvp", base_mvp);
         glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
-        glEnableVertexAttribArray(0);
-
-        int size;
-        glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
         glDrawArrays(GL_LINES, 0, size);
     }
 };
