@@ -6,6 +6,7 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
+#include "draw.h"
 
 /// Window size
 static const int WIDTH = 800;
@@ -92,8 +93,8 @@ void error_callback(int error, const char* description) {
     fputs(description, stderr);
 }
 
+/*
 /// Method to draw the 100x100 ground grid with it's middle centered at (0,0,0)
-//TODO: Eventually move this "object" to it's own class like all other "objects"
 void drawGrid() {
 
     //float vertices[2400];
@@ -124,7 +125,7 @@ void drawGrid() {
     glEnableVertexAttribArray(0);
 
     glDrawArrays(GL_LINES, 0, vertices.size());
-}
+}*/
 
 /// Main
 int main(int argc, char* argv[]) {
@@ -170,9 +171,8 @@ int main(int argc, char* argv[]) {
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-    // Grid shader
-    //TODO: Is there a better way to handle shaders (once we have many)
-    Shader gridShader = Shader("resources/shaders/GridVertexShader.vs", "resources/shaders/GridFragmentShader.fs");
+    GroundGrid grid = GroundGrid();
+    L8 will = L8();
 
     // MVP matrices
     glm::mat4 model = glm::mat4(1.0f);
@@ -191,8 +191,6 @@ int main(int argc, char* argv[]) {
         // Process input(s)
         processInput(window, deltaTime);
 
-        gridShader.use();
-
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -201,13 +199,10 @@ int main(int argc, char* argv[]) {
         projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 100.0f);
         view = camera.GetViewMatrix();
 
-        // Set the MVP matrices in the ground grid shader
-        //TODO: Better way to handle this?
-        gridShader.setMat4("Model", model);
-        gridShader.setMat4("View", view);
-        gridShader.setMat4("Projection", projection);
+        // draw objects
+        grid.draw(projection * view * model);
 
-        drawGrid();
+        will.draw(projection * view * model);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
