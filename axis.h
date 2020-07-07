@@ -10,16 +10,17 @@ class Axis
 {
 public:
 
-    Axis();
-    void Draw(Shader &shader);
+    Axis(Shader axisShader);
+    void Draw(glm::mat4 model, glm::mat4 view , glm::mat4 projection);
 private:
+    Shader axisShader;
     GLuint localVAO;
 };
 
 
-Axis::Axis() {
+Axis::Axis(Shader axisShader) : axisShader(axisShader) {
 
-
+    //axisShader = Shader("resources/shaders/BasicVertexShader.vs","resources/shaders/BasicFragmentShader.fs");
     const GLfloat arrowLines[] =
             {
                     //read row by row
@@ -82,11 +83,16 @@ Axis::Axis() {
 
 
 //axis takes in a reference to a shader and then uses it
-void Axis::Draw(Shader &shader)
+void Axis::Draw(glm::mat4 model, glm::mat4 view , glm::mat4 projection)
 {
 
-    shader.use();
-    shader.setMat4("model", glm::mat4(1.0f));
+
+
+    axisShader.use();
+    axisShader.setMat4("Model", model);
+    axisShader.setMat4("View", view);
+    axisShader.setMat4("Projection", projection);
+
 
     glBindVertexArray(this->localVAO);
     //xaxis

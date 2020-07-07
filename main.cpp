@@ -182,7 +182,8 @@ int main(int argc, char* argv[])
 
 
     //Axis shader
-    Shader axisShader = Shader("resources/shaders/BasicVertexShader.vs","resources/shaders/BasicFragmentShader.fs");
+
+
 
     std::cout << "Test\n";
 
@@ -191,7 +192,7 @@ int main(int argc, char* argv[])
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    Axis *axis = new Axis();
+    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.vs", "resources/shaders/BasicFragmentShader.fs"));
     // Render loop
     while(!glfwWindowShouldClose(window))
     {
@@ -221,12 +222,8 @@ int main(int argc, char* argv[])
         drawGrid();
 
 
-        axisShader.use();
-        axisShader.setMat4("Model", model);
-        axisShader.setMat4("View", view);
-        axisShader.setMat4("Projection", projection);
 
-        axis->Draw(axisShader);
+        axis.Draw(model,view,projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
