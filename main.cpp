@@ -6,6 +6,8 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
+#include "axis.h"
+
 
 /// Window size
 static const int WIDTH = 800;
@@ -13,6 +15,7 @@ static const int HEIGHT = 600;
 
 /// Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -123,6 +126,7 @@ void drawGrid() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), (void*) 0);
     glEnableVertexAttribArray(0);
 
+
     glDrawArrays(GL_LINES, 0, vertices.size());
 }
 
@@ -179,6 +183,7 @@ int main(int argc, char* argv[]) {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.vs", "resources/shaders/BasicFragmentShader.fs"));
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -209,7 +214,13 @@ int main(int argc, char* argv[]) {
 
         drawGrid();
 
-        // Swap buffers and poll events
+
+
+        axis.Draw(model,view,projection);
+
+
+
+// Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
