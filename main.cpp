@@ -6,6 +6,7 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
+#include "axis.h"
 #include "draw.h"
 
 /// Window size
@@ -14,6 +15,7 @@ static const int HEIGHT = 600;
 
 /// Camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -176,7 +178,13 @@ int main(int argc, char* argv[]) {
 
         h3.draw(projection * view * model);
 
-        // Swap buffers and poll events
+
+
+        axis.Draw(model,view,projection);
+
+
+
+// Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
