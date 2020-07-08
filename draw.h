@@ -206,7 +206,7 @@ public:
     H3() {
 
 
-        this->shader = Shader("resources/shaders/ModelVertexShader.vs", "resources/shaders/ModelFragmentShader.fs");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
         vertices.emplace_back(glm::vec3(-0.5, -0.5, 0.5));
         vertices.emplace_back(glm::vec3(0.5, -0.5, 0.5));
         vertices.emplace_back(glm::vec3(0.5, 0.5, 0.5));
