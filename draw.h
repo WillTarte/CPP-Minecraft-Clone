@@ -10,7 +10,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "shader.h"
 
-class L8 {
+class Drawable {
+public:
+    virtual void draw(const glm::mat4 &mvp) const = 0;
+
+    virtual ~Drawable() = default;
+};
+
+class L8 : Drawable {
 public:
     GLuint vbo{}, vao{}, ebo{};
     GLsizei size{};
@@ -66,18 +73,18 @@ public:
         glEnableVertexAttribArray(0);
     }
 
-    ~L8() {
+    ~L8() override {
         glDeleteProgram(shader.ID);
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ebo);
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &baseMvp) const {
+    void draw(const glm::mat4 &mvp) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("base_mvp", baseMvp);
+        shader.setMat4("base_mvp", mvp);
 
         glBindVertexArray(vao);
 
@@ -120,7 +127,7 @@ public:
     }
 };
 
-class GroundGrid {
+class GroundGrid : Drawable {
 private:
     GLuint vao{}, vbo{};
     GLsizei size;
@@ -156,15 +163,15 @@ public:
         glEnableVertexAttribArray(0);
     }
 
-    ~GroundGrid() {
+    ~GroundGrid() override {
         glDeleteProgram(shader.ID);
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &baseMvp) {
+    void draw(const glm::mat4 &mvp) const override {
         shader.use();
-        shader.setMat4("base_mvp", baseMvp);
+        shader.setMat4("base_mvp", mvp);
         glBindVertexArray(vao);
 
         glDrawArrays(GL_LINES, 0, size);
@@ -172,41 +179,49 @@ public:
 };
 
 
-class H3
-{
+class H3 : Drawable {
 
 private:
-    GLuint vbo, vao, ebo;
+    GLuint vbo{}, vao{}, ebo{};
     GLsizei size;
-    Shader shader;
-    std::vector<glm::vec3> vertices;
+    Shader shader{};
     const GLushort indices[36] = {
-        //front
-                   0, 1, 3, 
-                   2, 3, 1,
-                   //back
-                   4, 7, 5, 
-                   6, 5, 7,
-                   //left
-                   4, 0, 7, 
-                   3, 7, 0,
-                   //right
-                   5, 6, 1, 
-                   2, 1, 6,
-                   //bottom
-                   0, 4, 1, 
-                   5, 1, 4,
-                   //top
-                   3, 2, 7, 
-                   6, 7, 2
+            //front
+            0, 1, 3,
+            2, 3, 1,
+            //back
+            4, 7, 5,
+            6, 5, 7,
+            //left
+            4, 0, 7,
+            3, 7, 0,
+            //right
+            5, 6, 1,
+            2, 1, 6,
+            //bottom
+            0, 4, 1,
+            5, 1, 4,
+            //top
+            3, 2, 7,
+            6, 7, 2
     };
+
+    //unit cube
+    void drawCube(glm::mat4 base, glm::mat4 transform) const {
+        shader.use();
+        shader.setMat4("base_mvp", base);
+        shader.setMat4("transform", transform);
+
+        glBindVertexArray(vao);
+
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+    }
 
 public:
 
     H3() {
-
-
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        std::vector<glm::vec3> vertices;
         vertices.emplace_back(glm::vec3(-0.5, -0.5, 0.5));
         vertices.emplace_back(glm::vec3(0.5, -0.5, 0.5));
         vertices.emplace_back(glm::vec3(0.5, 0.5, 0.5));
@@ -233,62 +248,38 @@ public:
         glEnableVertexAttribArray(0);
     }
 
-
-
-
-
-    //unit cube
-    void DrawCube(glm::mat4 base, glm::mat4 transform)
-    {
-        shader.use();
-        shader.setMat4("base_mvp", base);
-        shader.setMat4("transform", transform);
-
-        glBindVertexArray(vao);
-        
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
-
-
-    }
-    void DrawH3(glm::mat4 base) {
+    void draw(const glm::mat4 &mvp) const override {
 
         //draw H
         glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.0f, 1.0f));
         glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f));
-        glm::mat4 rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.5f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
         //draw 3
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 3.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.5f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.25f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 2.75f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 1.5f, 0.0f));
-        rotationMatrix = glm::mat4(1.0f);
-        DrawCube(base, translationMatrix * rotationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix);
 
     }
 };

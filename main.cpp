@@ -141,6 +141,7 @@ int main(int argc, char* argv[]) {
     // Initialize models
     GroundGrid grid = GroundGrid();
     L8 will = L8();
+    H3 h3 = H3();
 
     // MVP matrices
     glm::mat4 model = glm::mat4(1.0f);
@@ -171,7 +172,9 @@ int main(int argc, char* argv[]) {
         // draw objects
         grid.draw(projection * view * model);
 
-        will.draw(projection * view * model);
+        will.draw(projection * view * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)));
+
+        h3.draw(projection * view * model);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
