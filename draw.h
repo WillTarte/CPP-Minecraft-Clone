@@ -176,8 +176,8 @@ class H3
 {
 
 private:
-    GLuint vbo{}, vao{}, ebo{};
-    GLsizei size{};
+    GLuint vbo, vao, ebo;
+    GLsizei size;
     Shader shader;
     std::vector<glm::vec3> vertices;
     const GLushort indices[36] = {
