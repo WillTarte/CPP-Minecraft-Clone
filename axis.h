@@ -34,32 +34,16 @@ Axis::Axis(Shader axisShader) : axisShader(axisShader) {
                     //main line
                     0.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
                     5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    //one side of arrow
-                    5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    4.5f, 0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    //other side of arrow
-                    5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    4.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-
                     //Zaxis
                     //set to green
                     0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
                     0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.5f, 0.0f,  4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    -0.5f, 0.0f,  4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
-
-
 
                     //Yaxis
                     //Set to red
                     0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
                     0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    0.5f, 4.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    -0.5f, 4.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+
 
 
             };
@@ -102,6 +86,8 @@ void Axis::Draw(glm::mat4 model, glm::mat4 view , glm::mat4 projection)
     axisShader.setMat4("Projection", projection);
 
 
+    glLineWidth(5.0f);
+
     //binding array that was created in constructor
     glBindVertexArray(this->localVAO);
 
@@ -109,7 +95,7 @@ void Axis::Draw(glm::mat4 model, glm::mat4 view , glm::mat4 projection)
     glDrawArrays(GL_LINES, 6, 6);
     glDrawArrays(GL_LINES, 12, 6);
 
-
+    glLineWidth(1.0f);
     //releasing the vertex array
     glBindVertexArray(0);
 }
