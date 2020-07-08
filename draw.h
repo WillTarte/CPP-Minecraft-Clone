@@ -91,10 +91,10 @@ public:
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
         /* L ------ */
-        shader.setMat4("transform_m", glm::scale(unitmat4, glm::vec3(3.0f, 1.0f, 1.0f)));
+        shader.setMat4("transform", glm::scale(unitmat4, glm::vec3(3.0f, 1.0f, 1.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
+        shader.setMat4("transform", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
 
@@ -103,25 +103,25 @@ public:
         transform = glm::translate(unitmat4, glm::vec3(4.0f, 0.0f, 0.0f));
         glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
 
-        shader.setMat4("transform_m", transformScaled);
+        shader.setMat4("transform", transformScaled);
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transform, glm::vec3(2.0f, 1.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 1.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
 
-        shader.setMat4("transform_m", glm::translate(transform, glm::vec3(2.0f, 3.0f, 0.0f)));
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 3.0f, 0.0f)));
         glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
     }
@@ -178,6 +178,98 @@ public:
     }
 };
 
+//Class definition
+class Axis : Drawable {
+private:
+    Shader shader;
+    GLuint localVAO{};
+public:
+
+    explicit Axis(Shader axisShader) : shader(axisShader) {
+        //axisShader = Shader("resources/shaders/BasicVertexShader.glsl","resources/shaders/BasicFragmentShader.glsl");
+        const GLfloat arrowLines[] =
+                {
+                        //read row by row
+                        //two arrowLines coresponding to a line
+                        //(first three pos)(second 3 are color)
+
+                        //Xaxis
+                        //set to blue
+                        //main line
+                        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        //one side of arrow
+                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        4.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        //other side of arrow
+                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        4.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+
+                        //Zaxis
+                        //set to green
+                        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.5f, 0.0f, 4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        -0.5f, 0.0f, 4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+
+                        //Yaxis
+                        //Set to red
+                        0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        0.5f, 4.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        -0.5f, 4.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+
+
+                };
+
+        //creates a localVBO and then connects that to to the arrowLines
+
+
+        //binding the buffers
+        GLuint localVBO;
+        glGenVertexArrays(1, &this->localVAO);
+        glGenBuffers(1, &localVBO);
+        glBindVertexArray(this->localVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, localVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(arrowLines), arrowLines, GL_STATIC_DRAW);
+
+        //arrowLines are stored in location 0 with three values
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) 0);
+
+        //colors are stored in the location 1 with 4 values
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) (3 * sizeof(float)));
+
+        glBindVertexArray(0);
+    };
+
+    ~Axis() {
+        glDeleteProgram(shader.ID);
+        glDeleteVertexArrays(1, &localVAO);
+    }
+
+    //draw function takes in the mvp matrix from the current scene and applies them to local shader
+    void draw(const glm::mat4 &mvp) const override {
+        //enabling the shader to be used
+        shader.use();
+        shader.setMat4("base_mvp", mvp);
+
+        //binding array that was created in constructor
+        glBindVertexArray(this->localVAO);
+
+        glDrawArrays(GL_LINES, 0, 6);
+        glDrawArrays(GL_LINES, 6, 6);
+        glDrawArrays(GL_LINES, 12, 6);
+
+        //releasing the vertex array
+        glBindVertexArray(0);
+    };
+};
 
 class H3 : Drawable {
 

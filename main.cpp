@@ -6,7 +6,6 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
-#include "axis.h"
 #include "draw.h"
 
 /// Window size
@@ -25,7 +24,7 @@ bool firstMouse = true;
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void processInput(GLFWwindow* window, double deltaTime) {
+void processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
@@ -47,7 +46,7 @@ void processInput(GLFWwindow* window, double deltaTime) {
  */
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
@@ -61,7 +60,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
  */
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -97,7 +96,7 @@ void errorCallback(int error, const char *description) {
 
 
 /// Main
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // Necessary variables
 
     // timing
@@ -113,7 +112,7 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -144,6 +143,7 @@ int main(int argc, char* argv[]) {
     GroundGrid grid = GroundGrid();
     L8 will = L8();
     H3 h3 = H3();
+    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
     glm::mat4 model = glm::mat4(1.0f);
@@ -151,6 +151,7 @@ int main(int argc, char* argv[]) {
     glm::mat4 projection = glm::mat4(1.0f);
 
     glEnable(GL_CULL_FACE);
+    glLineWidth(3.0f);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -174,17 +175,14 @@ int main(int argc, char* argv[]) {
         // draw objects
         grid.draw(projection * view * model);
 
+        axis.draw(projection * view * model);
+
         will.draw(projection * view * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)));
 
         h3.draw(projection * view * model);
 
 
-
-        axis.Draw(model,view,projection);
-
-
-
-// Swap buffers and poll events
+        // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
