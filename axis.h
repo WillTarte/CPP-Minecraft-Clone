@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include "shader.h"
 
+
+//Class definition
 class Axis
 {
 public:
@@ -24,36 +26,42 @@ Axis::Axis(Shader axisShader) : axisShader(axisShader) {
     const GLfloat arrowLines[] =
             {
                     //read row by row
-                    //two arrowLines corespodning to a line
-                    //(first three pos)(last 4 are color)
+                    //two arrowLines coresponding to a line
+                    //(first three pos)(second 3 are color)
 
                     //Xaxis
+                    //set to blue
                     //main line
-                    0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    3.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                    5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
                     //one side of arrow
-                    3.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    2.5f, 0.0f,  0.2f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                    4.5f, 0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
                     //other side of arrow
-                    3.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    2.5f, 0.0f, -0.2f, 1.0f, 0.0f, 0.0f, 1.0f,
-
-                    //pattern repeats for respective axis
-                    //Yaxis
-                    0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.0f, 3.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.0f, 3.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.2f, 2.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.0f, 3.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    -0.2f, 2.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                    4.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
 
                     //Zaxis
-                    0.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f,  3.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f,  3.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    0.2f, 0.0f,  2.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f,  3.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                    -0.2f, 0.0f,  2.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+                    //set to green
+                    0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    0.5f, 0.0f,  4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                    -0.5f, 0.0f,  4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+
+
+
+                    //Yaxis
+                    //Set to red
+                    0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    0.5f, 4.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                    -0.5f, 4.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+
+
             };
 
     //creates a localVBO and then connects that to to the arrowLines
@@ -82,27 +90,26 @@ Axis::Axis(Shader axisShader) : axisShader(axisShader) {
 
 
 
-//axis takes in a reference to a shader and then uses it
+//draw function takes in the matricxes from the current scene and applied them to local shader
 void Axis::Draw(glm::mat4 model, glm::mat4 view , glm::mat4 projection)
 {
 
 
-
+    //enabling the shader to be used
     axisShader.use();
     axisShader.setMat4("Model", model);
     axisShader.setMat4("View", view);
     axisShader.setMat4("Projection", projection);
 
 
+    //binding array that was created in constructor
     glBindVertexArray(this->localVAO);
-    //xaxis
+
     glDrawArrays(GL_LINES, 0, 6);
-
-    //yaxis
     glDrawArrays(GL_LINES, 6, 6);
-
-    //zaxis
     glDrawArrays(GL_LINES, 12, 6);
 
+
+    //releasing the vertex array
     glBindVertexArray(0);
 }
