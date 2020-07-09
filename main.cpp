@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
     GroundGrid grid = GroundGrid();
     L8 will = L8();
     H3 h3 = H3();
+    A2 ewan = A2();
     Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
@@ -172,6 +173,7 @@ int main(int argc, char *argv[]) {
         projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 100.0f);
         view = camera.getViewMatrix();
 
+        glm::mat4 pvm = projection * view * model;
         // draw objects
         grid.draw(projection * view * model);
 
@@ -181,7 +183,7 @@ int main(int argc, char *argv[]) {
 
         h3.draw(projection * view * model);
 
-
+        ewan.draw(pvm);
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
