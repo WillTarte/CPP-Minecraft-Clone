@@ -196,33 +196,17 @@ public:
                         //Xaxis
                         //set to blue
                         //main line
-                        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                        //one side of arrow
-                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                        4.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-                        //other side of arrow
-                        5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                        4.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-
+                        0.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+                        5.0f, 0.0f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
                         //Zaxis
                         //set to green
-                        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                        0.5f, 0.0f, 4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                        -0.5f, 0.0f, 4.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.0f, 0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+                        0.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 
                         //Yaxis
                         //Set to red
-                        0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                        0.5f, 4.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                        0.0f, 5.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                        -0.5f, 4.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-
+                        0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                        0.0f, 5.0f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
                 };
 
@@ -259,13 +243,14 @@ public:
         shader.use();
         shader.setMat4("base_mvp", mvp);
 
+        glLineWidth(5.0f);
         //binding array that was created in constructor
         glBindVertexArray(this->localVAO);
 
         glDrawArrays(GL_LINES, 0, 6);
         glDrawArrays(GL_LINES, 6, 6);
         glDrawArrays(GL_LINES, 12, 6);
-
+        glLineWidth(1.0f);
         //releasing the vertex array
         glBindVertexArray(0);
     };
