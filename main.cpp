@@ -34,63 +34,59 @@ bool fiveBool = false;
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void modelSelect(GLFWwindow *window) {
-    bool mutex = false;
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
-        if(mutex == false) {
-            mutex = true;
+void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS){
             if (oneBool == true) {
                 oneBool = false;
             } else {
                 oneBool = true;
             }
-            mutex = false;
         }
-    }
 
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-        if(mutex == false) {
-            mutex = true;
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+
             if (twoBool == true) {
                 twoBool = false;
             } else {
                 twoBool = true;
             }
-            mutex = false;
-        }
     }
-    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
         if (threeBool == true) {
             threeBool = false;
         } else {
             threeBool = true;
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
         if (fourBool == true) {
             fourBool = false;
         } else {
             fourBool = true;
         }
     }
-    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+    if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
         if (fiveBool == true) {
             fiveBool = false;
         } else {
             fiveBool = true;
         }
     }
-}
-
-
-void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) {
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     // Reset
-    if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
-        modelMatrix = glm::mat4(1.0f);
+    //needs to go through all models
+    //if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
+        //L8model = glm::mat4(1.0f);
+
+}
+
+
+void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) {
+
+
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
@@ -273,9 +269,8 @@ int main(int argc, char *argv[]) {
         lastFrame = currentFrame;
 
         // Process input(s)
-        modelSelect(window);
-        std::cout << "one " << oneBool;
-        std::cout << "two " << twoBool;
+        //modelSelect(window);
+        glfwSetKeyCallback(window, modelSelect);
         if(oneBool == true) {
             processInput(window, deltaTime, L8model);
         }
