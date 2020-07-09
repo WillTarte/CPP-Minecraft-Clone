@@ -144,6 +144,7 @@ int main(int argc, char *argv[]) {
     L8 will = L8();
     H3 h3 = H3();
     A2 ewan = A2();
+    P6 phil = P6();
     Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
@@ -174,6 +175,7 @@ int main(int argc, char *argv[]) {
         view = camera.getViewMatrix();
 
         glm::mat4 pvm = projection * view * model;
+
         // draw objects
         grid.draw(projection * view * model);
 
@@ -184,6 +186,9 @@ int main(int argc, char *argv[]) {
         h3.draw(projection * view * model);
 
         ewan.draw(pvm);
+
+        phil.draw(vp * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
+
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();

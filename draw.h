@@ -271,8 +271,6 @@ public:
     };
 };
 
-
-
 class H3 : Drawable {
 
 private:
@@ -377,6 +375,127 @@ public:
 
     }
 };
+
+class P6 : Drawable {
+public:
+    GLuint vbo{}, vao{}, ebo{};
+    GLsizei size{};
+    Shader shader{};
+
+    P6() {
+        std::vector<glm::vec3> vertices{};
+        this->shader = Shader("resources/shaders/L8vertexshader.glsl", "resources/shaders/dynamicshapefs.glsl");
+
+        // cube vertices
+        vertices.emplace_back(0.0f, 0.0f, 0.0f); // 0
+        vertices.emplace_back(1.0f, 0.0f, 0.0f); // 1
+        vertices.emplace_back(1.0f, 1.0f, 0.0f); // 2
+        vertices.emplace_back(0.0f, 1.0f, 0.0f); // 3
+        vertices.emplace_back(0.0f, 0.0f, 1.0f); // 4
+        vertices.emplace_back(1.0f, 0.0f, 1.0f); // 5
+        vertices.emplace_back(1.0f, 1.0f, 1.0f); // 6
+        vertices.emplace_back(0.0f, 1.0f, 1.0f); // 7
+
+        unsigned short cubeFaces[] = {
+                //front
+                0, 1, 3, //ccw
+                2, 3, 1,
+                //back
+                4, 7, 5, //cw
+                6, 5, 7,
+                //left
+                4, 0, 7, //ccw
+                3, 7, 0,
+                //right
+                5, 6, 1, //cw
+                2, 1, 6,
+                //bottom
+                0, 4, 1, //cw
+                5, 1, 4,
+                //top
+                3, 2, 7, //ccw
+                6, 7, 2
+        };
+        this->size = sizeof(cubeFaces) / sizeof(unsigned short);
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &ebo);
+
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeFaces), cubeFaces, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+        glEnableVertexAttribArray(0);
+    }
+
+    ~P6() override {
+        glDeleteProgram(shader.ID);
+        glDeleteBuffers(1, &vbo);
+        glDeleteBuffers(1, &ebo);
+        glDeleteVertexArrays(1, &vao);
+    }
+
+    void draw(const glm::mat4 &mvp) const override {
+        glm::mat4 unitmat4(1);
+
+        shader.use();
+        shader.setMat4("base_mvp", mvp);
+
+        glBindVertexArray(vao);
+
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        /* P ------ */
+        glm::mat4 transform = glm::translate(unitmat4, glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 3.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        /* -------- */
+
+        /* 6 ------ */
+        transform = glm::translate(unitmat4, glm::vec3(4.0f, 0.0f, 0.0f));
+        transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
+        shader.setMat4("transform", transformScaled);
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 1.0f, 0.0f)));
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+    }
+};
+
+
 
 class A2 {
 public:
