@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
 
         h3.draw(pv * model);
 
-        ewan.draw(pv * model);
+        ewan.draw(pv * glm::translate(model, glm::vec3(30.0f , 0.0f , -50.0f )));
 
         phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
 

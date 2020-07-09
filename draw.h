@@ -572,7 +572,7 @@ public:
     }
     void draw(const glm::mat4 &baseMvp) {
         glm::mat4 unitmat4(1);
-        unitmat4 = glm::translate(unitmat4, glm::vec3(30.0f , 0.0f , -50.0f ));
+
 
         shader.use();
         shader.setMat4("base_mvp", baseMvp);
