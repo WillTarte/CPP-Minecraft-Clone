@@ -23,63 +23,44 @@ float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 
 
-bool oneBool = false;
-bool twoBool = false;
-bool threeBool = false;
-bool fourBool = false;
-bool fiveBool = false;
+enum selectedModel {
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    RESET,
+    WORLD
+};
 
+
+selectedModel selectedModel = WORLD;
 /** Method to consume keyboard inputs to control the camera.
  *
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
 void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS){
-            if (oneBool == true) {
-                oneBool = false;
-            } else {
-                oneBool = true;
-            }
-        }
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+        selectedModel = ONE;
 
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+        selectedModel = TWO;
 
-            if (twoBool == true) {
-                twoBool = false;
-            } else {
-                twoBool = true;
-            }
-    }
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-        if (threeBool == true) {
-            threeBool = false;
-        } else {
-            threeBool = true;
-        }
-    }
-    if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
-        if (fourBool == true) {
-            fourBool = false;
-        } else {
-            fourBool = true;
-        }
-    }
-    if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
-        if (fiveBool == true) {
-            fiveBool = false;
-        } else {
-            fiveBool = true;
-        }
-    }
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+        selectedModel = THREE;
+
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+        selectedModel = FOUR;
+
+    if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+        selectedModel = FIVE;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    // Reset
-    //needs to go through all models
-    //if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
-        //L8model = glm::mat4(1.0f);
+    if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
+        selectedModel = RESET;
 
 }
 
@@ -271,11 +252,16 @@ int main(int argc, char *argv[]) {
         // Process input(s)
         //modelSelect(window);
         glfwSetKeyCallback(window, modelSelect);
-        if(oneBool == true) {
+        if(selectedModel == ONE) {
             processInput(window, deltaTime, L8model);
         }
-        if(twoBool == true){
+        if(selectedModel == TWO){
             processInput(window, deltaTime, H3model);
+        }
+
+        if(selectedModel == RESET){
+            L8model = glm::mat4(1.0f);
+            H3model = glm::mat4(1.0f);
         }
 
         // Render
