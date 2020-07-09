@@ -22,11 +22,67 @@ float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 
+
+bool oneBool = false;
+bool twoBool = false;
+bool threeBool = false;
+bool fourBool = false;
+bool fiveBool = false;
+
 /** Method to consume keyboard inputs to control the camera.
  *
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
+void modelSelect(GLFWwindow *window) {
+    bool mutex = false;
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS){
+        if(mutex == false) {
+            mutex = true;
+            if (oneBool == true) {
+                oneBool = false;
+            } else {
+                oneBool = true;
+            }
+            mutex = false;
+        }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        if(mutex == false) {
+            mutex = true;
+            if (twoBool == true) {
+                twoBool = false;
+            } else {
+                twoBool = true;
+            }
+            mutex = false;
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        if (threeBool == true) {
+            threeBool = false;
+        } else {
+            threeBool = true;
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+        if (fourBool == true) {
+            fourBool = false;
+        } else {
+            fourBool = true;
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        if (fiveBool == true) {
+            fiveBool = false;
+        } else {
+            fiveBool = true;
+        }
+    }
+}
+
+
 void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) {
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -200,10 +256,15 @@ int main(int argc, char *argv[]) {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    //model matrices
+    glm::mat4 L8model = glm::mat4(1.0f);
+    glm::mat4 H3model = glm::mat4(1.0f);
+
     glEnable(GL_CULL_FACE);
     glLineWidth(3.0f);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
+
 
         // per-frame time logic
         // --------------------
@@ -212,7 +273,15 @@ int main(int argc, char *argv[]) {
         lastFrame = currentFrame;
 
         // Process input(s)
-        processInput(window, deltaTime, model);
+        modelSelect(window);
+        std::cout << "one " << oneBool;
+        std::cout << "two " << twoBool;
+        if(oneBool == true) {
+            processInput(window, deltaTime, L8model);
+        }
+        if(twoBool == true){
+            processInput(window, deltaTime, H3model);
+        }
 
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -227,9 +296,9 @@ int main(int argc, char *argv[]) {
 
         axis.draw(projection * view * model, renderMode);
 
-        will.draw(projection * view * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
+        will.draw(projection * view * glm::translate(L8model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
 
-        h3.draw(projection * view * model, renderMode);
+        h3.draw(projection * view * H3model, renderMode);
 
 
         // Swap buffers and poll events
