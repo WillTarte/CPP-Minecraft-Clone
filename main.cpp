@@ -13,7 +13,7 @@ static const int WIDTH = 800;
 static const int HEIGHT = 600;
 
 /// Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 30.0f, 15.0f));
 
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
@@ -143,6 +143,7 @@ int main(int argc, char *argv[]) {
     GroundGrid grid = GroundGrid();
     L8 will = L8();
     H3 h3 = H3();
+    A2 ewan = A2();
     P6 phil = P6();
     Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
@@ -170,20 +171,23 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update Projection and View matrices
-        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 200.0f);
         view = camera.getViewMatrix();
 
-        auto vp = projection * view * model;
-        auto mvp = model * vp;
+        glm::mat4 pv = projection * view;
 
         // draw objects
-        grid.draw(mvp);
-        axis.draw(mvp);
+        grid.draw(pv * model);
 
-        // Models
-        will.draw(vp * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)));
-        h3.draw(mvp);
-        phil.draw(vp * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
+        axis.draw(pv * model);
+
+        will.draw(pv * glm::translate(model, glm::vec3(43.0f, 0.1f, 49.0f)));
+
+        h3.draw(pv * model);
+
+        ewan.draw(pv * glm::translate(model, glm::vec3(30.0f , 0.0f , -50.0f )));
+
+        phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
