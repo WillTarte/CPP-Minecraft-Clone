@@ -13,7 +13,7 @@ static const int WIDTH = 800;
 static const int HEIGHT = 600;
 
 /// Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 30.0f, 15.0f));
 
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
@@ -171,23 +171,23 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update Projection and View matrices
-        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 200.0f);
         view = camera.getViewMatrix();
 
-        glm::mat4 pvm = projection * view * model;
+        glm::mat4 pv = projection * view;
 
         // draw objects
-        grid.draw(projection * view * model);
+        grid.draw(pv * model);
 
-        axis.draw(projection * view * model);
+        axis.draw(pv * model);
 
-        will.draw(projection * view * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)));
+        will.draw(pv * glm::translate(model, glm::vec3(43.0f, 0.1f, 49.0f)));
 
-        h3.draw(projection * view * model);
+        h3.draw(pv * model);
 
-        ewan.draw(pvm);
+        ewan.draw(pv * model);
 
-        phil.draw(vp * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
+        phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
