@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
         // Models
         will.draw(vp * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)));
         h3.draw(mvp);
-        phil.draw(vp * glm::translate(model, glm::vec3(-43.0f, 0.0f, -49.0f)));
+        phil.draw(vp * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
