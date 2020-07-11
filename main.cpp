@@ -22,19 +22,52 @@ float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 
+
+enum selectedModel {
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    RESET,
+    WORLD
+};
+
+
+selectedModel selectedModel = WORLD;
 /** Method to consume keyboard inputs to control the camera.
  *
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) {
+void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+        selectedModel = ONE;
+
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+        selectedModel = TWO;
+
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+        selectedModel = THREE;
+
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+        selectedModel = FOUR;
+
+    if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+        selectedModel = FIVE;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    // Reset
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
-        modelMatrix = glm::mat4(1.0f);
+        selectedModel = RESET;
+
+}
+
+
+void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) {
+
+
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
@@ -200,10 +233,15 @@ int main(int argc, char *argv[]) {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
+    //model matrices
+    glm::mat4 L8model = glm::mat4(1.0f);
+    glm::mat4 H3model = glm::mat4(1.0f);
+
     glEnable(GL_CULL_FACE);
     glLineWidth(3.0f);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
+
 
         // per-frame time logic
         // --------------------
@@ -212,7 +250,19 @@ int main(int argc, char *argv[]) {
         lastFrame = currentFrame;
 
         // Process input(s)
-        processInput(window, deltaTime, model);
+        //modelSelect(window);
+        glfwSetKeyCallback(window, modelSelect);
+        if(selectedModel == ONE) {
+            processInput(window, deltaTime, L8model);
+        }
+        if(selectedModel == TWO){
+            processInput(window, deltaTime, H3model);
+        }
+
+        if(selectedModel == RESET){
+            L8model = glm::mat4(1.0f);
+            H3model = glm::mat4(1.0f);
+        }
 
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -227,9 +277,9 @@ int main(int argc, char *argv[]) {
 
         axis.draw(projection * view * model, renderMode);
 
-        will.draw(projection * view * glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
+        will.draw(projection * view * glm::translate(L8model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
 
-        h3.draw(projection * view * model, renderMode);
+        h3.draw(projection * view * H3model, renderMode);
 
 
         // Swap buffers and poll events
