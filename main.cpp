@@ -33,7 +33,15 @@ enum selectedModel {
     WORLD
 };
 
+enum worldOrientation {
+    worldLEFT,
+    worldRIGHT,
+    worldUP,
+    worldDOWN,
+    worldHOME
+};
 
+worldOrientation worldOrientation = worldHOME;
 selectedModel selectedModel = WORLD;
 /** Method to consume keyboard inputs to control the camera.
  *
@@ -61,6 +69,21 @@ void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
         selectedModel = RESET;
+
+
+
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        worldOrientation = worldLEFT;
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        worldOrientation = worldRIGHT;
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        worldOrientation = worldUP;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        worldOrientation = worldDOWN;
+    /* -------------------------------------------------------- */
+
+    ///the world orientation needs to always be running
 
 }
 
@@ -91,16 +114,6 @@ void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) 
         modelMatrix = glm::rotate(modelMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     /* ---------------------- */
 
-    /* Weird rotation stuff that assignment doesnt explain well */
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-    /* -------------------------------------------------------- */
 
     /* Change Render Mode */
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
@@ -262,8 +275,38 @@ int main(int argc, char *argv[]) {
         if(selectedModel == RESET){
             L8model = glm::mat4(1.0f);
             H3model = glm::mat4(1.0f);
+            model = glm::mat4(1.0f);
         }
 
+
+
+        //world processing
+
+    /* Weird rotation stuff that assignment doesnt explain well */
+    if (worldOrientation == worldLEFT) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldRIGHT) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldUP) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldDOWN) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
