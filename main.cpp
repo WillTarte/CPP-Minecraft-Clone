@@ -125,15 +125,7 @@ void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) 
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
         renderMode = GL_TRIANGLES;
     /* ------------------ */
-
-    /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, deltaTime);*/
+    
 }
 
 /** Callback for whenever the window size is changed.
@@ -315,38 +307,38 @@ int main(int argc, char *argv[]) {
 
     if (worldOrientation == worldLEFT) {
         model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        A2model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        P6model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        H7model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(H3model , glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         worldOrientation = worldHOME;
     }
     if (worldOrientation == worldRIGHT) {
         model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        A2model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        P6model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-        H7model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
         worldOrientation = worldHOME;
     }
     if (worldOrientation == worldUP) {
         model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        A2model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        P6model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        H7model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         worldOrientation = worldHOME;
     }
     if (worldOrientation == worldDOWN) {
         model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-        L8model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-        H3model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-        A2model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-        P6model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-        H7model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
         worldOrientation = worldHOME;
     }
         // Render
