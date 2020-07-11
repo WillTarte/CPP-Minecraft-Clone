@@ -80,12 +80,17 @@ public:
     }
 
     /// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-    void processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true) {
+    void processMouseMovement(float xoffset, float yoffset, GLFWwindow *window, GLboolean constrainPitch = true) {
         xoffset *= MouseSensitivity;
         yoffset *= MouseSensitivity;
 
-        Yaw += xoffset;
-        Pitch += yoffset;
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+            Yaw += xoffset;
+        }
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+            Pitch += yoffset;
+        }
 
         // make sure that when pitch is out of bounds, screen doesn't get flipped
         if (constrainPitch) {
@@ -93,6 +98,14 @@ public:
                 Pitch = 89.0f;
             if (Pitch < -89.0f)
                 Pitch = -89.0f;
+        }
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            Zoom -= (float) yoffset;
+            if (Zoom < 1.0f)
+                Zoom = 1.0f;
+            if (Zoom > 45.0f)
+                Zoom = 45.0f;
         }
 
         // update Front, Right and Up Vectors using the updated Euler angles

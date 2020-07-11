@@ -12,7 +12,7 @@
 
 class Drawable {
 public:
-    virtual void draw(const glm::mat4 &mvp) const = 0;
+    virtual void draw(const glm::mat4 &mvp, GLenum renderMode) const = 0;
 
     virtual ~Drawable() = default;
 };
@@ -80,7 +80,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
@@ -88,14 +88,14 @@ public:
 
         glBindVertexArray(vao);
 
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         /* L ------ */
         shader.setMat4("transform", glm::scale(unitmat4, glm::vec3(3.0f, 1.0f, 1.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
 
         /* 8 ------ */
@@ -104,25 +104,25 @@ public:
         glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
 
         shader.setMat4("transform", transformScaled);
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 1.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 3.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
     }
 };
@@ -169,7 +169,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         shader.use();
         shader.setMat4("base_mvp", mvp);
         glBindVertexArray(vao);
@@ -238,7 +238,7 @@ public:
     }
 
     //draw function takes in the mvp matrix from the current scene and applies them to local shader
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         //enabling the shader to be used
         shader.use();
         shader.setMat4("base_mvp", mvp);
@@ -284,14 +284,14 @@ private:
     };
 
     //unit cube
-    void drawCube(glm::mat4 base, glm::mat4 transform) const {
+    void drawCube(glm::mat4 base, glm::mat4 transform, GLenum renderMode) const {
         shader.use();
         shader.setMat4("base_mvp", base);
         shader.setMat4("transform", transform);
 
         glBindVertexArray(vao);
 
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
     }
 
 public:
@@ -325,38 +325,38 @@ public:
         glEnableVertexAttribArray(0);
     }
 
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
 
         //draw H
         glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.0f, 1.0f));
         glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 3.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         //draw 3
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 3.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 0.25f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 2.75f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
     }
 };
@@ -424,7 +424,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
@@ -555,7 +555,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4& mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
 
         //Draws the letter H - This draws the vertical line 
         glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));
