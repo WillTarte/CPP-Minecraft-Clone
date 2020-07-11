@@ -6,15 +6,14 @@
 #include <vector>
 #include "shader.h"
 #include "camera.h"
-#include "axis.h"
-
+#include "draw.h"
 
 /// Window size
 static const int WIDTH = 800;
 static const int HEIGHT = 600;
 
 /// Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 30.0f, 15.0f));
 
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
@@ -25,18 +24,18 @@ bool firstMouse = true;
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void processInput(GLFWwindow* window, float deltaTime) {
+void processInput(GLFWwindow *window, double deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.processKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.processKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.processKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.processKeyboard(RIGHT, deltaTime);
 }
 
 /** Callback for whenever the window size is changed.
@@ -47,7 +46,7 @@ void processInput(GLFWwindow* window, float deltaTime) {
  */
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
@@ -61,7 +60,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
  */
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -74,7 +73,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    camera.processMouseMovement(xoffset, yoffset);
 }
 
 /** Callback for whenever the scroll wheel is used to control the camera zoom.
@@ -85,58 +84,24 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
  */
 /// glfw: whenever the mouse scroll wheel scrolls, this callback is called
 /// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.ProcessMouseScroll(yoffset);
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+    camera.processMouseScroll(yoffset);
 }
 
 /// glfw: error callback
 /// --------------------
-void error_callback(int error, const char* description) {
+void errorCallback(int error, const char *description) {
     fputs(description, stderr);
 }
 
-/// Method to draw the 100x100 ground grid with it's middle centered at (0,0,0)
-//TODO: Eventually move this "object" to it's own class like all other "objects"
-void drawGrid() {
-
-    //float vertices[2400];
-    std::vector<glm::vec3> vertices;
-
-    for (int i = 0; i <= 100; i++) //draw 100 horizontal and 100 vertical lines - 2 vertices per line
-    {
-        // horizontal
-        vertices.emplace_back(glm::vec3(-50.0f, 0.0f, (float) i - 50.0f));
-        vertices.emplace_back(glm::vec3(50.0f, 0.0f, (float) i - 50.0f));
-
-        // vertical
-        vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, -50));
-        vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, 50.0f));
-    }
-
-    // Set up and bind VBO and VAO
-    GLuint VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), (void*) 0);
-    glEnableVertexAttribArray(0);
-
-
-    glDrawArrays(GL_LINES, 0, vertices.size());
-}
 
 /// Main
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // Necessary variables
 
     // timing
-    float deltaTime = 0.0f;    // time between current frame and last frame
-    float lastFrame = 0.0f;
+    double deltaTime = 0.0f;    // time between current frame and last frame
+    double lastFrame = 0.0f;
 
     // *********************
 
@@ -147,7 +112,7 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -158,8 +123,8 @@ int main(int argc, char* argv[]) {
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetErrorCallback(error_callback);
+    glfwSetScrollCallback(window, scrollCallback);
+    glfwSetErrorCallback(errorCallback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -174,53 +139,62 @@ int main(int argc, char* argv[]) {
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
-    // Grid shader
-    //TODO: Is there a better way to handle shaders (once we have many)
-    Shader gridShader = Shader("resources/shaders/GridVertexShader.vs", "resources/shaders/GridFragmentShader.fs");
+    // Initialize models
+    GroundGrid grid = GroundGrid();
+    L8 will = L8();
+    H3 h3 = H3();
+    A2 ewan = A2();
+    P6 phil = P6();
+    H7 moh = H7();
+    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.vs", "resources/shaders/BasicFragmentShader.fs"));
+    glEnable(GL_CULL_FACE);
+    glLineWidth(3.0f);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
         // per-frame time logic
         // --------------------
-        float currentFrame = glfwGetTime();
+        double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         // Process input(s)
         processInput(window, deltaTime);
 
-        gridShader.use();
-
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update Projection and View matrices
-        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 100.0f);
-        view = camera.GetViewMatrix();
+        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 200.0f);
+        view = camera.getViewMatrix();
 
-        // Set the MVP matrices in the ground grid shader
-        //TODO: Better way to handle this?
-        gridShader.setMat4("Model", model);
-        gridShader.setMat4("View", view);
-        gridShader.setMat4("Projection", projection);
+        glm::mat4 pv = projection * view;
 
-        drawGrid();
+        // draw objects
+        grid.draw(pv * model);
+
+        axis.draw(pv * model);
+
+        will.draw(pv * glm::translate(model, glm::vec3(43.0f, 0.1f, 49.0f)));
+
+        h3.draw(pv * model);
+
+        ewan.draw(pv * glm::translate(model, glm::vec3(30.0f , 0.0f , -50.0f )));
+
+        phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
+
+        moh.draw(pv * glm::translate(model, glm :: vec3(-49.5f, 0.1f, 49.0f)));
 
 
 
-        axis.Draw(model,view,projection);
-
-
-
-// Swap buffers and poll events
+        // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

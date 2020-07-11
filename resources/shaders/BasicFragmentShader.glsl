@@ -5,8 +5,5 @@ in vec4 fragmentColor;
 
 void main()
 {
-
-
-		FragColor = fragmentColor;
-
+	FragColor = fragmentColor;
 }
