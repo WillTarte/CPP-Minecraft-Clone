@@ -480,6 +480,141 @@ public:
     }
 };
 
+class H7 : Drawable {
+public:
+    GLuint vbo{}, vao{}, ebo{};
+    GLsizei size{};
+    Shader shader{};
+
+    const unsigned short cubeFaces[36] = {
+        //front
+    0, 1, 3, //ccw
+    2, 3, 1,
+    //back
+    4, 7, 5, //cw
+    6, 5, 7,
+    //left
+    4, 0, 7, //ccw
+    3, 7, 0,
+    //right
+    5, 6, 1, //cw
+    2, 1, 6,
+    //bottom
+    0, 4, 1, //cw
+    5, 1, 4,
+    //top
+    3, 2, 7, //ccw
+    6, 7, 2
+    };
+
+    void drawCube(glm::mat4 base, glm::mat4 transform) const {
+        shader.use();
+        shader.setMat4("base_mvp", base);
+        shader.setMat4("transform", transform);
+
+        glBindVertexArray(vao);
+
+        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+    }
+
+    H7() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        std::vector<glm::vec3> vertices;
+        vertices.emplace_back(glm::vec3(-0.5, -0.5, 0.5));
+        vertices.emplace_back(glm::vec3(0.5, -0.5, 0.5));
+        vertices.emplace_back(glm::vec3(0.5, 0.5, 0.5));
+        vertices.emplace_back(glm::vec3(-0.5, 0.5, 0.5));
+        vertices.emplace_back(glm::vec3(-0.5, -0.5, -0.5));
+        vertices.emplace_back(glm::vec3(0.5, -0.5, -0.5));
+        vertices.emplace_back(glm::vec3(0.5, 0.5, -0.5));
+        vertices.emplace_back(glm::vec3(-0.5, 0.5, -0.5));
+
+
+        this->size = sizeof(cubeFaces) / sizeof(unsigned short);
+
+
+
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &ebo);
+
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeFaces), cubeFaces, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+        glEnableVertexAttribArray(0);
+    }
+
+    ~H7() override {
+        glDeleteProgram(shader.ID);
+        glDeleteBuffers(1, &vbo);
+        glDeleteBuffers(1, &ebo);
+        glDeleteVertexArrays(1, &vao);
+    }
+
+    void draw(const glm::mat4& mvp) const override {
+
+        //Draws the letter H - This draws the vertical line 
+        glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));
+        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        // This draws the small horizontal line connecting the two vertical lines 
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        // This draws the second vertical line for the letter H
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        //Draws the number 7 - This part creates the straight horizontal line
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(3.5f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        // Draw the diagonal bar for the number 7
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 2.5f, 0.0f));
+        drawCube(mvp, translationMatrix *  scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 2.0f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 1.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 1.0f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 0.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 0.0f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 1.0f, 1.0f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.125f, 2.5f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 0.5f, 0.75f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.25f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+
+        scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.75f, 0.5f, 0.75f));
+        translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(6.5f, 1.25f, 0.0f));
+        drawCube(mvp, translationMatrix * scalingMatrix);
+    }
+};
 
 
 class A2 {
@@ -621,6 +756,7 @@ public:
 
         /* -------- */
     }
+
 };
 
 

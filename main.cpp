@@ -145,6 +145,7 @@ int main(int argc, char *argv[]) {
     H3 h3 = H3();
     A2 ewan = A2();
     P6 phil = P6();
+    H7 moh = H7();
     Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
@@ -188,6 +189,10 @@ int main(int argc, char *argv[]) {
         ewan.draw(pv * glm::translate(model, glm::vec3(30.0f , 0.0f , -50.0f )));
 
         phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
+
+        moh.draw(pv * glm::translate(model, glm :: vec3(-49.5f, 0.1f, 49.0f)));
+
+
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
