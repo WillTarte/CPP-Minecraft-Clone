@@ -1,5 +1,7 @@
 # COMP-371-Proj
-
+## Requirements
+ - For the first build, requires an active internet connection to fetch dependencies.
+ 
 ## Royal Octopi Team Members
  - Zahra Nikbakht 40138253
  - Philip Dumaresq 40082638
