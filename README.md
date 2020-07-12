@@ -25,8 +25,15 @@ _It should also work with Visual Studio with CMake support._
 3. Once the build successfully finishes, you can run the executable in the build folder that was generated.
 
 ## Controls
- - TODO
-
+ - Numpad 1 to 6 selects the currently controlled model.  
+    - 1 to 5 selects one of the student models.
+    - 6 selects the world.
+ - Left-Shift + (W,A,S,D) moves the currently selected model up, left, down, right respectively.
+ - A/D rotates the currently selected model on the Y axis.
+ - U/J scales the currently selected model up/down respectively.
+ - __With the world selected,__ the arrow keys rotate the world on the Y and X axis.
+ - The _Home_ button resets the world/models to their original position/orientation.
+ - The mouse is TODO
 
 ## Resources
  - https://learnopengl.com/
