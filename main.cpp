@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
-#include "shader.h"
 #include "camera.h"
 #include "draw.h"
 
@@ -16,15 +15,21 @@ static const int HEIGHT = 768;
 GLenum renderMode = GL_TRIANGLES;
 
 /// Camera
+static const glm::vec3 EyePosition = glm::vec3(0.0f, 30.0f, 130.0f);
+static const glm::vec3 WorldCenter = glm::vec3(0.0f, 0.0f, 0.0f);
+static const glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+static const glm::vec3 WorldRight = glm::vec3(1.0f, 0.0f, 0.0f);
+static const glm::vec3 WorldForward = glm::vec3(0.0f, 0.0f, 1.0f);
+Camera camera(EyePosition);
 
-Camera camera(glm::vec3(0.0f, 30.0f, 130.0f));
-
-
+/// Some global vars
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 float movespeed = 20.0f;
+static const glm::mat4 unitMat = glm::mat4(1.0f);
 
+/// So the program knows what model is selected
 enum selectedModel {
     ONE,
     TWO,
@@ -35,17 +40,9 @@ enum selectedModel {
     WORLD
 };
 
-enum worldOrientation {
-    worldLEFT,
-    worldRIGHT,
-    worldUP,
-    worldDOWN,
-    worldHOME
-};
-
-worldOrientation worldOrientation = worldHOME;
 selectedModel selectedModel = WORLD;
 
+// TODO can we include code from processInputs here? Or just clean up handling input in general
 /** Method to consume keyboard inputs to control the camera.
  *
  * @param window The currently active window
@@ -70,38 +67,26 @@ void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_6 && action == GLFW_PRESS)
         selectedModel = WORLD;
 
-
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
         selectedModel = RESET;
-
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        worldOrientation = worldLEFT;
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        worldOrientation = worldRIGHT;
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        worldOrientation = worldUP;
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        worldOrientation = worldDOWN;
-    /* -------------------------------------------------------- */
-
-    ///the world orientation needs to always be running
-
 }
 
-
+/** Processes user input to control the models/world
+ *
+ * @param window The current active window
+ * @param deltaTime The time since the last frame
+ * @param objectModel The current model to be controlled
+ */
 void processInput(GLFWwindow* window, double deltaTime, Drawable* objectModel) {
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
         objectModel->setLocalTransform(glm::scale(objectModel->getLocalTransform(), glm::vec3(1.01, 1.01, 1.01)));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(1.01, 1.01, 1.01));
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         objectModel->setLocalTransform(glm::scale(objectModel->getLocalTransform(), glm::vec3(0.99, 0.99, 0.99)));
-    //modelMatrix = glm::scale(modelMatrix, glm::vec3(0.99f, 0.99f, 0.99f));
     /* ----------------- */
 
     /* Move and Rotate models */
@@ -125,7 +110,6 @@ void processInput(GLFWwindow* window, double deltaTime, Drawable* objectModel) {
                 glm::rotate(objectModel->getLocalTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     /* ---------------------- */
 
-
     /* Change Render Mode */
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
         renderMode = GL_POINTS;
@@ -134,7 +118,6 @@ void processInput(GLFWwindow* window, double deltaTime, Drawable* objectModel) {
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
         renderMode = GL_TRIANGLES;
     /* ------------------ */
-
 }
 
 /** Callback for whenever the window size is changed.
@@ -151,6 +134,7 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// TODO some controls use the mouse
 /** Callback for mouse movement which controls the camera.
  *
  * @param window The currently active window
@@ -175,6 +159,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     camera.processMouseMovement(xoffset, yoffset, window);
 }
 
+// TODO reuse some of this code to process zoom
 /** Callback for whenever the scroll wheel is used to control the camera zoom.
  *
  * @param window The currently active window
@@ -193,6 +178,41 @@ void errorCallback(int error, const char* description) {
     fputs(description, stderr);
 }
 
+void processInputWorld(GLFWwindow* window, double deltatime, glm::mat4& worldModelMatrix) {
+
+    /* Scale Up and Down */
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+        worldModelMatrix = glm::scale(worldModelMatrix, glm::vec3(1.01, 1.01, 1.01));
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        worldModelMatrix = glm::scale(worldModelMatrix, glm::vec3(0.99f, 0.99f, 0.99f));
+    /* ----------------- */
+
+    /* Move and Rotate models */
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, 0.1f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, -0.1f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(-0.1f, 0.0f, 0.0f));
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.1f, 0.0f, 0.0f));
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    /* ---------------------- */
+
+    /* Weird rotation stuff that assignment doesnt explain well */
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+    /* -------------------------------------------------------- */
+}
 
 /// Main
 int main(int argc, char* argv[]) {
@@ -223,7 +243,6 @@ int main(int argc, char* argv[]) {
     glfwSetKeyCallback(window, modelSelect);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
-    glfwSetScrollCallback(window, scrollCallback);
     glfwSetErrorCallback(errorCallback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -241,33 +260,24 @@ int main(int argc, char* argv[]) {
 
     // Initialize models
     GroundGrid grid = GroundGrid();
+    Axis axis = Axis();
     L8 will = L8();
     H3 h3 = H3();
     A2 ewan = A2();
     P6 phil = P6();
     H7 moh = H7();
 
-
-    Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
-
     // MVP matrices
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 worldModelMatrix = glm::mat4(1.0f);
+    glm::mat4 view = glm::lookAt(EyePosition, WorldCenter, WorldUp);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    //model matrices
-    glm::mat4 L8model = glm::mat4(1.0f);
-    glm::mat4 H3model = glm::mat4(1.0f);
-    glm::mat4 A2model = glm::mat4(1.0f);
-    glm::mat4 P6model = glm::mat4(1.0f);
-    glm::mat4 H7model = glm::mat4(1.0f);
-
-
     glEnable(GL_CULL_FACE);
+
     glLineWidth(3.0f);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
-
 
         // per-frame time logic
         // --------------------
@@ -275,8 +285,7 @@ int main(int argc, char* argv[]) {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Process input(s)
-        //modelSelect(window);
+        // Input Processing
         if (selectedModel == ONE) {
             processInput(window, deltaTime, &h3);
         }
@@ -292,79 +301,43 @@ int main(int argc, char* argv[]) {
         if (selectedModel == FIVE) {
             processInput(window, deltaTime, &moh);
         }
-        /*if (selectedModel == WORLD) {
-            processInput(window, deltaTime, model);
-        }*/
+        if (selectedModel == WORLD) {
+            processInputWorld(window, deltaTime, worldModelMatrix);
+        }
+        // Resets the world orientation and position
         if (selectedModel == RESET) {
-            L8model = glm::mat4(1.0f);
-            H3model = glm::mat4(1.0f);
-            model = glm::mat4(1.0f);
+            will.setLocalTransform(unitMat);
+            h3.setLocalTransform(unitMat);
+            ewan.setLocalTransform(unitMat);
+            phil.setLocalTransform(unitMat);
+            moh.setLocalTransform(unitMat);
+            worldModelMatrix = unitMat;
         }
-
-        //world processing
-
-        /*if (worldOrientation == worldLEFT) {
-            model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            worldOrientation = worldHOME;
-        }
-        if (worldOrientation == worldRIGHT) {
-            model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-            worldOrientation = worldHOME;
-        }
-        if (worldOrientation == worldUP) {
-            model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-            worldOrientation = worldHOME;
-        }
-        if (worldOrientation == worldDOWN) {
-            model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-            worldOrientation = worldHOME;
-        }*/
 
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Update Projection and View matrices
-        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 200.0f);
-        view = camera.getViewMatrix();
+        // Update Projection matrix
+        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
 
-        glm::mat4 pv = projection * view;
+        grid.draw(projection * view * worldModelMatrix, renderMode);
 
-        grid.draw(projection * view * model, renderMode);
+        axis.draw(projection * view * worldModelMatrix, renderMode);
 
-        axis.draw(projection * view * model, renderMode);
+        will.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(43.0f, 0.0f, 49.0f)),
+                  renderMode);
 
-        will.draw(pv * model * glm::translate(L8model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
+        h3.draw(projection * view * worldModelMatrix * unitMat, renderMode);
 
-        h3.draw(pv * model * H3model, renderMode);
+        ewan.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(30.0f, 0.0f, -50.0f)),
+                  renderMode);
 
-        ewan.draw(pv * model * glm::translate(A2model, glm::vec3(30.0f, 0.0f, -50.0f)), renderMode);
+        phil.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(-50.0f, 0.0f, -50.0f)),
+                  renderMode);
 
-        phil.draw(pv * model * glm::translate(P6model, glm::vec3(-50.0f, 0.0f, -50.0f)), renderMode);
-
-        moh.draw(pv * model * glm::translate(H7model, glm::vec3(-49.5f, 0.1f, 49.0f)), renderMode);
-
-
+        moh.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(-49.5f, 0.1f, 49.0f)),
+                 renderMode);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
