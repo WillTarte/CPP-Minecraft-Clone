@@ -96,7 +96,7 @@ glm::mat4 GetViewMatrix(Camera &camera) {
 }
 
 /// So the program knows what model is selected
-enum selectedModel {
+enum class SelectedModel {
     ONE,
     TWO,
     THREE,
@@ -106,7 +106,7 @@ enum selectedModel {
     WORLD
 };
 
-selectedModel selectedModel = WORLD;
+SelectedModel selectedModel = SelectedModel::WORLD;
 
 /** Method to consume keyboard inputs to control the camera.
  *
@@ -115,28 +115,28 @@ selectedModel selectedModel = WORLD;
  */
 void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_1 && action == GLFW_PRESS)
-        selectedModel = ONE;
+        selectedModel = SelectedModel::ONE;
 
     if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-        selectedModel = TWO;
+        selectedModel = SelectedModel::TWO;
 
     if (key == GLFW_KEY_3 && action == GLFW_PRESS)
-        selectedModel = THREE;
+        selectedModel = SelectedModel::THREE;
 
     if (key == GLFW_KEY_4 && action == GLFW_PRESS)
-        selectedModel = FOUR;
+        selectedModel = SelectedModel::FOUR;
 
     if (key == GLFW_KEY_5 && action == GLFW_PRESS)
-        selectedModel = FIVE;
+        selectedModel = SelectedModel::FIVE;
 
     if (key == GLFW_KEY_6 && action == GLFW_PRESS)
-        selectedModel = WORLD;
+        selectedModel = SelectedModel::WORLD;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
-        selectedModel = RESET;
+        selectedModel = SelectedModel::RESET;
 }
 
 /** Processes user input to control the models/world
@@ -352,26 +352,26 @@ int main(int argc, char* argv[]) {
         lastFrame = currentFrame;
 
         // Input Processing
-        if (selectedModel == ONE) {
+        if (selectedModel == SelectedModel::ONE) {
             processInput(window, deltaTime, &h3);
         }
-        if (selectedModel == TWO) {
+        if (selectedModel == SelectedModel::TWO) {
             processInput(window, deltaTime, &will);
         }
-        if (selectedModel == THREE) {
+        if (selectedModel == SelectedModel::THREE) {
             processInput(window, deltaTime, &ewan);
         }
-        if (selectedModel == FOUR) {
+        if (selectedModel == SelectedModel::FOUR) {
             processInput(window, deltaTime, &phil);
         }
-        if (selectedModel == FIVE) {
+        if (selectedModel == SelectedModel::FIVE) {
             processInput(window, deltaTime, &moh);
         }
-        if (selectedModel == WORLD) {
+        if (selectedModel == SelectedModel::WORLD) {
             processInputWorld(window, deltaTime, worldModelMatrix);
         }
         // Resets the world orientation and position
-        if (selectedModel == RESET) {
+        if (selectedModel == SelectedModel::RESET) {
             will.setLocalTransform(unitMat);
             h3.setLocalTransform(unitMat);
             ewan.setLocalTransform(unitMat);

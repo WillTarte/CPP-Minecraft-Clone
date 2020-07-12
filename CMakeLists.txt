@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM.cmake")
 set(CPM_DOWNLOAD_VERSION 0.27)
