@@ -108,7 +108,6 @@ enum selectedModel {
 
 selectedModel selectedModel = WORLD;
 
-// TODO can we include code from processInputs here? Or just clean up handling input in general
 /** Method to consume keyboard inputs to control the camera.
  *
  * @param window The currently active window

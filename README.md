@@ -25,7 +25,7 @@ __Method 1__
 4. Build/Run the project.  
   
 __Method 2: Install Script__
-1. [Download CMake](https://cmake.org/download/) and make sure to link it to PATH (might require restart).
+1. [Download/Run CMake .msi installer](https://cmake.org/download/) and make sure to link it to PATH (might require restart).
 2. Clone the repository or download the zip file and unzip it.
 3. Open the project folder, and right-click on install.bat > run as administrator and accept.
 4. If there are no errors, there should be a new folder called "build". Open it and the .exe should be there.
