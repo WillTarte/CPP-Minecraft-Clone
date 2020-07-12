@@ -12,17 +12,23 @@
  - glew-2.1.0
  - glm-0.9.9.8
  - Minimum OpengGL version = 3.3
+ - Minimum CMake version =  3.14
  
 ## Installation Guide
 _This project has been successfully compiled on both Arch Linux Manjaro using GCC  
 and on Windows 10 using Microsoft Visual Studio 2017's compiler (MSVC)_
-  
-_The IDE that has been tested is CLION 2019/2020. On Windows, the toolchain had to manually be changed to use MSVC._
-_It should also work with Visual Studio with CMake support._
 
-1. Either clone the repository or download the zip file and unzip it.
-2. cd into the project folder and run cmake to build the project.
-3. Once the build successfully finishes, you can run the executable in the build folder that was generated.
+__Method 1__
+1. Clone the repository or download the zip file and unzip it.
+2. Open the project in either CLion or VS2017.
+3. If Using CLion on Windows, go to File > Settings > __Build, Execution, Deployment__ > Toolchain; and set the current toolchain to Visual Studio.
+4. Build/Run the project.  
+  
+__Method 2: Install Script__
+1. [Download CMake](https://cmake.org/download/) and make sure to link it to PATH (might require restart).
+2. Clone the repository or download the zip file and unzip it.
+3. Open the project folder, and right-click on install.bat > run as administrator and accept.
+4. If there are no errors, there should be a new folder called "build". Open it and the .exe should be there.
 
 ## Controls
  - Numpad 1 to 6 selects the currently controlled model.  
@@ -33,7 +39,9 @@ _It should also work with Visual Studio with CMake support._
  - U/J scales the currently selected model up/down respectively.
  - __With the world selected,__ the arrow keys rotate the world on the Y and X axis.
  - The _Home_ button resets the world/models to their original position/orientation.
- - The mouse is TODO
+ - Holding the LMB and moving forwards/backwards will change the current zoom.
+ - Holding the MMB and moving forwards/backwards will tilt the camera.
+ - Holding the RMB and moving left/right will pan the camera.
 
 ## Resources
  - https://learnopengl.com/
