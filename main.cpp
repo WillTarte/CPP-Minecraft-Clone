@@ -316,7 +316,7 @@ int main(int argc, char* argv[]) {
     double lastFrame = 0.0f;
 
     // *********************
-
+    updateCameraVectors();
     // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
