@@ -424,7 +424,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4 &mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
@@ -555,7 +555,7 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    void draw(const glm::mat4& mvp) const override {
+    void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
 
         //Draws the letter H - This draws the vertical line 
         glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));

@@ -16,7 +16,9 @@ static const int HEIGHT = 600;
 GLenum renderMode = GL_TRIANGLES;
 
 /// Camera
-Camera camera(glm::vec3(0.0f, 30.0f, 15.0f));
+
+Camera camera(glm::vec3(0.0f, 3.0f, 3.0f));
+
 
 float lastX = WIDTH / 2.0f;
 float lastY = HEIGHT / 2.0f;
@@ -33,7 +35,15 @@ enum selectedModel {
     WORLD
 };
 
+enum worldOrientation {
+    worldLEFT,
+    worldRIGHT,
+    worldUP,
+    worldDOWN,
+    worldHOME
+};
 
+worldOrientation worldOrientation = worldHOME;
 selectedModel selectedModel = WORLD;
 /** Method to consume keyboard inputs to control the camera.
  *
@@ -61,6 +71,21 @@ void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
         selectedModel = RESET;
+
+
+
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+        worldOrientation = worldLEFT;
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        worldOrientation = worldRIGHT;
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        worldOrientation = worldUP;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        worldOrientation = worldDOWN;
+    /* -------------------------------------------------------- */
+
+    ///the world orientation needs to always be running
 
 }
 
@@ -91,16 +116,6 @@ void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) 
         modelMatrix = glm::rotate(modelMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     /* ---------------------- */
 
-    /* Weird rotation stuff that assignment doesnt explain well */
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-    /* -------------------------------------------------------- */
 
     /* Change Render Mode */
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
@@ -110,15 +125,7 @@ void processInput(GLFWwindow *window, double deltaTime, glm::mat4 &modelMatrix) 
     if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
         renderMode = GL_TRIANGLES;
     /* ------------------ */
-
-    /*if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboard(RIGHT, deltaTime);*/
+    
 }
 
 /** Callback for whenever the window size is changed.
@@ -178,6 +185,8 @@ void errorCallback(int error, const char *description) {
 }
 
 
+
+
 /// Main
 int main(int argc, char *argv[]) {
     // Necessary variables
@@ -229,6 +238,8 @@ int main(int argc, char *argv[]) {
     A2 ewan = A2();
     P6 phil = P6();
     H7 moh = H7();
+
+
     Axis axis = Axis(Shader("resources/shaders/BasicVertexShader.glsl", "resources/shaders/BasicFragmentShader.glsl"));
 
     // MVP matrices
@@ -239,11 +250,20 @@ int main(int argc, char *argv[]) {
     //model matrices
     glm::mat4 L8model = glm::mat4(1.0f);
     glm::mat4 H3model = glm::mat4(1.0f);
+    glm::mat4 A2model = glm::mat4(1.0f);
+    glm::mat4 P6model = glm::mat4(1.0f);
+    glm::mat4 H7model = glm::mat4(1.0f);
+
+
+
+
+
 
     glEnable(GL_CULL_FACE);
     glLineWidth(3.0f);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
+
 
         // per-frame time logic
         // --------------------
@@ -255,17 +275,72 @@ int main(int argc, char *argv[]) {
         //modelSelect(window);
         glfwSetKeyCallback(window, modelSelect);
         if(selectedModel == ONE) {
-            processInput(window, deltaTime, L8model);
-        }
-        if(selectedModel == TWO){
             processInput(window, deltaTime, H3model);
         }
+        if(selectedModel == TWO){
+            processInput(window, deltaTime, L8model);
+        }
+        if(selectedModel == THREE) {
+            processInput(window, deltaTime, A2model);
+        }
+        if(selectedModel == FOUR){
+            processInput(window, deltaTime, P6model);
+        }
+        if(selectedModel == FIVE) {
+            processInput(window, deltaTime, H7model);
+        }
+
+
+
+
 
         if(selectedModel == RESET){
             L8model = glm::mat4(1.0f);
             H3model = glm::mat4(1.0f);
+            model = glm::mat4(1.0f);
         }
 
+
+
+        //world processing
+
+
+    if (worldOrientation == worldLEFT) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(H3model , glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldRIGHT) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldUP) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
+    if (worldOrientation == worldDOWN) {
+        model = glm::rotate(model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        L8model = glm::rotate(L8model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        H3model = glm::rotate(H3model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        A2model = glm::rotate(A2model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        P6model = glm::rotate(P6model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        H7model = glm::rotate(H7model, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+        worldOrientation = worldHOME;
+    }
         // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -276,17 +351,20 @@ int main(int argc, char *argv[]) {
 
         glm::mat4 pv = projection * view;
 
-        // draw objects
+
         grid.draw(projection * view * model, renderMode);
 
         axis.draw(projection * view * model, renderMode);
-        ewan.draw(pv * glm::translate(model, glm::vec3(30.0f , 0.0f , -50.0f )));
 
         will.draw(projection * view * glm::translate(L8model, glm::vec3(43.0f, 0.0f, 49.0f)), renderMode);
-        phil.draw(pv * glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)));
 
         h3.draw(projection * view * H3model, renderMode);
-        moh.draw(pv * glm::translate(model, glm :: vec3(-49.5f, 0.1f, 49.0f)));
+
+        ewan.draw(pv * glm::translate(A2model, glm::vec3(30.0f , 0.0f , -50.0f )));
+
+        phil.draw(pv * glm::translate(P6model, glm::vec3(-50.0f, 0.0f, -50.0f)), renderMode);
+
+        moh.draw(pv * glm::translate(H7model, glm :: vec3(-49.5f, 0.1f, 49.0f)),renderMode);
 
 
 
