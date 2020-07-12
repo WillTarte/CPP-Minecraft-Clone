@@ -158,9 +158,12 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
     lastX = xpos;
     lastY = ypos;
+
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
 
     camera.processMouseMovement(xoffset, yoffset, window);
 }
@@ -250,6 +253,7 @@ int main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetErrorCallback(errorCallback);
+    glfwSetScrollCallback(window,scrollCallback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -326,6 +330,9 @@ int main(int argc, char* argv[]) {
 
         // Update Projection matrix
         projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
+
+
+        glm::mat4 view = camera.GetViewMatrix();
 
         grid.draw(projection * view * worldModelMatrix, renderMode);
 

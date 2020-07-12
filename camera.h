@@ -51,6 +51,11 @@ public:
         updateCameraVectors();
     }
 
+    glm::mat4 GetViewMatrix()
+    {
+        return glm::lookAt(Position, Position + Front, Up);
+    }
+
     /// Constructor with scalar values
     [[maybe_unused]] Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
             : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {
@@ -87,6 +92,7 @@ public:
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
             Yaw += xoffset;
+
         }
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
@@ -126,14 +132,15 @@ private:
     /// Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors() {
         // calculate the new Front vector
+        std::cout << "called";
         glm::vec3 tempfront;
         tempfront.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
         tempfront.y = sin(glm::radians(Pitch));
         tempfront.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+
         Front = glm::normalize(tempfront);
         // also re-calculate the Right and Up vector
-        Right = glm::normalize(glm::cross(Front,
-                                          WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        Right = glm::normalize(glm::cross(Front,WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
         Up = glm::normalize(glm::cross(Right, Front));
     }
 };
