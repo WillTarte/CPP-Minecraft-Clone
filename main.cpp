@@ -93,9 +93,15 @@ void processInput(GLFWwindow* window, double deltaTime, Drawable* objectModel) {
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         objectModel->setLocalTransform(
                 glm::translate(objectModel->getLocalTransform(), glm::vec3(0.0f, movespeed * deltaTime, 0.0f)));
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        objectModel->setLocalTransform(
+                glm::rotate(objectModel->getLocalTransform(), glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         objectModel->setLocalTransform(
                 glm::translate(objectModel->getLocalTransform(), glm::vec3(0.0f, -movespeed * deltaTime, 0.0f)));
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        objectModel->setLocalTransform(
+                glm::rotate(objectModel->getLocalTransform(), glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         objectModel->setLocalTransform(
                 glm::translate(objectModel->getLocalTransform(), glm::vec3(-movespeed * deltaTime, 0.0f, 0.0f)));
@@ -204,13 +210,13 @@ void processInputWorld(GLFWwindow* window, double deltatime, glm::mat4& worldMod
 
     /* Weird rotation stuff that assignment doesnt explain well */
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
     /* -------------------------------------------------------- */
 }
 
