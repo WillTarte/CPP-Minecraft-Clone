@@ -12,12 +12,20 @@
 
 class Drawable {
 public:
+    glm::mat4 localTransform{};
+
+    Drawable() { localTransform = glm::mat4(1.0f); }
+
+    virtual glm::mat4& getLocalTransform() { return localTransform; }
+
+    virtual void setLocalTransform(glm::mat4 newTransform) { localTransform = newTransform; }
+
     virtual void draw(const glm::mat4 &mvp, GLenum renderMode) const = 0;
 
     virtual ~Drawable() = default;
 };
 
-class L8 : Drawable {
+class L8 : public Drawable {
 public:
     GLuint vbo{}, vao{}, ebo{};
     GLsizei size{};
@@ -84,7 +92,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("base_mvp", mvp);
+        shader.setMat4("base_mvp", mvp * localTransform);
 
         glBindVertexArray(vao);
 
@@ -127,7 +135,7 @@ public:
     }
 };
 
-class GroundGrid : Drawable {
+class GroundGrid : public Drawable {
 private:
     GLuint vao{}, vbo{};
     GLsizei size;
@@ -171,7 +179,7 @@ public:
 
     void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         shader.use();
-        shader.setMat4("base_mvp", mvp);
+        shader.setMat4("base_mvp", mvp * localTransform);
         glBindVertexArray(vao);
 
         glDrawArrays(GL_LINES, 0, size);
@@ -179,7 +187,7 @@ public:
 };
 
 //Class definition
-class Axis : Drawable {
+class Axis : public Drawable {
 private:
     Shader shader;
     GLuint localVAO{};
@@ -241,7 +249,7 @@ public:
     void draw(const glm::mat4 &mvp, GLenum renderMode) const override {
         //enabling the shader to be used
         shader.use();
-        shader.setMat4("base_mvp", mvp);
+        shader.setMat4("base_mvp", mvp * localTransform);
 
         glLineWidth(5.0f);
         //binding array that was created in constructor
@@ -256,7 +264,7 @@ public:
     };
 };
 
-class H3 : Drawable {
+class H3 : public Drawable {
 
 private:
     GLuint vbo{}, vao{}, ebo{};
@@ -286,7 +294,7 @@ private:
     //unit cube
     void drawCube(glm::mat4 base, glm::mat4 transform, GLenum renderMode) const {
         shader.use();
-        shader.setMat4("base_mvp", base);
+        shader.setMat4("base_mvp", base * localTransform);
         shader.setMat4("transform", transform);
 
         glBindVertexArray(vao);
@@ -361,7 +369,7 @@ public:
     }
 };
 
-class P6 : Drawable {
+class P6 : public Drawable {
 public:
     GLuint vbo{}, vao{}, ebo{};
     GLsizei size{};
@@ -428,59 +436,59 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("base_mvp", mvp);
+        shader.setMat4("base_mvp", mvp * localTransform);
 
         glBindVertexArray(vao);
 
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         /* P ------ */
         glm::mat4 transform = glm::translate(unitmat4, glm::vec3(0.0f, 0.0f, 0.0f));
         glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 3.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
 
         /* 6 ------ */
         transform = glm::translate(unitmat4, glm::vec3(4.0f, 0.0f, 0.0f));
         transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
         shader.setMat4("transform", transformScaled);
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 2.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transformScaled, glm::vec3(0.0f, 4.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(0.0f, 3.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform", glm::translate(transform, glm::vec3(2.0f, 1.0f, 0.0f)));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
     }
 };
 
-class H7 : Drawable {
+class H7 : public Drawable {
 public:
     GLuint vbo{}, vao{}, ebo{};
     GLsizei size{};
@@ -507,14 +515,14 @@ public:
     6, 7, 2
     };
 
-    void drawCube(glm::mat4 base, glm::mat4 transform) const {
+    void drawCube(glm::mat4 base, glm::mat4 transform, GLenum renderMode) const {
         shader.use();
-        shader.setMat4("base_mvp", base);
+        shader.setMat4("base_mvp", base * localTransform);
         shader.setMat4("transform", transform);
 
         glBindVertexArray(vao);
 
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
     }
 
     H7() {
@@ -560,64 +568,64 @@ public:
         //Draws the letter H - This draws the vertical line 
         glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));
         glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         // This draws the small horizontal line connecting the two vertical lines 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         // This draws the second vertical line for the letter H
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 4.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         //Draws the number 7 - This part creates the straight horizontal line
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(3.5f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 3.0f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         // Draw the diagonal bar for the number 7
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 2.5f, 0.0f));
-        drawCube(mvp, translationMatrix *  scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 2.0f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 1.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 1.0f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 0.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(5.75f, 0.0f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.75f, 1.0f, 1.0f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.125f, 2.5f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 0.5f, 0.75f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.5f, 1.25f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
 
         scalingMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1.75f, 0.5f, 0.75f));
         translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(6.5f, 1.25f, 0.0f));
-        drawCube(mvp, translationMatrix * scalingMatrix);
+        drawCube(mvp, translationMatrix * scalingMatrix, renderMode);
     }
 };
 
 
-class A2 {
+class A2 : public Drawable {
 public:
     GLuint vbo{}, vao{}, ebo{};
     GLsizei size{};
@@ -675,14 +683,15 @@ public:
         glEnableVertexAttribArray(0);
     }
 
-    ~A2() {
+    ~A2() override {
         glDeleteProgram(shader.ID);
         glDeleteBuffers(1, &vbo);
         glDeleteBuffers(1, &ebo);
         glDeleteVertexArrays(1, &vao);
     }
 
-    glm::mat4  scaleandTranslate(int xTran, int yTran, int zTran,int xScale, int yScale, int zScale, glm::mat4 unitmat4) {
+    static glm::mat4
+    scaleandTranslate(int xTran, int yTran, int zTran, int xScale, int yScale, int zScale, glm::mat4 unitmat4) {
 
 
         glm::mat4 output =  glm::translate(unitmat4, glm::vec3(xTran, yTran, zTran));
@@ -690,17 +699,18 @@ public:
         return output;
 
     }
-    void draw(const glm::mat4 &baseMvp) {
+
+    void draw(const glm::mat4& baseMvp, GLenum renderMode) const override {
         glm::mat4 unitmat4(1);
 
 
         shader.use();
-        shader.setMat4("base_mvp", baseMvp);
+        shader.setMat4("base_mvp", baseMvp * localTransform);
 
 
         glBindVertexArray(vao);
 
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
 
 
@@ -710,23 +720,23 @@ public:
         //left side
 
         shader.setMat4("transform",  scaleandTranslate(0.0,0.0,0.0,2.0,8.0,1.0,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //right side
         shader.setMat4("transform",  scaleandTranslate(6.0,0.0,0.0,2.0,8.0,1.0,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //top
         shader.setMat4("transform",  scaleandTranslate(1.0,8.0,0.0,6.0,1.0,1.0,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         shader.setMat4("transform",  scaleandTranslate(2.0,9.0,0.0,4.0,1.0,1.0,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
 
         //middle
         shader.setMat4("transform",  scaleandTranslate(2.0,4.0,0.0,4.0,2.0,1.0,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         glm::mat4 movedTwo = scaleandTranslate(10,0,0,6,2,1,unitmat4);
 
@@ -735,23 +745,23 @@ public:
 
         //base
         shader.setMat4("transform", scaleandTranslate(10,0,0,6,2,1,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //leftside
         shader.setMat4("transform", scaleandTranslate(10,2,0,2,4,1,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //middle
         shader.setMat4("transform", scaleandTranslate(12,4,0,2,2,1,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //rightside
         shader.setMat4("transform", scaleandTranslate(14,4,0,2,4,1,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //top
         shader.setMat4("transform", scaleandTranslate(10,8,0,6,2,1,unitmat4));
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
 
         /* -------- */
