@@ -4,7 +4,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
-#include "camera.h"
 #include "draw.h"
 
 /// Window size
@@ -18,9 +17,94 @@ GLenum renderMode = GL_TRIANGLES;
 static const glm::vec3 EyePosition = glm::vec3(0.0f, 30.0f, 130.0f);
 static const glm::vec3 WorldCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 static const glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-static const glm::vec3 WorldRight = glm::vec3(1.0f, 0.0f, 0.0f);
-static const glm::vec3 WorldForward = glm::vec3(0.0f, 0.0f, 1.0f);
-Camera camera(EyePosition);
+//static const glm::vec3 WorldRight = glm::vec3(1.0f, 0.0f, 0.0f);
+//static const glm::vec3 WorldForward = glm::vec3(0.0f, 0.0f, 1.0f);
+
+
+glm::vec3 Position = glm::vec3(0.0f, 30.0f, 130.0f);
+glm::vec3 Front = glm::vec3(0.0f, 0.0f, 1.0f);
+glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 Right = glm::vec3(1.0f, 0.0f, 0.0f);
+glm::vec3 localWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+// euler Angles
+float Yaw = -90.0f;
+float Pitch=  0.0f;;
+// camera options
+float MovementSpeed;
+float MouseSensitivity = 0.5;
+float Zoom =  45.0f;
+
+
+
+
+
+void updateCameraVectors() {
+    // calculate the new Front vector
+    std::cout << "called";
+    glm::vec3 tempfront;
+    tempfront.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+    tempfront.y = sin(glm::radians(Pitch));
+    tempfront.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+
+    Front = glm::normalize(tempfront);
+    // also re-calculate the Right and Up vector
+    Right = glm::normalize(glm::cross(Front,localWorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+    Up = glm::normalize(glm::cross(Right, Front));
+}
+
+
+
+
+
+/// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
+void processMouseMovement(float xoffset, float yoffset, GLFWwindow *window, GLboolean constrainPitch = true) {
+    xoffset *= MouseSensitivity;
+    yoffset *= MouseSensitivity;
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+        Yaw += xoffset;
+
+    }
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+        Pitch += yoffset;
+    }
+
+    // make sure that when pitch is out of bounds, screen doesn't get flipped
+    if (constrainPitch) {
+        if (Pitch > 89.0f)
+            Pitch = 89.0f;
+        if (Pitch < -89.0f)
+            Pitch = -89.0f;
+    }
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        Zoom -= (float) yoffset;
+        if (Zoom < 1.0f)
+            Zoom = 1.0f;
+        if (Zoom > 45.0f)
+            Zoom = 45.0f;
+    }
+
+    // update Front, Right and Up Vectors using the updated Euler angles
+    updateCameraVectors();
+}
+
+
+
+glm::mat4 GetViewMatrix()
+{
+    return glm::lookAt(Position, Position + Front, Up);
+}
+
+
+
+
+
+
+// camera(EyePosition);
 
 /// Some global vars
 float lastX = WIDTH / 2.0f;
@@ -165,7 +249,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    camera.processMouseMovement(xoffset, yoffset, window);
+  processMouseMovement(xoffset, yoffset, window);
 }
 
 // TODO reuse some of this code to process zoom
@@ -177,9 +261,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
  */
 /// glfw: whenever the mouse scroll wheel scrolls, this callback is called
 /// ----------------------------------------------------------------------
-void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.processMouseScroll(yoffset);
-}
+//void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+//   processMouseScroll(yoffset);
+//}
 
 /// glfw: error callback
 /// --------------------
@@ -253,7 +337,7 @@ int main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetErrorCallback(errorCallback);
-    glfwSetScrollCallback(window,scrollCallback);
+    //glfwSetScrollCallback(window,scrollCallback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -329,10 +413,10 @@ int main(int argc, char* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update Projection matrix
-        projection = glm::perspective(glm::radians(camera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
+        projection = glm::perspective(glm::radians(Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
 
 
-        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 view = GetViewMatrix();
 
         grid.draw(projection * view * worldModelMatrix, renderMode);
 
@@ -361,6 +445,3 @@ int main(int argc, char* argv[]) {
     glfwTerminate();
     return 0;
 }
-
-
-
