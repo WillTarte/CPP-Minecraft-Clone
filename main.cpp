@@ -331,26 +331,26 @@ int main(int argc, char *argv[]) {
     P6 phil = P6();
     H7 moh = H7();
 
-
-    Sphere bubble = Sphere();
+    Sphere bubbleWill = Sphere();
+    Sphere bubbleH3 = Sphere();
+    Sphere bubbleEwan = Sphere();
+    Sphere bubblePhil = Sphere();
+    Sphere bubbleMoh = Sphere();
 
 
     // Initialize Nodes
-
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
     SceneNode willNode = SceneNode(&will, "Will");
-    willNode.linkSphere(&bubble);
+    willNode.addChild(&bubbleWill, "Bubble Will");
     SceneNode h3Node = SceneNode(&h3, "H3");
-    h3Node.linkSphere(&bubble);
+    h3Node.addChild(&bubbleH3, "Bubble H3");
     SceneNode ewanNode = SceneNode(&ewan, "Ewan");
-    ewanNode.linkSphere(&bubble);
+    ewanNode.addChild(&bubbleEwan, "Bubble Ewan");
     SceneNode philNode = SceneNode(&phil, "Phil");
-    philNode.linkSphere(&bubble);
+    philNode.addChild(&bubblePhil, "Bubble Phill");
     SceneNode mohNode = SceneNode(&moh, "Moh");
-    mohNode.linkSphere(&bubble);
-    //Initalize Bubble
-
+    mohNode.addChild(&bubbleMoh, "Bubble Moh");
 
     // Set up scene
     Scene world = Scene();

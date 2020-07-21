@@ -21,8 +21,6 @@ private:
     /// The children of this node
     std::vector<SceneNode> children;
 
-    Sphere *bubble;
-
 public:
     SceneNode() = default;
 
@@ -33,8 +31,6 @@ public:
     void addChild(Drawable *child, std::string childTag);
 
     void addChild(SceneNode &node);
-
-    void linkSphere(Sphere *bubble);
 
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
