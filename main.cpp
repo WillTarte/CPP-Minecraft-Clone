@@ -331,14 +331,26 @@ int main(int argc, char *argv[]) {
     P6 phil = P6();
     H7 moh = H7();
 
+
+    Sphere bubble = Sphere();
+
+
     // Initialize Nodes
+
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
     SceneNode willNode = SceneNode(&will, "Will");
+    willNode.linkSphere(&bubble);
     SceneNode h3Node = SceneNode(&h3, "H3");
+    h3Node.linkSphere(&bubble);
     SceneNode ewanNode = SceneNode(&ewan, "Ewan");
+    ewanNode.linkSphere(&bubble);
     SceneNode philNode = SceneNode(&phil, "Phil");
+    philNode.linkSphere(&bubble);
     SceneNode mohNode = SceneNode(&moh, "Moh");
+    mohNode.linkSphere(&bubble);
+    //Initalize Bubble
+
 
     // Set up scene
     Scene world = Scene();
