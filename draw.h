@@ -457,7 +457,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", getTransform());
+        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -522,7 +522,8 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", model * getTransform());
+
+        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -574,7 +575,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", getTransform());
+        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -647,7 +648,7 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model",getTransform());
+        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -708,7 +709,7 @@ public:
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
 
         shader.use();
-        shader.setMat4("model", getTransform());
+        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         glBindVertexArray(vao);
