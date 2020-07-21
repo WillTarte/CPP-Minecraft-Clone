@@ -11,5 +11,5 @@ uniform mat4 local_transform = mat4(1.0f);
 
 void main(){
     // Output position of the vertex, in clip space : MVP * position
-    gl_Position = projection * view * model * transform * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * local_transform * vec4(aPos, 1.0);
 }

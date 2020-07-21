@@ -658,9 +658,18 @@ public:
         glDeleteProgram(shader.ID);
     }
 
-    inline LightParams getLightParams() { return lightParams; }
+    [[nodiscard]] inline LightParams getLightParams() { return lightParams; }
 
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    [[nodiscard]] inline glm::vec3 getLightPos() const { return lightParams.lightPos; }
+
+    [[nodiscard]] inline glm::vec3 getLightColor() const { return lightParams.lightColor; }
+
+    inline void setLightPosition(glm::vec3 newPos) { this->lightParams = {newPos, lightParams.lightColor}; }
+
+    inline void setLightColor(glm::vec3 newColor) { this->lightParams = {lightParams.lightPos, newColor}; }
+
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
 
         glBindVertexArray(vao);
         shader.use();
