@@ -330,6 +330,7 @@ int main(int argc, char *argv[]) {
     A2 ewan = A2();
     P6 phil = P6();
     H7 moh = H7();
+    Light light = Light();
 
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
@@ -339,6 +340,7 @@ int main(int argc, char *argv[]) {
     SceneNode ewanNode = SceneNode(&ewan, "Ewan");
     SceneNode philNode = SceneNode(&phil, "Phil");
     SceneNode mohNode = SceneNode(&moh, "Moh");
+    SceneNode lightNode = SceneNode(&light, "WorldLight");
 
     // Set up scene
     Scene world = Scene();
@@ -349,6 +351,7 @@ int main(int argc, char *argv[]) {
     world.addNode(ewanNode);
     world.addNode(philNode);
     world.addNode(mohNode);
+    world.addNode(lightNode);
 
     // MVP matrices
     glm::mat4 worldModelMatrix = glm::mat4(1.0f);
@@ -358,7 +361,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     glLineWidth(3.0f);
 
@@ -410,7 +413,7 @@ int main(int argc, char *argv[]) {
 
         // Draw models
         world.changeRenderMode(renderMode);
-        world.draw(worldModelMatrix, view, projection);
+        world.draw(worldModelMatrix, view, projection, light.getLightParams());
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
