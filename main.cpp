@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include "draw.h"
+#include "scene.h"
 
 /// Window size
 static const int WIDTH = 1024;
@@ -113,7 +114,7 @@ SelectedModel selectedModel = SelectedModel::WORLD;
  * @param window The currently active window
  * @param deltaTime The time elapsed since the last frame
  */
-void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void modelSelect(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_1 && action == GLFW_PRESS)
         selectedModel = SelectedModel::ONE;
 
@@ -145,40 +146,40 @@ void modelSelect(GLFWwindow* window, int key, int scancode, int action, int mods
  * @param deltaTime The time since the last frame
  * @param objectModel The current model to be controlled
  */
-void processInput(GLFWwindow* window, double deltaTime, Drawable* objectModel) {
+void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-        objectModel->setLocalTransform(glm::scale(objectModel->getLocalTransform(), glm::vec3(1.01, 1.01, 1.01)));
+        objectModel->setTransform(glm::scale(objectModel->getTransform(), glm::vec3(1.01, 1.01, 1.01)));
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        objectModel->setLocalTransform(glm::scale(objectModel->getLocalTransform(), glm::vec3(0.99, 0.99, 0.99)));
+        objectModel->setTransform(glm::scale(objectModel->getTransform(), glm::vec3(0.99, 0.99, 0.99)));
     /* ----------------- */
 
     /* Move and Rotate models */
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::translate(objectModel->getLocalTransform(), glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f)));
+        objectModel->setTransform(
+                glm::translate(objectModel->getTransform(), glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f)));
     else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::rotate(objectModel->getLocalTransform(), glm::radians(-5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::translate(objectModel->getLocalTransform(), glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f)));
+        objectModel->setTransform(
+                glm::translate(objectModel->getTransform(), glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f)));
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::rotate(objectModel->getLocalTransform(), glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::rotate(objectModel->getTransform(), glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::translate(objectModel->getLocalTransform(), glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::translate(objectModel->getTransform(), glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f)));
     else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::rotate(objectModel->getLocalTransform(), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::rotate(objectModel->getTransform(), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::translate(objectModel->getLocalTransform(), glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::translate(objectModel->getTransform(), glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f)));
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        objectModel->setLocalTransform(
-                glm::rotate(objectModel->getLocalTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        objectModel->setTransform(
+                glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     /* ---------------------- */
 
     /* Change Render Mode */
@@ -253,7 +254,7 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
  */
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
     if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -274,13 +275,13 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 
 /// glfw: error callback
 /// --------------------
-void errorCallback(int error, const char* description) {
+void errorCallback(int error, const char *description) {
     fputs(description, stderr);
 }
 
 
 /// Main
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // Necessary variables
 
     // timing
@@ -294,7 +295,7 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create GLFW window
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Assignment 1", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -329,6 +330,25 @@ int main(int argc, char* argv[]) {
     A2 ewan = A2();
     P6 phil = P6();
     H7 moh = H7();
+
+    // Initialize Nodes
+    SceneNode gridNode = SceneNode(&grid, "GroundGrid");
+    SceneNode axisNode = SceneNode(&axis, "Axis");
+    SceneNode willNode = SceneNode(&will, "Will");
+    SceneNode h3Node = SceneNode(&h3, "H3");
+    SceneNode ewanNode = SceneNode(&ewan, "Ewan");
+    SceneNode philNode = SceneNode(&phil, "Phil");
+    SceneNode mohNode = SceneNode(&moh, "Moh");
+
+    // Set up scene
+    Scene world = Scene();
+    world.addNode(gridNode);
+    world.addNode(axisNode);
+    world.addNode(willNode);
+    world.addNode(h3Node);
+    world.addNode(ewanNode);
+    world.addNode(philNode);
+    world.addNode(mohNode);
 
     // MVP matrices
     glm::mat4 worldModelMatrix = glm::mat4(1.0f);
@@ -372,11 +392,11 @@ int main(int argc, char* argv[]) {
         }
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
-            will.setLocalTransform(unitMat);
-            h3.setLocalTransform(unitMat);
-            ewan.setLocalTransform(unitMat);
-            phil.setLocalTransform(unitMat);
-            moh.setLocalTransform(unitMat);
+            will.setTransform(unitMat);
+            h3.setTransform(unitMat);
+            ewan.setTransform(unitMat);
+            phil.setTransform(unitMat);
+            moh.setTransform(unitMat);
             worldModelMatrix = unitMat;
         }
 
@@ -389,23 +409,8 @@ int main(int argc, char* argv[]) {
         view = GetViewMatrix(worldCamera);
 
         // Draw models
-        grid.draw(projection * view * worldModelMatrix, renderMode);
-
-        axis.draw(projection * view * worldModelMatrix, renderMode);
-
-        will.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(43.0f, 0.0f, 49.0f)),
-                  renderMode);
-
-        h3.draw(projection * view * worldModelMatrix * unitMat, renderMode);
-
-        ewan.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(30.0f, 0.0f, -50.0f)),
-                  renderMode);
-
-        phil.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(-50.0f, 0.0f, -50.0f)),
-                  renderMode);
-
-        moh.draw(projection * view * worldModelMatrix * glm::translate(unitMat, glm::vec3(-49.5f, 0.1f, 49.0f)),
-                 renderMode);
+        world.changeRenderMode(renderMode);
+        world.draw(worldModelMatrix, view, projection);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
