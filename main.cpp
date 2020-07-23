@@ -440,9 +440,24 @@ int main(int argc, char *argv[]) {
             worldModelMatrix = unitMat;
         }
 
-        // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 1. render depth of scene to texture (from light's perspective)
+        // --------------------------------------------------------------
+        glm::mat4 lightProjection, lightView;
+        glm::mat4 lightSpaceMatrix;
+        float near_plane = 1.0f, far_plane = 7.5f;
+        //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+        lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+        lightView = glm::lookAt(light.getLightPos(), WorldCenter, WorldUp);
+        lightSpaceMatrix = lightProjection * lightView;
+
+        world.drawShadows(worldModelMatrix, lightSpaceMatrix);
+
+        // Render Scene
+        // reset viewport
+        glViewport(0, 0, WIDTH, HEIGHT);
 
         // Update Projection matrix
         projection = glm::perspective(glm::radians(worldCamera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
@@ -450,7 +465,16 @@ int main(int argc, char *argv[]) {
 
         // Draw models
         world.changeRenderMode(renderMode);
-        world.draw(worldModelMatrix, view, projection, light.getLightParams());
+        world.draw(worldModelMatrix, view, projection, light.getLightParams(), worldCamera.Position);
+
+        // render Depth map to quad for visual debugging
+        // ---------------------------------------------
+        //debugDepthQuad.use();
+        //debugDepthQuad.setFloat("near_plane", near_plane);
+        //debugDepthQuad.setFloat("far_plane", far_plane);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, depthMap);
+        //renderQuad();
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
