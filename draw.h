@@ -82,6 +82,8 @@ class Drawable {
 private:
     /// Matrix for transformations when drawing the object(example is object rotating on itself)
     glm::mat4 transform{};
+    glm::vec3 InitialPos = glm::vec3(0.0f, 0.0f, 0.0f);
+
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
@@ -95,6 +97,11 @@ public:
     /// Transform Setter
     virtual void setTransform(glm::mat4 newTransform) { transform = newTransform; }
 
+    /// Initial Position Getter
+    [[nodiscard]] virtual glm::vec3 getInitialPos() const { return InitialPos; }
+
+    /// Initial Position Setter
+    virtual void setInitialPos(glm::vec3 newPos) { InitialPos = newPos; }
     /// Render Mode setter
     virtual void setRenderMode(GLenum newRenderMode) { renderMode = newRenderMode; }
 
@@ -246,9 +253,10 @@ public:
 class L8 : public Cube, public Drawable {
 public:
     Shader shader{};
-
     L8() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->setInitialPos(glm::vec3(43.0f, 0.0f, 49.0f));
+
     }
 
     ~L8() override {
@@ -259,7 +267,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -313,6 +321,8 @@ public:
 
     H3() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->setInitialPos(glm::vec3(0.0f, 0.0f, 0.0f));
+
     }
 
     ~H3() override {
@@ -323,7 +333,7 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", model * getTransform());
+        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -363,6 +373,8 @@ public:
 
     P6() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->setInitialPos(glm::vec3(-50.0f, 0.0f, -50.0f));
+
     }
 
     ~P6() override {
@@ -373,7 +385,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -434,6 +446,7 @@ public:
 
     H7() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->setInitialPos(glm::vec3(-49.5f, 0.1f, 49.0f));
     }
 
     ~H7() override {
@@ -444,7 +457,7 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(-49.5f, 0.1f, 49.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -484,6 +497,7 @@ public:
 
     A2() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->setInitialPos(glm::vec3(30.0f, 0.0f, -50.0f));
     }
 
     ~A2() override {
@@ -503,7 +517,7 @@ public:
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(30.0f, 0.0f, -50.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         glBindVertexArray(vao);
