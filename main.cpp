@@ -6,6 +6,7 @@
 #include <vector>
 #include "draw.h"
 #include "scene.h"
+#include <cstdlib>
 
 /// Window size
 static const int WIDTH = 1024;
@@ -17,6 +18,8 @@ float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 float MoveSpeed = 20.0f;
 static const glm::mat4 unitMat = glm::mat4(1.0f);
+int rand();
+int lastSpaceState = GLFW_RELEASE;
 
 /// Render Mode
 GLenum renderMode = GL_TRIANGLES;
@@ -181,6 +184,17 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     /* ---------------------- */
+
+
+
+    /* Randomize the model position on key press Space */
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && lastSpaceState == GLFW_RELEASE) {
+
+        glm::vec3 random_Position = glm::vec3((rand() % 100) - 50.0f, (rand() % 100) - 50.0f, (rand() % 100)-50.0f);
+        objectModel->setInitialPos(random_Position);
+    }
+
+    lastSpaceState = glfwGetKey(window, GLFW_KEY_SPACE);
 
     /* Change Render Mode */
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
@@ -392,6 +406,15 @@ int main(int argc, char *argv[]) {
         }
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
+
+            //reset models to their inital position
+            will.setInitialPos(glm::vec3(43.0f, 0.0f, 49.0f));
+            h3.setInitialPos(glm::vec3(0.0f, 0.0f, 0.0f));
+            ewan.setInitialPos(glm::vec3(30.0f, 0.0f, -50.0f));
+            phil.setInitialPos(glm::vec3(-50.0f, 0.0f, -50.0f));
+            moh.setInitialPos(glm::vec3(-49.5f, 0.1f, 49.0f));
+
+            //reset models transform matrix
             will.setTransform(unitMat);
             h3.setTransform(unitMat);
             ewan.setTransform(unitMat);
