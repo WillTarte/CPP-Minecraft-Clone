@@ -331,11 +331,18 @@ int main(int argc, char *argv[]) {
     P6 phil = P6();
     H7 moh = H7();
 
-    Sphere bubbleWill = Sphere();
-    Sphere bubbleH3 = Sphere();
-    Sphere bubbleEwan = Sphere();
-    Sphere bubblePhil = Sphere();
-    Sphere bubbleMoh = Sphere();
+    glm::mat4 output = glm::translate(unitMat, glm::vec3(4.0, 6.5, 0.0));
+    output = glm::scale(output, glm::vec3(1.75, 1.75, 1.75));
+
+
+    glm::mat4 bigOutput = glm::translate(unitMat, glm::vec3(8.0, 10.5, 0.0));
+    bigOutput = glm::scale(bigOutput, glm::vec3(3.0, 3.0, 3.0));
+
+    Sphere bubbleWill = Sphere(output);
+    Sphere bubbleH3 = Sphere(output);
+    Sphere bubbleEwan = Sphere(bigOutput);
+    Sphere bubblePhil = Sphere(output);
+    Sphere bubbleMoh = Sphere(output);
 
 
     // Initialize Nodes

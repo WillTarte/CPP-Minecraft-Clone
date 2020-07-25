@@ -124,7 +124,13 @@ private:
 public:
     GLuint vao{};
 
-    Sphere() {
+    Sphere(const glm::mat4 &transform) {
+
+
+        //getting the size displacement
+        setTransform(transform);
+
+
         shader = Shader("resources/shaders/SphereVertexShader.glsl",
                         "resources/shaders/SphereFragmentShader.glsl");
         //need to create interleaved ones
