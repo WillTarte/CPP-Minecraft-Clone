@@ -368,6 +368,20 @@ int main(int argc, char *argv[]) {
     ModelH modelH_2 = ModelH();
     Model7 model7 = Model7();
 
+    glm::mat4 output = glm::translate(unitMat, glm::vec3(4.0, 6.5, 0.0));
+    output = glm::scale(output, glm::vec3(1.75, 1.75, 1.75));
+
+
+    glm::mat4 bigOutput = glm::translate(unitMat, glm::vec3(8.0, 10.5, 0.0));
+    bigOutput = glm::scale(bigOutput, glm::vec3(3.0, 3.0, 3.0));
+
+    Sphere bubbleWill = Sphere(output);
+    Sphere bubbleH3 = Sphere(output);
+    Sphere bubbleEwan = Sphere(bigOutput);
+    Sphere bubblePhil = Sphere(output);
+    Sphere bubbleMoh = Sphere(output);
+
+
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
