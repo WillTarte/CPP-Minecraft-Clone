@@ -37,7 +37,7 @@ public:
     std::vector<SceneNode *> &getChildren() { return children; }
 
     /// Draws this Node, AND its children relative to it.
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp);
 
     /// Getter for this node's tag
     inline std::string getTag() { return tag; }
@@ -65,7 +65,7 @@ public:
      * @param view the view matrix (world space -> view space)
      * @param projection the pojection matrix (view space -> clip space)
      */
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp);
 
     /// Adds a node to the scene
     void addNode(SceneNode *node);

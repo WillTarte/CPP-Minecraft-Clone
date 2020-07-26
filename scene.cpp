@@ -9,11 +9,11 @@ SceneNode::SceneNode(Drawable *noderoot, std::string tag) {
     this->children = std::vector<SceneNode *>();
 };
 
-void SceneNode::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) {
-    this->drawable->draw(model, view, projection);
+void SceneNode::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) {
+    this->drawable->draw(model, view, projection, lp);
     for (auto *child : children) {
         child->draw(glm::translate(model, this->drawable->getPosition()) * this->drawable->getTransform(), view,
-                    projection);
+                    projection, lp);
     }
 }
 
@@ -21,9 +21,9 @@ void SceneNode::addChild(SceneNode *node) {
     this->children.emplace_back(node);
 }
 
-void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) {
+void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) {
     for (auto *node : nodes) {
-        node->draw(model, view, projection);
+        node->draw(model, view, projection, lp);
     }
 }
 
