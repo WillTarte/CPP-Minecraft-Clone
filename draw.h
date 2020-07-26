@@ -245,7 +245,8 @@ public:
     }
 
 
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
 
         //took out the local transform
         shader.use();
