@@ -19,7 +19,6 @@ in vec3 Normal;
 in vec3 FragPos;
 in vec2 TexCoord;
 
-uniform vec3 objectColor = vec3(0.1, 0.5, 0.1);
 uniform vec3 viewPos = vec3(0.0, 0.0, 0.0);
 
 // Material
@@ -29,7 +28,7 @@ uniform Material material;
 uniform Light light;
 
 // texture sampler
-uniform sampler2D texture1;
+uniform sampler2D textureSampler;
 
 float constant = 1.0f;
 float linear= 0.007f;
@@ -37,7 +36,8 @@ float quadratic=0.0002f;
 
 void main()
 {
-    objectColor = texture(texture1, TexCoord).rgb;
+    vec3 objectColor = vec3(1.0, 1.0, 1.0);
+    objectColor = texture(textureSampler, TexCoord).rgb;
     vec3 normal = normalize(Normal);
 
     // ambient

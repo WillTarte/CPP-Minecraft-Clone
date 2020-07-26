@@ -123,49 +123,61 @@ public:
 
     };
 
-    /// vertex position data, normal data and uv texture coords
+    /// vertex position data, normal data
     const glm::vec3 vertices[72] = {
             // back face - cw
-            {0.0f,  0.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
-            {0.0f,  1.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
-            {1.0f,  0.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
-            {1.0f,  1.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
-            {1.0f,  0.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
-            {0.0f,  1.0f,  1.0f},
-            {0.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {0.0f,  1.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {1.0f,  0.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {1.0f,  1.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {1.0f,  0.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
+            {0.0f,  1.0f, 1.0f},
+            {0.0f,  0.0f, 1.0f},
 
             // front face - ccw
-            {0.0f,  0.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
-            {1.0f,  0.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
-            {0.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
-            {1.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
-            {0.0f,  1.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
-            {1.0f,  0.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
+            {0.0f,  0.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
+            {1.0f,  0.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
+            {0.0f,  1.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
+            {1.0f,  1.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
+            {0.0f,  1.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
+            {1.0f,  0.0f, 0.0f},
+            {0.0f,  0.0f, -1.0f},
 
             // left side - ccw
-            {0.0f,  0.0f,  1.0f}, {-1.0f, 0.0f,  0.0f},
-            {0.0f,  0.0f,  0.0f}, {-1.0f, 0.0f,  0.0f},
-            {0.0f,  1.0f,  1.0f}, {-1.0f, 0.0f,  0.0f},
-            {0.0f,  1.0f,  0.0f}, {-1.0f, 0.0f,  0.0f},
-            {0.0f,  1.0f,  1.0f}, {-1.0f, 0.0f,  0.0f},
-            {0.0f,  0.0f,  0.0f}, {-1.0f, 0.0f,  0.0f},
+            {0.0f,  0.0f, 1.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {0.0f,  0.0f, 0.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {0.0f,  1.0f, 1.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {0.0f,  1.0f, 0.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {0.0f,  1.0f, 1.0f},
+            {-1.0f, 0.0f, 0.0f},
+            {0.0f,  0.0f, 0.0f},
+            {-1.0f, 0.0f, 0.0f},
 
             // right side - cw
-            {1.0f,  0.0f,  1.0f}, {1.0f,  0.0f,  0.0f},
-            {1.0f,  1.0f,  1.0f}, {1.0f,  0.0f,  0.0f},
-            {1.0f,  0.0f,  0.0f}, {1.0f,  0.0f,  0.0f},
-            {1.0f,  1.0f,  0.0f}, {1.0f,  0.0f,  0.0f},
-            {1.0f,  0.0f,  0.0f}, {1.0f,  0.0f,  0.0f},
-            {1.0f,  1.0f,  1.0f}, {1.0f,  0.0f,  0.0f},
+            {1.0f,  0.0f, 1.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f,  1.0f, 1.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f,  0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f,  1.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f,  0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
+            {1.0f,  1.0f, 1.0f}, {1.0f, 0.0f, 0.0f},
 
             // bottom side - cw
-            {0.0f,  0.0f,  0.0f}, {0.0f,  -1.0f, 0.0f},
-            {0.0f,  0.0f,  1.0f}, {0.0f,  -1.0f, 0.0f},
+            {0.0f,  0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+            {0.0f,  0.0f, 1.0f}, {0.0f, -1.0f, 0.0f},
             {1.0f,  0.0f,  0.0f}, {0.0f,  -1.0f, 0.0f},
             {1.0f,  0.0f,  1.0f}, {0.0f,  -1.0f, 0.0f},
             {1.0f,  0.0f,  0.0f}, {0.0f,  -1.0f, 0.0f},
@@ -247,7 +259,7 @@ public:
 
 
         shader = Shader("resources/shaders/SphereVertexShader.glsl",
-                        "resources/shaders/SphereFragmentShader.glsl");
+                        "resources/shaders/SphereFragmentShader.glsl", "resources/textures/metallic_surface.png");
         //need to create interleaved ones
 
         //runs the function to generate verts
@@ -433,39 +445,34 @@ public:
 /// The Ground Grid for the world
 class GroundGrid : public Drawable {
 private:
-    GLuint vao{}, vbo{};
+    GLuint vao{}, vbo{}, vboUV{};
     GLsizei size;
     Shader shader{};
 public:
     GroundGrid() {
         this->shader = Shader("resources/shaders/GridVertexShader.glsl", "resources/shaders/GridFragmentShader.glsl",
-                              "resources/textures/container.jpg");
-
-        std::vector<glm::vec3> vertices;
-
-        for (int i = 0; i <= 100; i++) //draw 100 horizontal and 100 vertical lines - 2 vertices per line
-        {
-            // horizontal
-            vertices.emplace_back(glm::vec3(-50.0f, 0.0f, (float) i - 50.0f));
-            vertices.emplace_back(glm::vec3(50.0f, 0.0f, (float) i - 50.0f));
-
-            // vertical
-            vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, -50));
-            vertices.emplace_back(glm::vec3((float) i - 50.0f, 0.0f, 50.0f));
-        }
-        this->size = vertices.size();
+                              "resources/textures/chessboard_floor.jpg");
+        this->size = sizeof(vertices) / sizeof(glm::vec3);
 
         // Set up and bind VBO and VAO
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
+        glGenBuffers(1, &vboUV);
 
         glBindVertexArray(vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboUV);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr);
+
     }
 
     ~GroundGrid() override {
@@ -483,8 +490,26 @@ public:
         shader.setMat4("projection", projection);
         glBindVertexArray(vao);
 
-        glDrawArrays(GL_LINES, 0, size);
+        glDrawArrays(GL_TRIANGLES, 0, size);
     }
+
+    static constexpr glm::vec3 vertices[6] = {
+            {-50.0f, 0.0f, -50.0f},
+            {50.0f,  0.0f, -50.0f},
+            {50.0f,  0.0f, 50.0f},
+            {50.0f,  0.0f, 50.0f},
+            {-50.0f, 0.0f, 50.0f},
+            {-50.0f, 0.0f, -50.0f}
+    };
+
+    static constexpr glm::vec2 texCoords[6] = {
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f},
+            {0.0f, 0.0f}
+    };
 };
 
 /// The world Axis

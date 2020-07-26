@@ -102,14 +102,24 @@ public:
             // load image, create texture and generate mipmaps
             int width, height, nrChannels;
             unsigned char *data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
-            if (data) {
-                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width * 5, height * 5, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-            } else {
+            if (!data) {
                 std::cout << "Failed to load texture" << std::endl;
                 textureID = -1;
+                return;
             }
+            GLenum format = 0;
+            if (nrChannels == 1) {
+                format = GL_RED;
+                // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+                // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+            } else if (nrChannels == 3)
+                format = GL_RGB;
+            else if (nrChannels == 4)
+                format = GL_RGBA;
+
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+            glBindTexture(GL_TEXTURE_2D, 0);
             stbi_image_free(data);
         }
     }
@@ -119,7 +129,9 @@ public:
     void use() const {
         glUseProgram(ID);
         if (textureID != -1) {
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureID);
+            setInt("textureSampler", 0);
         }
     }
 
