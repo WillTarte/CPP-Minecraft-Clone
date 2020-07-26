@@ -448,11 +448,13 @@ private:
     GLuint vao{}, vbo{}, vboUV{};
     GLsizei size;
     Shader shader{};
+    Material material{};
 public:
     GroundGrid() {
-        this->shader = Shader("resources/shaders/GridVertexShader.glsl", "resources/shaders/GridFragmentShader.glsl",
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/GridFragmentShader.glsl",
                               "resources/textures/chessboard_floor.jpg");
         this->size = sizeof(vertices) / sizeof(glm::vec3);
+        this->material = METALLIC;
 
         // Set up and bind VBO and VAO
         glGenVertexArrays(1, &vao);
@@ -465,13 +467,16 @@ public:
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(glm::vec3), nullptr);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, 2 * sizeof(glm::vec3), nullptr);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void *) sizeof(glm::vec3));
 
         glBindBuffer(GL_ARRAY_BUFFER, vboUV);
         glBufferData(GL_ARRAY_BUFFER, sizeof(texCoords), texCoords, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), nullptr);
 
     }
 
@@ -488,18 +493,34 @@ public:
         shader.setMat4("model", model * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
         glBindVertexArray(vao);
 
         glDrawArrays(GL_TRIANGLES, 0, size);
     }
 
-    static constexpr glm::vec3 vertices[6] = {
+    static constexpr glm::vec3 vertices[12] = {
             {-50.0f, 0.0f, -50.0f},
+            {0.0f,   1.0f, 0.0f},
             {50.0f,  0.0f, -50.0f},
+            {0.0f,   1.0f, 0.0f},
             {50.0f,  0.0f, 50.0f},
+            {0.0f,   1.0f, 0.0f},
             {50.0f,  0.0f, 50.0f},
+            {0.0f,   1.0f, 0.0f},
             {-50.0f, 0.0f, 50.0f},
-            {-50.0f, 0.0f, -50.0f}
+            {0.0f,   1.0f, 0.0f},
+            {-50.0f, 0.0f, -50.0f},
+            {0.0f,   1.0f, 0.0f}
     };
 
     static constexpr glm::vec2 texCoords[6] = {
@@ -1195,7 +1216,7 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", glm::translate(model, lightParams.lightPos) * getTransform());
+        shader.setMat4("model", glm::translate(model, lightParams.lightPos));
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 

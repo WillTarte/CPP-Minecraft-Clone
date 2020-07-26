@@ -264,18 +264,18 @@ void processInputLightSource(GLFWwindow *window, double deltaTime, Light &light)
     float velocity = MoveSpeed * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 0.0f, 1.0f * velocity)));
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 0.0f, 1.0f * velocity)));
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 1.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 1.0f * velocity, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 1.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 1.0f * velocity, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(1.0f * velocity, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(1.0f * velocity, 0.0f, 0.0f)));
 }
 
 

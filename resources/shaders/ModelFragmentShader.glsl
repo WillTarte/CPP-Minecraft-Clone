@@ -36,8 +36,7 @@ float quadratic=0.0002f;
 
 void main()
 {
-    vec3 objectColor = vec3(1.0, 1.0, 1.0);
-    objectColor = texture(textureSampler, TexCoord).rgb;
+    vec3 objectColor = texture(textureSampler, TexCoord).rgb;
     vec3 normal = normalize(Normal);
 
     // ambient
@@ -54,11 +53,12 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * (spec * material.specular);
 
-    /*float distance    = length(lightPos - FragPos);
+    float distance    = length(light.position - FragPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
 
     ambient  *= attenuation;
-    diffuse   *= attenuation;*/
+    diffuse  *= attenuation;
+    specular *= attenuation;
 
     vec3 result = (ambient + diffuse + specular) * objectColor;
     FragColor = vec4(result, 1.0);
