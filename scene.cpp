@@ -38,6 +38,9 @@ void Scene::addNode(SceneNode *node) {
 void Scene::changeRenderMode(GLenum renderMode) {
     for (auto *node : nodes) {
         node->setRenderMode(renderMode);
+        for (auto *child : node->getChildren()) {
+            child->setRenderMode(renderMode);
+        }
     }
 }
 

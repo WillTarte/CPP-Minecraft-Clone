@@ -27,16 +27,22 @@ public:
 
     ~SceneNode() = default;
 
+    /// Constructor from a root drawable and its name
     SceneNode(Drawable *noderoot, std::string tag);
 
+    /// Add a child Node to this Node
     void addChild(SceneNode *node);
 
+    /// Getter for this node's children
     std::vector<SceneNode *> &getChildren() { return children; }
 
+    /// Draws this Node, AND its children relative to it.
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
+    /// Getter for this node's tag
     inline std::string getTag() { return tag; }
 
+    /// Changes this node's render mode
     inline void setRenderMode(GLenum renderMode) { this->drawable->setRenderMode(renderMode); }
 };
 

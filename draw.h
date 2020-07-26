@@ -80,12 +80,12 @@ public:
 /// Drawable class is an abstract class for any object that is renderable
 class Drawable {
 private:
-    /// Matrix for transformations when drawing the object(example is object rotating on itself)
-    glm::mat4 transform{};
     glm::vec3 position{};
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
+/// Matrix for transformations when drawing the object(example is object rotating on itself)
+    glm::mat4 transform{};
 public:
 
     Drawable() {
@@ -133,11 +133,11 @@ private:
 public:
     GLuint vao{};
 
-    Sphere(const glm::mat4 &transform) {
+    explicit Sphere(const glm::mat4 transform) {
 
 
         //getting the size displacement
-        setTransform(transform);
+        this->transform = transform;
 
 
         shader = Shader("resources/shaders/SphereVertexShader.glsl",
@@ -419,11 +419,11 @@ public:
 
         //arrowLines are stored in location 0 with three values
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) 0);
 
         //colors are stored in the location 1 with 4 values
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *) (3 * sizeof(float)));
 
         glBindVertexArray(0);
     };
@@ -881,16 +881,6 @@ public:
         shader.setMat4("local_transform", scaleandTranslate(2.0, 4.0, 0.0, 4.0, 2.0, 1.0, unitmat4));
         glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
     }
-};
-
-/** Special drawable that doesnt draw anything. Can be used to anchor multiple models together in the Scene.
- *  You should only translate objects of this class by using setTransform()
- */
-class Anchor : public Drawable {
-public:
-    Anchor() = default;
-
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {}
 };
 
 #endif //COMP_371_PROJECT_DRAW_H
