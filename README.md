@@ -33,9 +33,10 @@ __Method 2: Install Script__
 4. If there are no errors, there should be a new folder called "build". Open it and the .exe should be there.
 
 ## Controls
- - Numpad 1 to 6 selects the currently controlled model.  
+ - Numpad 1 to 7 selects the currently controlled model.  
     - 1 to 5 selects one of the student models.
     - 6 selects the world.
+    - 7 selects the light source.
  - Left-Shift + (W,A,S,D) moves the currently selected model up, left, down, right respectively.
  - A/D rotates the currently selected model on the Y axis.
  - U/J scales the currently selected model up/down respectively.
@@ -44,6 +45,7 @@ __Method 2: Install Script__
  - Holding the LMB and moving forwards/backwards will change the current zoom.
  - Holding the MMB and moving forwards/backwards will tilt the camera.
  - Holding the RMB and moving left/right will pan the camera.
+ - __With the light selected__, WASD move it up/down/left/right and UP/DOWN move it forward and backwards.
 
 ## Resources
  - https://learnopengl.com/

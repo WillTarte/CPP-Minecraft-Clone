@@ -107,7 +107,8 @@ enum class SelectedModel {
     FOUR,
     FIVE,
     RESET,
-    WORLD
+    WORLD,
+    LIGHT
 };
 
 SelectedModel selectedModel = SelectedModel::WORLD;
@@ -135,6 +136,9 @@ void modelSelect(GLFWwindow *window, int key, int scancode, int action, int mods
 
     if (key == GLFW_KEY_6 && action == GLFW_PRESS)
         selectedModel = SelectedModel::WORLD;
+
+    if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+        selectedModel = SelectedModel::LIGHT;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -248,6 +252,34 @@ void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldMod
     /* -------------------------------------------------------- */
 }
 
+/** Processes inputs for a Light
+ *
+ * @param window
+ * @param deltaTime
+ * @param light
+ */
+void processInputLightSource(GLFWwindow *window, double deltaTime, Light &light) {
+    //WASD -> UP LEFT DOWN RIGHT
+    // up arrow / down arrow -> forwards and backwards
+
+    float velocity = MoveSpeed * deltaTime;
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 1.0f, 0.0f) * velocity));
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 1.0f, 0.0f) * velocity));
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() - (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        light.setLightPosition(light.getLightPos() + (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+}
+
+
 /** Callback for whenever the window size is changed.
  *
  * @param window The currently active window
@@ -344,6 +376,7 @@ int main(int argc, char *argv[]) {
     A2 ewan = A2();
     P6 phil = P6();
     H7 moh = H7();
+    Light light = Light();
 
     glm::mat4 output = glm::translate(unitMat, glm::vec3(4.0, 6.5, 0.0));
     output = glm::scale(output, glm::vec3(1.75, 1.75, 1.75));
@@ -362,6 +395,8 @@ int main(int argc, char *argv[]) {
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
+    SceneNode lightNode = SceneNode(&light, "WorldLight");
+
     SceneNode willNode = SceneNode(&will, "Will");
     willNode.addChild(&bubbleWill, "Bubble Will");
     SceneNode h3Node = SceneNode(&h3, "H3");
@@ -371,6 +406,7 @@ int main(int argc, char *argv[]) {
     SceneNode philNode = SceneNode(&phil, "Phil");
     philNode.addChild(&bubblePhil, "Bubble Phill");
     SceneNode mohNode = SceneNode(&moh, "Moh");
+
     mohNode.addChild(&bubbleMoh, "Bubble Moh");
 
     // Set up scene
@@ -382,6 +418,7 @@ int main(int argc, char *argv[]) {
     world.addNode(ewanNode);
     world.addNode(philNode);
     world.addNode(mohNode);
+    world.addNode(lightNode);
 
     // MVP matrices
     glm::mat4 worldModelMatrix = glm::mat4(1.0f);
@@ -391,7 +428,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     glLineWidth(3.0f);
 
@@ -423,22 +460,18 @@ int main(int argc, char *argv[]) {
         if (selectedModel == SelectedModel::WORLD) {
             processInputWorld(window, deltaTime, worldModelMatrix);
         }
+        if (selectedModel == SelectedModel::LIGHT) {
+            processInputLightSource(window, deltaTime, light);
+        }
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
-
-            //reset models to their inital position
-            will.setInitialPos(glm::vec3(43.0f, 0.0f, 49.0f));
-            h3.setInitialPos(glm::vec3(0.0f, 0.0f, 0.0f));
-            ewan.setInitialPos(glm::vec3(30.0f, 0.0f, -50.0f));
-            phil.setInitialPos(glm::vec3(-50.0f, 0.0f, -50.0f));
-            moh.setInitialPos(glm::vec3(-49.5f, 0.1f, 49.0f));
-
-            //reset models transform matrix
             will.setTransform(unitMat);
             h3.setTransform(unitMat);
             ewan.setTransform(unitMat);
             phil.setTransform(unitMat);
             moh.setTransform(unitMat);
+            light.setLightPosition(glm::vec3(0.0f, 30.0f, 0.0f));
+            light.setTransform(unitMat);
             worldModelMatrix = unitMat;
         }
 
@@ -452,7 +485,7 @@ int main(int argc, char *argv[]) {
 
         // Draw models
         world.changeRenderMode(renderMode);
-        world.draw(worldModelMatrix, view, projection);
+        world.draw(worldModelMatrix, view, projection, light.getLightParams());
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
