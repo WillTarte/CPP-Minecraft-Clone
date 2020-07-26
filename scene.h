@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <optional>
+#include <unordered_map>
 #include "draw.h"
 
 /** A node in the Scene. Composed of a root drawable object, and its children.
@@ -19,24 +21,29 @@ private:
     /// The underlying drawable object
     Drawable *drawable{};
     /// The children of this node
-    std::vector<SceneNode> children;
+    std::vector<SceneNode *> children;
 public:
     SceneNode() = default;
 
     ~SceneNode() = default;
 
+    /// Constructor from a root drawable and its name
     SceneNode(Drawable *noderoot, std::string tag);
 
-    void addChild(Drawable *child, std::string childTag);
+    /// Add a child Node to this Node
+    void addChild(SceneNode *node);
 
-    void addChild(SceneNode &node);
+    /// Getter for this node's children
+    std::vector<SceneNode *> &getChildren() { return children; }
 
     void draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos);
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader);
 
+    /// Getter for this node's tag
     inline std::string getTag() { return tag; }
 
+    /// Changes this node's render mode
     inline void setRenderMode(GLenum renderMode) { this->drawable->setRenderMode(renderMode); }
 };
 
@@ -47,6 +54,7 @@ public:
 class Scene {
 private:
     std::vector<SceneNode> nodes;
+    std::unordered_map<std::string, SceneNode *> taggedNodes;
     Shader depthShader{};
     GLuint depthMapFBO{};
     GLuint depthMap{};
@@ -74,10 +82,17 @@ public:
     void drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix);
 
     /// Adds a node to the scene
-    void addNode(SceneNode &node);
+    void addNode(SceneNode *node);
 
     /// Changes the scene's render mode (GL_TRIANGLES, GL_LINES, GL_POINTS)
     void changeRenderMode(GLenum renderMode);
+
+    /** Returns a reference to a node for a given tag. TODO: handle duplicate tags?
+     *
+     * @param tag
+     * @return
+     */
+    std::optional<SceneNode *> getNodeByTag(const std::string &tag);
 };
 
 

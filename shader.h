@@ -12,16 +12,19 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "libs/stb_image.h"
 
 /// The shader class that contains the source for a vertex shader and a fragment shader to be compiled into a program.
 class Shader {
 public:
     unsigned int ID;
+    unsigned int textureID;
 
     Shader() = default;
+
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath) {
+    Shader(const char *vertexPath, const char *fragmentPath, const char *texturePath = nullptr) {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;
@@ -83,12 +86,53 @@ public:
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
+        if (texturePath != nullptr) {
+            // load and create a texture
+            // -------------------------
+            glGenTextures(1, &textureID);
+            glBindTexture(GL_TEXTURE_2D,
+                          textureID); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+            // set the texture wrapping parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                            GL_REPEAT);    // set texture wrapping to GL_REPEAT (default wrapping method)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filtering parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            // load image, create texture and generate mipmaps
+            int width, height, nrChannels;
+            unsigned char *data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+            if (!data) {
+                std::cout << "Failed to load texture" << std::endl;
+                textureID = -1;
+                return;
+            }
+            GLenum format = 0;
+            if (nrChannels == 1) {
+                format = GL_RED;
+                // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+                // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+            } else if (nrChannels == 3)
+                format = GL_RGB;
+            else if (nrChannels == 4)
+                format = GL_RGBA;
+
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+            glBindTexture(GL_TEXTURE_2D, 0);
+            stbi_image_free(data);
+        }
     }
 
     // activate the shader
     // ------------------------------------------------------------------------
     void use() const {
         glUseProgram(ID);
+        if (textureID != -1) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            setInt("textureSampler", 0);
+        }
     }
 
     // utility uniform functions

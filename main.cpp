@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include "draw.h"
 #include "scene.h"
 
@@ -25,6 +26,9 @@ GLenum renderMode = GL_TRIANGLES;
 static const glm::vec3 WorldCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 static const glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+///last space bar action
+int lastSpaceAction = GLFW_RELEASE;
+
 /// Camera Struct to hold data for the current view
 struct Camera {
     float Yaw = -90.0f;
@@ -37,6 +41,10 @@ struct Camera {
     glm::vec3 Right = {1.0f, 0.0f, 0.0f};
 
 } worldCamera;
+
+void randomizePosition(Drawable *model) {
+    model->setPosition({rand() % 101 - 50, 0, rand() % 101 - 50});
+}
 
 /** Updates the camera vectors to update the current view correctly.
  *
@@ -105,7 +113,8 @@ enum class SelectedModel {
     FIVE,
     RESET,
     WORLD,
-    LIGHT
+    LIGHT,
+    RANDOMIZE
 };
 
 SelectedModel selectedModel = SelectedModel::WORLD;
@@ -142,6 +151,14 @@ void modelSelect(GLFWwindow *window, int key, int scancode, int action, int mods
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
         selectedModel = SelectedModel::RESET;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && lastSpaceAction == GLFW_RELEASE) {
+        selectedModel = SelectedModel::RANDOMIZE;
+        lastSpaceAction = GLFW_PRESS;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+        lastSpaceAction = GLFW_RELEASE;
 }
 
 /** Processes user input to control the models/world
@@ -161,26 +178,22 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
 
     /* Move and Rotate models */
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setTransform(
-                glm::translate(objectModel->getTransform(), glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f)));
+        objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
     else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setTransform(
-                glm::translate(objectModel->getTransform(), glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f)));
+        objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(5.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setTransform(
-                glm::translate(objectModel->getTransform(), glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f)));
+        objectModel->setPosition(objectModel->getPosition() + glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
     else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        objectModel->setTransform(
-                glm::translate(objectModel->getTransform(), glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f)));
+        objectModel->setPosition(objectModel->getPosition() + glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -251,18 +264,18 @@ void processInputLightSource(GLFWwindow *window, double deltaTime, Light &light)
     float velocity = MoveSpeed * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 0.0f, 1.0f * velocity)));
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 0.0f, 1.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 0.0f, 1.0f * velocity)));
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 1.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(0.0f, 1.0f * velocity, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 1.0f, 1.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(0.0f, 1.0f * velocity, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() - (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() - (glm::vec3(1.0f * velocity, 0.0f, 0.0f)));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        light.setLightPosition(light.getLightPos() + (glm::vec3(1.0f, 0.0f, 0.0f) * velocity));
+        light.setLightPosition(light.getLightPos() + (glm::vec3(1.0f * velocity, 0.0f, 0.0f)));
 }
 
 
@@ -357,33 +370,87 @@ int main(int argc, char *argv[]) {
     // Initialize models
     GroundGrid grid = GroundGrid();
     Axis axis = Axis();
-    L8 will = L8();
-    H3 h3 = H3();
-    A2 ewan = A2();
-    P6 phil = P6();
-    H7 moh = H7();
     Light light = Light();
+    //L will = L();
+    ModelL modelL = ModelL();
+    modelL.setPosition(glm::vec3(43.0f, 0.0f, 49.0f));
+    Model8 model8 = Model8();
+    //H3 h3 = H3();
+    ModelH modelH = ModelH();
+    modelH.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    Model3 model3 = Model3();
+    //A2 ewan = A2();
+    ModelA modelA = ModelA();
+    modelA.setPosition(glm::vec3(30.0f, 0.0f, -50.0f));
+    Model2 model2 = Model2();
+    //P6 phil = P6();
+    ModelP modelP = ModelP();
+    modelP.setPosition(glm::vec3(-50.0f, 0.0f, -50.0f));
+    Model6 model6 = Model6();
+    //H7 moh = H7();
+    ModelH modelH_2 = ModelH();
+    modelH_2.setPosition(glm::vec3(-49.5f, 0.1f, 49.0f));
+    Model7 model7 = Model7();
+
+    glm::mat4 output = glm::translate(unitMat, glm::vec3(4.0, 6.5, 0.0));
+    output = glm::scale(output, glm::vec3(1.75, 1.75, 1.75));
+
+    glm::mat4 bigOutput = glm::translate(unitMat, glm::vec3(8.0, 10.5, 0.0));
+    bigOutput = glm::scale(bigOutput, glm::vec3(3.0, 3.0, 3.0));
+
+    Sphere bubbleWill = Sphere(output);
+    SceneNode bubbleWillNode = SceneNode(&bubbleWill, "bubbleWill");
+    Sphere bubbleH3 = Sphere(output);
+    SceneNode bubbleH3Node = SceneNode(&bubbleH3, "bubbleH3");
+    Sphere bubbleEwan = Sphere(bigOutput);
+    SceneNode bubbleEwanNode = SceneNode(&bubbleEwan, "bubbleEwan");
+    Sphere bubblePhil = Sphere(output);
+    SceneNode bubblePhilNode = SceneNode(&bubblePhil, "bubblePhil");
+    Sphere bubbleMoh = Sphere(output);
+    SceneNode bubbleMohNode = SceneNode(&bubbleMoh, "bubbleMoh");
+
 
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
-    SceneNode willNode = SceneNode(&will, "Will");
-    SceneNode h3Node = SceneNode(&h3, "H3");
-    SceneNode ewanNode = SceneNode(&ewan, "Ewan");
-    SceneNode philNode = SceneNode(&phil, "Phil");
-    SceneNode mohNode = SceneNode(&moh, "Moh");
     SceneNode lightNode = SceneNode(&light, "WorldLight");
+
+
+    SceneNode modelLNode = SceneNode(&modelL, "modelL");
+    SceneNode model8Node = SceneNode(&model8, "model8");
+    modelLNode.addChild(&model8Node);
+    modelLNode.addChild(&bubbleWillNode);
+
+    SceneNode modelHNode = SceneNode(&modelH, "modelH");
+    SceneNode model3Node = SceneNode(&model3, "model3");
+    modelHNode.addChild(&model3Node);
+    modelHNode.addChild(&bubbleH3Node);
+
+    SceneNode modelANode = SceneNode(&modelA, "modelA");
+    SceneNode model2Node = SceneNode(&model2, "model2");
+    modelANode.addChild(&model2Node);
+    modelANode.addChild(&bubbleEwanNode);
+
+    SceneNode modelPNode = SceneNode(&modelP, "modelP");
+    SceneNode model6Node = SceneNode(&model6, "model6");
+    modelPNode.addChild(&model6Node);
+    modelPNode.addChild(&bubblePhilNode);
+
+    SceneNode modelH_2Node = SceneNode(&modelH_2, "modelH_2");
+    SceneNode model7Node = SceneNode(&model7, "model7");
+    modelH_2Node.addChild(&model7Node);
+    modelH_2Node.addChild(&bubbleMohNode);
 
     // Set up scene
     Scene world = Scene();
-    world.addNode(gridNode);
-    world.addNode(axisNode);
-    world.addNode(willNode);
-    world.addNode(h3Node);
-    world.addNode(ewanNode);
-    world.addNode(philNode);
-    world.addNode(mohNode);
-    world.addNode(lightNode);
+    world.addNode(&gridNode);
+    world.addNode(&axisNode);
+    world.addNode(&lightNode);
+    world.addNode(&modelLNode);
+    world.addNode(&modelHNode);
+    world.addNode(&modelANode);
+    world.addNode(&modelPNode);
+    world.addNode(&modelH_2Node);
 
     // MVP matrices
     glm::mat4 worldModelMatrix = glm::mat4(1.0f);
@@ -393,6 +460,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
+    //TODO: fix light + culling
     //glEnable(GL_CULL_FACE);
 
     glLineWidth(3.0f);
@@ -408,19 +476,19 @@ int main(int argc, char *argv[]) {
 
         // Input Processing
         if (selectedModel == SelectedModel::ONE) {
-            processInput(window, deltaTime, &h3);
+            processInput(window, deltaTime, &modelH);
         }
         if (selectedModel == SelectedModel::TWO) {
-            processInput(window, deltaTime, &will);
+            processInput(window, deltaTime, &modelL);
         }
         if (selectedModel == SelectedModel::THREE) {
-            processInput(window, deltaTime, &ewan);
+            processInput(window, deltaTime, &modelA);
         }
         if (selectedModel == SelectedModel::FOUR) {
-            processInput(window, deltaTime, &phil);
+            processInput(window, deltaTime, &modelP);
         }
         if (selectedModel == SelectedModel::FIVE) {
-            processInput(window, deltaTime, &moh);
+            processInput(window, deltaTime, &modelH_2);
         }
         if (selectedModel == SelectedModel::WORLD) {
             processInputWorld(window, deltaTime, worldModelMatrix);
@@ -430,16 +498,26 @@ int main(int argc, char *argv[]) {
         }
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
-            will.setTransform(unitMat);
-            h3.setTransform(unitMat);
-            ewan.setTransform(unitMat);
-            phil.setTransform(unitMat);
-            moh.setTransform(unitMat);
+            modelL.setTransform(unitMat);
+            modelH.setTransform(unitMat);
+            modelA.setTransform(unitMat);
+            modelP.setTransform(unitMat);
+            modelH_2.setTransform(unitMat);
             light.setLightPosition(glm::vec3(0.0f, 30.0f, 0.0f));
             light.setTransform(unitMat);
             worldModelMatrix = unitMat;
         }
 
+        if (selectedModel == SelectedModel::RANDOMIZE) {
+            randomizePosition(&modelL);
+            randomizePosition(&modelH);
+            randomizePosition(&modelA);
+            randomizePosition(&modelP);
+            randomizePosition(&modelH_2);
+            selectedModel = SelectedModel::WORLD;
+        }
+
+        // Render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

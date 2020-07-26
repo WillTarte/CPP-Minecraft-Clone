@@ -1,6 +1,23 @@
 #version 330 core
-
 out vec4 FragColor;
+
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+struct Light {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+in vec2 TexCoord;
+
+uniform vec3 viewPos = vec3(0.0, 0.0, 0.0);
 
 in VS_OUT {
     vec3 FragPos;
@@ -9,14 +26,19 @@ in VS_OUT {
     vec4 FragPosLightSpace;
 } fs_in;
 
+uniform vec3 viewPos;
 
 //uniform sampler2D diffuseTexture;
 uniform sampler2D shadowMap;
 
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
-uniform vec3 objectColor = vec3(0.1, 0.5, 0.1);
+// Material
+uniform Material material;
+
+// Light
+uniform Light light;
+
+// texture sampler
+uniform sampler2D textureSampler;
 
 float constant = 1.0f;
 float linear= 0.007f;
@@ -60,6 +82,12 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
 void main()
 {
+
+    //TODO: is this spot light?
+
+    vec3 objectColor = texture(textureSampler, TexCoord).rgb;
+    vec3 normal = normalize(Normal);
+
     // ambient
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * objectColor;
