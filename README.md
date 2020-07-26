@@ -51,3 +51,4 @@ __Method 2: Install Script__
  - https://learnopengl.com/
  - https://en.cppreference.com/w/
  - https://www.khronos.org/registry/OpenGL-Refpages/gl4/
+ - http://devernay.free.fr/cours/opengl/materials.html

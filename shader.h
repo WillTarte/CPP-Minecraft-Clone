@@ -12,16 +12,19 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "libs/stb_image.h"
 
 /// The shader class that contains the source for a vertex shader and a fragment shader to be compiled into a program.
 class Shader {
 public:
     unsigned int ID;
+    unsigned int textureID;
 
     Shader() = default;
+
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath) {
+    Shader(const char *vertexPath, const char *fragmentPath, const char *texturePath = nullptr) {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;
@@ -83,12 +86,41 @@ public:
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
+        if (texturePath != nullptr) {
+            // load and create a texture
+            // -------------------------
+            glGenTextures(1, &textureID);
+            glBindTexture(GL_TEXTURE_2D,
+                          textureID); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+            // set the texture wrapping parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                            GL_REPEAT);    // set texture wrapping to GL_REPEAT (default wrapping method)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filtering parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            // load image, create texture and generate mipmaps
+            int width, height, nrChannels;
+            unsigned char *data = stbi_load(texturePath, &width, &height, &nrChannels, 0);
+            if (data) {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width * 5, height * 5, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+            } else {
+                std::cout << "Failed to load texture" << std::endl;
+                textureID = -1;
+            }
+            stbi_image_free(data);
+        }
     }
 
     // activate the shader
     // ------------------------------------------------------------------------
     void use() const {
         glUseProgram(ID);
+        if (textureID != -1) {
+            glBindTexture(GL_TEXTURE_2D, textureID);
+        }
     }
 
     // utility uniform functions

@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Don't add this line if you will try_compile with boost.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(${PROJECT_NAME} main.cpp shader.h draw.h scene.h scene.cpp)
+add_executable(${PROJECT_NAME} main.cpp libs/stb_image.h libs/stb_image_impl.cpp shader.h draw.h scene.h scene.cpp)
 
 #glfw
 CPMAddPackage(

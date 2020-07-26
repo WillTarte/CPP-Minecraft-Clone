@@ -16,6 +16,18 @@ struct LightParams {
     glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 };
 
+struct Material {
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    float shininess;
+};
+
+static const Material METALLIC = {glm::vec3(0.25f, 0.25f, 0.25f), glm::vec3(0.4f, 0.4f, 0.4f),
+                                  glm::vec3(0.774597f, 0.774597f, 0.774597f), 0.6f};
+static const Material WOOD = {glm::vec3(0.2125f, 0.2125f, 0.2125f), glm::vec3(0.714f, 0.4284f, 0.18144f),
+                              glm::vec3(0.393548f, 0.271906f, 0.166721f), 0.2f};
+
 /// Cube class contains necessary data to draw a unit cube
 class Cube {
 private:
@@ -27,8 +39,10 @@ public:
     Cube() {
 
         // Gen and bind buffers
+        unsigned int vboUV;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
+        glGenBuffers(1, &vboUV);
 
         // bind buffers
         glBindVertexArray(vao);
@@ -44,6 +58,13 @@ public:
         // normal attribute
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3), (void *) (1 * sizeof(glm::vec3)));
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboUV);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW);
+
+        // texture attribute
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void *) 0);
     }
 
     virtual ~Cube() {
@@ -51,15 +72,72 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    /// vertex position data and normal data
+    const glm::vec2 textureCoords[36] = {
+            // back face
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {0.0f, 0.0f},
+            {0.0f, 1.0f},
+            {0.0f, 0.0f},
+            {1.0f, 1.0f},
+
+            // front face
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {0.0f, 1.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f},
+            {1.0f, 0.0f},
+
+            //left side
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {0.0f, 1.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f},
+            {1.0f, 0.0f},
+
+            // right side
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {0.0f, 1.0f},
+            {1.0f, 1.0f},
+            {0.0f, 1.0f},
+            {1.0f, 0.0f},
+
+            // bottom side
+            {0.0f, 1.0f},
+            {0.0f, 0.0f},
+            {1.0f, 1.0f},
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {0.0f, 0.0f},
+
+            // top side
+            {0.0f, 1.0f},
+            {0.0f, 0.0f},
+            {1.0f, 1.0f},
+            {1.0f, 0.0f},
+            {1.0f, 1.0f},
+            {0.0f, 0.0f},
+
+    };
+
+    /// vertex position data, normal data and uv texture coords
     const glm::vec3 vertices[72] = {
             // back face - cw
-            {0.0f,  0.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
-            {0.0f,  1.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
-            {1.0f,  0.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
-            {1.0f,  1.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
-            {1.0f,  0.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
-            {0.0f,  1.0f,  1.0f}, {0.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {0.0f,  1.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {1.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {1.0f,  1.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {1.0f,  0.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
+            {0.0f,  1.0f,  1.0f},
+            {0.0f,  0.0f,  1.0f},
 
             // front face - ccw
             {0.0f,  0.0f,  0.0f}, {0.0f,  0.0f,  -1.0f},
@@ -140,7 +218,8 @@ public:
      * @param renderMode The current render mode. Example: GL_TRIANGLES
      */
     virtual void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const = 0;
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const = 0;
 
     virtual ~Drawable() = default;
 };
@@ -216,7 +295,8 @@ public:
 
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
         //took out the local transform
         shader.use();
@@ -358,7 +438,8 @@ private:
     Shader shader{};
 public:
     GroundGrid() {
-        this->shader = Shader("resources/shaders/GridVertexShader.glsl", "resources/shaders/GridFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/GridVertexShader.glsl", "resources/shaders/GridFragmentShader.glsl",
+                              "resources/textures/container.jpg");
 
         std::vector<glm::vec3> vertices;
 
@@ -394,7 +475,8 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         shader.use();
         shader.setMat4("model", model * getTransform());
         shader.setMat4("view", view);
@@ -465,7 +547,8 @@ public:
 
     //draw function takes in the mvp matrix from the current scene and applies them to local shader
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         //enabling the shader to be used
         shader.use();
         shader.setMat4("model", model * getTransform());
@@ -489,9 +572,12 @@ public:
 class ModelL : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     ModelL() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/crate1_wood.png");
+        this->material = WOOD;
     }
 
     ~ModelL() override {
@@ -499,15 +585,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         glBindVertexArray(vao);
 
@@ -527,9 +622,12 @@ public:
 class Model8 : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     Model8() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/metallic_surface.png");
+        this->material = METALLIC;
     }
 
     ~Model8() override {
@@ -537,15 +635,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         glBindVertexArray(vao);
 
@@ -582,11 +689,13 @@ public:
 class Model3 : public Cube, public Drawable {
 private:
     Shader shader{};
-
+    Material material{};
 public:
 
     Model3() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/metallic_surface.png");
+        this->material = METALLIC;
     }
 
     ~Model3() override {
@@ -594,15 +703,25 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
-        glBindVertexArray(vao);
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
+        glBindVertexArray(vao);
 
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f));
@@ -627,11 +746,13 @@ public:
 class ModelH : public Cube, public Drawable {
 private:
     Shader shader{};
-
+    Material material{};
 public:
 
     ModelH() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/crate1_wood.png");
+        this->material = WOOD;
     }
 
     ~ModelH() override {
@@ -639,15 +760,25 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
-        glBindVertexArray(vao);
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
+        glBindVertexArray(vao);
 
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f));
@@ -669,9 +800,12 @@ public:
 class ModelP : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     ModelP() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/crate1_wood.png");
+        this->material = WOOD;
     }
 
     ~ModelP() override {
@@ -679,15 +813,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         glBindVertexArray(vao);
 
@@ -724,9 +867,12 @@ public:
 class Model6 : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     Model6() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/metallic_surface.png");
+        this->material = METALLIC;
     }
 
     ~Model6() override {
@@ -734,15 +880,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
         glm::mat4 unitmat4(1);
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         glBindVertexArray(vao);
 
@@ -775,9 +930,12 @@ public:
 class Model7 : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     Model7() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/metallic_surface.png");
+        this->material = METALLIC;
     }
 
     ~Model7() override {
@@ -785,15 +943,25 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
-        glBindVertexArray(vao);
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
+        glBindVertexArray(vao);
 
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f)); // 5 cubes stacked in y
@@ -818,9 +986,12 @@ public:
 class Model2 : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     Model2() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/metallic_surface.png");
+        this->material = METALLIC;
     }
 
     ~Model2() override {
@@ -838,14 +1009,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
         glBindVertexArray(vao);
 
         glm::mat4 unitmat4(1);
@@ -881,9 +1062,12 @@ public:
 class ModelA : public Cube, public Drawable {
 public:
     Shader shader{};
+    Material material{};
 
     ModelA() {
-        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl",
+                              "resources/textures/crate1_wood.png");
+        this->material = WOOD;
     }
 
     ~ModelA() override {
@@ -901,14 +1085,24 @@ public:
     }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
         shader.use();
         shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        shader.setVec3("lightPos", lp.lightPos);
-        shader.setVec3("lightColor", lp.lightColor);
+        shader.setVec3("viewPos", cameraPos);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // material properties
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
         glBindVertexArray(vao);
 
         glm::mat4 unitmat4(1);
@@ -971,7 +1165,8 @@ public:
     inline void setLightColor(glm::vec3 newColor) { this->lightParams = {lightParams.lightPos, newColor}; }
 
     void
-    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
+         const glm::vec3 &cameraPos) const override {
 
         glBindVertexArray(vao);
         shader.use();

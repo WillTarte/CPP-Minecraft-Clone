@@ -527,7 +527,7 @@ int main(int argc, char *argv[]) {
 
         // Draw models
         world.changeRenderMode(renderMode);
-        world.draw(worldModelMatrix, view, projection, light.getLightParams());
+        world.draw(worldModelMatrix, view, projection, light.getLightParams(), worldCamera.Position);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
