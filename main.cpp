@@ -113,7 +113,7 @@ enum class SelectedModel {
     FIVE,
     RESET,
     WORLD,
-    LIGHT
+    LIGHT,
     RANDOMIZE
 };
 
@@ -445,6 +445,7 @@ int main(int argc, char *argv[]) {
     Scene world = Scene();
     world.addNode(&gridNode);
     world.addNode(&axisNode);
+    world.addNode(&lightNode);
     world.addNode(&modelLNode);
     world.addNode(&modelHNode);
     world.addNode(&modelANode);
@@ -459,6 +460,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
+    //TODO: fix light + culling
     //glEnable(GL_CULL_FACE);
 
     glLineWidth(3.0f);
@@ -486,7 +488,7 @@ int main(int argc, char *argv[]) {
             processInput(window, deltaTime, &modelP);
         }
         if (selectedModel == SelectedModel::FIVE) {
-            processInput(window, deltaTime, &modelH);
+            processInput(window, deltaTime, &modelH_2);
         }
         if (selectedModel == SelectedModel::WORLD) {
             processInputWorld(window, deltaTime, worldModelMatrix);

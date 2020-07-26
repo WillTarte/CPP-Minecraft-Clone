@@ -51,38 +51,6 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    /// EBO defining the cube faces
-    /*const unsigned short cubeFaces[36] = {
-            //front
-            0, 1, 3, //ccw
-            2, 3, 1,
-            //back
-            4, 7, 5, //cw
-            6, 5, 7,
-            //left
-            4, 0, 7, //ccw
-            3, 7, 0,
-            //right
-            5, 6, 1, //cw
-            2, 1, 6,
-            //bottom
-            0, 4, 1, //cw
-            5, 1, 4,
-            //top
-            3, 2, 7, //ccw
-            6, 7, 2
-    };*/
-    /// VBO defining the cube vertices
-    /*const glm::vec3 cubeVertices[8] = {
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.0f, 0.0f},
-            {1.0f, 1.0f, 0.0f},
-            {0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f},
-            {1.0f, 0.0f, 1.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 1.0f, 1.0f}
-    };*/
     /// vertex position data and normal data
     const glm::vec3 vertices[72] = {
             // back face - cw
@@ -698,7 +666,7 @@ public:
 };
 
 /// Model for a student
-class P6 : public Cube, public Drawable {
+class ModelP : public Cube, public Drawable {
 public:
     Shader shader{};
 
@@ -946,7 +914,7 @@ public:
         glm::mat4 unitmat4(1);
         glm::mat4 input(1);
 
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+        glDrawArrays(renderMode, 0, size);
 
         /* A ------ */
 
