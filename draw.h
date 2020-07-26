@@ -51,38 +51,6 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-    /// EBO defining the cube faces
-    /*const unsigned short cubeFaces[36] = {
-            //front
-            0, 1, 3, //ccw
-            2, 3, 1,
-            //back
-            4, 7, 5, //cw
-            6, 5, 7,
-            //left
-            4, 0, 7, //ccw
-            3, 7, 0,
-            //right
-            5, 6, 1, //cw
-            2, 1, 6,
-            //bottom
-            0, 4, 1, //cw
-            5, 1, 4,
-            //top
-            3, 2, 7, //ccw
-            6, 7, 2
-    };*/
-    /// VBO defining the cube vertices
-    /*const glm::vec3 cubeVertices[8] = {
-            {0.0f, 0.0f, 0.0f},
-            {1.0f, 0.0f, 0.0f},
-            {1.0f, 1.0f, 0.0f},
-            {0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f},
-            {1.0f, 0.0f, 1.0f},
-            {1.0f, 1.0f, 1.0f},
-            {0.0f, 1.0f, 1.0f}
-    };*/
     /// vertex position data and normal data
     const glm::vec3 vertices[72] = {
             // back face - cw
@@ -139,16 +107,18 @@ public:
 /// Drawable class is an abstract class for any object that is renderable
 class Drawable {
 private:
-    /// Matrix for transformations when drawing the object(example is object rotating on itself)
-    glm::mat4 transform{};
-    glm::vec3 InitialPos = glm::vec3(0.0f, 0.0f, 0.0f);
-
+    glm::vec3 position{};
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
+/// Matrix for transformations when drawing the object(example is object rotating on itself)
+    glm::mat4 transform{};
 public:
 
-    Drawable() { transform = glm::mat4(1.0f); }
+    Drawable() {
+        transform = glm::mat4(1.0f);
+        position = glm::vec3(0, 0, 0);
+    }
 
     /// Transform Getter
     [[nodiscard]] virtual glm::mat4 getTransform() const { return transform; }
@@ -156,11 +126,11 @@ public:
     /// Transform Setter
     virtual void setTransform(glm::mat4 newTransform) { transform = newTransform; }
 
-    /// Initial Position Getter
-    [[nodiscard]] virtual glm::vec3 getInitialPos() const { return InitialPos; }
+    [[nodiscard]] virtual glm::vec3 getPosition() const { return position; }
 
-    /// Initial Position Setter
-    virtual void setInitialPos(glm::vec3 newPos) { InitialPos = newPos; }
+    virtual void setPosition(glm::vec3 pos) { position = pos; }
+
+
     /// Render Mode setter
     virtual void setRenderMode(GLenum newRenderMode) { renderMode = newRenderMode; }
 
@@ -190,11 +160,11 @@ private:
 public:
     GLuint vao{};
 
-    Sphere(const glm::mat4 &transform) {
+    explicit Sphere(const glm::mat4 transform) {
 
 
         //getting the size displacement
-        setTransform(transform);
+        this->transform = transform;
 
 
         shader = Shader("resources/shaders/SphereVertexShader.glsl",
@@ -516,21 +486,15 @@ public:
 };
 
 /// Model for a student
-class L8 : public Cube, public Drawable {
+class ModelL : public Cube, public Drawable {
 public:
     Shader shader{};
-    L8() {
+
+    ModelL() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
-
-        this->setInitialPos(glm::vec3(43.0f, 0.0f, 49.0f));
-
-
-        this->setTransform(
-                glm::translate(this->getTransform(), glm::vec3(43.0f, 0.0f, 49.0f)));
-
     }
 
-    ~L8() override {
+    ~ModelL() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -539,10 +503,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-
-        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
-
-        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setVec3("lightPos", lp.lightPos);
@@ -559,6 +520,34 @@ public:
         shader.setMat4("local_transform", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
         glDrawArrays(renderMode, 0, size);
         /* -------- */
+    }
+};
+
+/// Model for a student
+class Model8 : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    Model8() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~Model8() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+        glm::mat4 unitmat4(1);
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        shader.setVec3("lightPos", lp.lightPos);
+        shader.setVec3("lightColor", lp.lightColor);
+
+        glBindVertexArray(vao);
 
         /* 8 ------ */
         glm::mat4 transform = glm::mat4(1.0f);
@@ -590,21 +579,17 @@ public:
 };
 
 /// Model for a student
-class H3 : public Cube, public Drawable {
+class Model3 : public Cube, public Drawable {
 private:
     Shader shader{};
 
 public:
 
-    H3() {
+    Model3() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
-
-        this->setInitialPos(glm::vec3(0.0f, 0.0f, 0.0f));
-
-
     }
 
-    ~H3() override {
+    ~Model3() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -613,12 +598,52 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        shader.setVec3("lightPos", lp.lightPos);
+        shader.setVec3("lightColor", lp.lightColor);
 
-        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
+        glm::mat4 unitmat = glm::mat4(1.0f);
+        glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f));
+        glm::mat4 x2 = glm::scale(unitmat, glm::vec3(2.0f, 1.0f, 1.0f));
 
+        //draw 3
+        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(6.0f, 0.0f, 0.0f)));
+        glDrawArrays(renderMode, 0, size);
 
-        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
+        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 0.0f, 0.0f)));
+        glDrawArrays(renderMode, 0, size);
 
+        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 2.0f, 0.0f)));
+        glDrawArrays(renderMode, 0, size);
+
+        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 4.0f, 0.0f)));
+        glDrawArrays(renderMode, 0, size);
+    }
+};
+
+/// Model for a student
+class ModelH : public Cube, public Drawable {
+private:
+    Shader shader{};
+
+public:
+
+    ModelH() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~ModelH() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+
+        glBindVertexArray(vao);
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setVec3("lightPos", lp.lightPos);
@@ -637,38 +662,19 @@ public:
 
         shader.setMat4("local_transform", glm::translate(unitmat, glm::vec3(1.0f, 2.0f, 0.0f)));
         glDrawArrays(renderMode, 0, size);
-
-        //draw 3
-        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(6.0f, 0.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 0.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 2.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", glm::translate(x2, glm::vec3(2.0f, 4.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
     }
 };
 
 /// Model for a student
-class P6 : public Cube, public Drawable {
+class ModelP : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    P6() {
+    ModelP() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
-
-        this->setInitialPos(glm::vec3(-50.0f, 0.0f, -50.0f));
-
-        this->setTransform(
-                glm::translate(this->getTransform(), glm::vec3(-50.0f, 0.0f, -50.0f)));
-
     }
 
-    ~P6() override {
+    ~ModelP() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -677,11 +683,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-
-        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
-
-        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
-
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setVec3("lightPos", lp.lightPos);
@@ -714,6 +716,39 @@ public:
         glDrawArrays(renderMode, 0, size);
         /* -------- */
 
+
+    }
+};
+
+/// Model for a student
+class Model6 : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    Model6() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~Model6() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+        glm::mat4 unitmat4(1);
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        shader.setVec3("lightPos", lp.lightPos);
+        shader.setVec3("lightColor", lp.lightColor);
+
+        glBindVertexArray(vao);
+
+        glm::mat4 transform = glm::translate(unitmat4, glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
+
         /* 6 ------ */
         transform = glm::translate(unitmat4, glm::vec3(4.0f, 0.0f, 0.0f));
         transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
@@ -737,22 +772,15 @@ public:
     }
 };
 
-/// Model for a student
-class H7 : public Cube, public Drawable {
+class Model7 : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    H7() {
+    Model7() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
-
-        this->setInitialPos(glm::vec3(-49.5f, 0.1f, 49.0f));
-
-        this->setTransform(
-                glm::translate(this->getTransform(), glm::vec3(-49.5f, 0.1f, 49.0f)));
-
     }
 
-    ~H7() override {
+    ~Model7() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -761,11 +789,7 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-
-        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
-
-        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
-
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setVec3("lightPos", lp.lightPos);
@@ -774,16 +798,6 @@ public:
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f)); // 5 cubes stacked in y
         glm::mat4 x2 = glm::scale(unitmat, glm::vec3(2.0f, 1.0f, 1.0f)); // 2 cubes stacked in x
-
-        //draw H
-        shader.setMat4("local_transform", y5);
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(2.0f, 0.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", glm::translate(unitmat, glm::vec3(1.0f, 2.0f, 0.0f)));
-        glDrawArrays(renderMode, 0, size);
 
         //Draws the number 7
         shader.setMat4("local_transform", glm::translate(y5, glm::vec3(6.0f, 0.0f, 0.0f)));
@@ -801,21 +815,15 @@ public:
 };
 
 /// Model for a student
-class A2 : public Cube, public Drawable {
+class Model2 : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    A2() {
+    Model2() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
-
-        this->setInitialPos(glm::vec3(30.0f, 0.0f, -50.0f));
-
-        this->setTransform(
-                glm::translate(this->getTransform(), glm::vec3(30.0f, 0.0f, -50.0f)));
-
     }
 
-    ~A2() override {
+    ~Model2() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -833,11 +841,7 @@ public:
     draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
 
         shader.use();
-
-        shader.setMat4("model", glm::translate(model, getInitialPos()) * getTransform());
-
-        shader.setMat4("model", glm::translate(model,glm::vec3(0.0f, 0.0f, 0.0f)) * getTransform());
-
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         shader.setVec3("lightPos", lp.lightPos);
@@ -845,33 +849,7 @@ public:
         glBindVertexArray(vao);
 
         glm::mat4 unitmat4(1);
-
-        glDrawArrays(renderMode, 0, size);
-
-
         glm::mat4 input(1);
-        /* A ------ */
-
-        //left side
-        shader.setMat4("local_transform", scaleandTranslate(0.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
-        glDrawArrays(renderMode, 0, size);
-
-        //right side
-        shader.setMat4("local_transform", scaleandTranslate(6.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
-        glDrawArrays(renderMode, 0, size);
-
-        //top
-        shader.setMat4("local_transform", scaleandTranslate(1.0, 8.0, 0.0, 6.0, 1.0, 1.0, unitmat4));
-        glDrawArrays(renderMode, 0, size);
-
-        shader.setMat4("local_transform", scaleandTranslate(2.0, 9.0, 0.0, 4.0, 1.0, 1.0, unitmat4));
-        glDrawArrays(renderMode, 0, size);
-
-        //middle
-        shader.setMat4("local_transform", scaleandTranslate(2.0, 4.0, 0.0, 4.0, 2.0, 1.0, unitmat4));
-        glDrawArrays(renderMode, 0, size);
-
-        glm::mat4 movedTwo = scaleandTranslate(10, 0, 0, 6, 2, 1, unitmat4);
 
         /* 2 ------ */
 
@@ -898,6 +876,70 @@ public:
     }
 
 };
+
+/// Model for a student
+class ModelA : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    ModelA() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~ModelA() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    static glm::mat4
+    scaleandTranslate(int xTran, int yTran, int zTran, int xScale, int yScale, int zScale, glm::mat4 unitmat4) {
+
+
+        glm::mat4 output = glm::translate(unitmat4, glm::vec3(xTran, yTran, zTran));
+        output = glm::scale(output, glm::vec3(xScale, yScale, zScale));
+        return output;
+
+    }
+
+    void
+    draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp) const override {
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        shader.setVec3("lightPos", lp.lightPos);
+        shader.setVec3("lightColor", lp.lightColor);
+        glBindVertexArray(vao);
+
+        glm::mat4 unitmat4(1);
+        glm::mat4 input(1);
+
+        glDrawArrays(renderMode, 0, size);
+
+        /* A ------ */
+
+        //left side
+        shader.setMat4("local_transform", scaleandTranslate(0.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
+        glDrawArrays(renderMode, 0, size);
+
+        //right side
+        shader.setMat4("local_transform", scaleandTranslate(6.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
+        glDrawArrays(renderMode, 0, size);
+
+        //top
+        shader.setMat4("local_transform", scaleandTranslate(1.0, 8.0, 0.0, 6.0, 1.0, 1.0, unitmat4));
+        glDrawArrays(renderMode, 0, size);
+
+        shader.setMat4("local_transform", scaleandTranslate(2.0, 9.0, 0.0, 4.0, 1.0, 1.0, unitmat4));
+        glDrawArrays(renderMode, 0, size);
+
+        //middle
+        shader.setMat4("local_transform", scaleandTranslate(2.0, 4.0, 0.0, 4.0, 2.0, 1.0, unitmat4));
+        glDrawArrays(renderMode, 0, size);
+
+    }
+};
+
 
 /// light source
 class Light : public Cube, public Drawable {
