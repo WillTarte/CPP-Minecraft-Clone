@@ -6,6 +6,7 @@
 #include <vector>
 #include "draw.h"
 #include "scene.h"
+#include <cstdlib>
 
 /// Window size
 static const int WIDTH = 1024;
@@ -17,6 +18,8 @@ float lastY = HEIGHT / 2.0f;
 bool firstMouse = true;
 float MoveSpeed = 20.0f;
 static const glm::mat4 unitMat = glm::mat4(1.0f);
+int rand();
+int lastSpaceState = GLFW_RELEASE;
 
 /// Render Mode
 GLenum renderMode = GL_TRIANGLES;
@@ -185,6 +188,17 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
     /* ---------------------- */
+
+
+
+    /* Randomize the model position on key press Space */
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && lastSpaceState == GLFW_RELEASE) {
+
+        glm::vec3 random_Position = glm::vec3((rand() % 100) - 50.0f, (rand() % 100) - 50.0f, (rand() % 100)-50.0f);
+        objectModel->setInitialPos(random_Position);
+    }
+
+    lastSpaceState = glfwGetKey(window, GLFW_KEY_SPACE);
 
     /* Change Render Mode */
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
@@ -364,15 +378,36 @@ int main(int argc, char *argv[]) {
     H7 moh = H7();
     Light light = Light();
 
+    glm::mat4 output = glm::translate(unitMat, glm::vec3(4.0, 6.5, 0.0));
+    output = glm::scale(output, glm::vec3(1.75, 1.75, 1.75));
+
+
+    glm::mat4 bigOutput = glm::translate(unitMat, glm::vec3(8.0, 10.5, 0.0));
+    bigOutput = glm::scale(bigOutput, glm::vec3(3.0, 3.0, 3.0));
+
+    Sphere bubbleWill = Sphere(output);
+    Sphere bubbleH3 = Sphere(output);
+    Sphere bubbleEwan = Sphere(bigOutput);
+    Sphere bubblePhil = Sphere(output);
+    Sphere bubbleMoh = Sphere(output);
+
+
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
-    SceneNode willNode = SceneNode(&will, "Will");
-    SceneNode h3Node = SceneNode(&h3, "H3");
-    SceneNode ewanNode = SceneNode(&ewan, "Ewan");
-    SceneNode philNode = SceneNode(&phil, "Phil");
-    SceneNode mohNode = SceneNode(&moh, "Moh");
     SceneNode lightNode = SceneNode(&light, "WorldLight");
+
+    SceneNode willNode = SceneNode(&will, "Will");
+    willNode.addChild(&bubbleWill, "Bubble Will");
+    SceneNode h3Node = SceneNode(&h3, "H3");
+    h3Node.addChild(&bubbleH3, "Bubble H3");
+    SceneNode ewanNode = SceneNode(&ewan, "Ewan");
+    ewanNode.addChild(&bubbleEwan, "Bubble Ewan");
+    SceneNode philNode = SceneNode(&phil, "Phil");
+    philNode.addChild(&bubblePhil, "Bubble Phill");
+    SceneNode mohNode = SceneNode(&moh, "Moh");
+
+    mohNode.addChild(&bubbleMoh, "Bubble Moh");
 
     // Set up scene
     Scene world = Scene();
@@ -393,7 +428,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     glLineWidth(3.0f);
 

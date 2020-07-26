@@ -20,6 +20,7 @@ private:
     Drawable *drawable{};
     /// The children of this node
     std::vector<SceneNode> children;
+
 public:
     SceneNode() = default;
 
