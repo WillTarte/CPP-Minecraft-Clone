@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <optional>
+#include <unordered_map>
 #include "draw.h"
 
 /** A node in the Scene. Composed of a root drawable object, and its children.
@@ -19,7 +21,7 @@ private:
     /// The underlying drawable object
     Drawable *drawable{};
     /// The children of this node
-    std::vector<SceneNode> children;
+    std::vector<SceneNode *> children;
 public:
     SceneNode() = default;
 
@@ -27,9 +29,9 @@ public:
 
     SceneNode(Drawable *noderoot, std::string tag);
 
-    void addChild(Drawable *child, std::string childTag);
+    void addChild(SceneNode *node);
 
-    void addChild(SceneNode &node);
+    std::vector<SceneNode *> &getChildren() { return children; }
 
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
@@ -44,7 +46,8 @@ public:
  */
 class Scene {
 private:
-    std::vector<SceneNode> nodes;
+    std::vector<SceneNode *> nodes;
+    std::unordered_map<std::string, SceneNode *> taggedNodes;
 public:
     Scene() = default;
 
@@ -59,10 +62,17 @@ public:
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection);
 
     /// Adds a node to the scene
-    void addNode(SceneNode &node);
+    void addNode(SceneNode *node);
 
     /// Changes the scene's render mode (GL_TRIANGLES, GL_LINES, GL_POINTS)
     void changeRenderMode(GLenum renderMode);
+
+    /** Returns a reference to a node for a given tag. TODO: handle duplicate tags?
+     *
+     * @param tag
+     * @return
+     */
+    std::optional<SceneNode *> getNodeByTag(const std::string &tag);
 };
 
 

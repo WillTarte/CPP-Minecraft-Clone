@@ -82,18 +82,27 @@ class Drawable {
 private:
     /// Matrix for transformations when drawing the object(example is object rotating on itself)
     glm::mat4 transform{};
+    glm::vec3 position{};
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
 public:
 
-    Drawable() { transform = glm::mat4(1.0f); }
+    Drawable() {
+        transform = glm::mat4(1.0f);
+        position = glm::vec3(0, 0, 0);
+    }
 
     /// Transform Getter
     [[nodiscard]] virtual glm::mat4 getTransform() const { return transform; }
 
     /// Transform Setter
     virtual void setTransform(glm::mat4 newTransform) { transform = newTransform; }
+
+    [[nodiscard]] virtual glm::vec3 getPosition() const { return position; }
+
+    virtual void setPosition(glm::vec3 pos) { position = pos; }
+
 
     /// Render Mode setter
     virtual void setRenderMode(GLenum newRenderMode) { renderMode = newRenderMode; }
@@ -243,15 +252,15 @@ public:
 };
 
 /// Model for a student
-class L8 : public Cube, public Drawable {
+class ModelL : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    L8() {
+    ModelL() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
     }
 
-    ~L8() override {
+    ~ModelL() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -259,7 +268,8 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(43.0f, 0.0f, 49.0f)) * getTransform());
+        glm::vec3 s = getPosition();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -274,6 +284,31 @@ public:
         shader.setMat4("local_transform", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
         glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
+    }
+};
+
+/// Model for a student
+class Model8 : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    Model8() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~Model8() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
+        glm::mat4 unitmat4(1);
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+
+        glBindVertexArray(vao);
 
         /* 8 ------ */
         glm::mat4 transform = glm::mat4(1.0f);
@@ -305,17 +340,17 @@ public:
 };
 
 /// Model for a student
-class H3 : public Cube, public Drawable {
+class Model3 : public Cube, public Drawable {
 private:
     Shader shader{};
 
 public:
 
-    H3() {
+    Model3() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
     }
 
-    ~H3() override {
+    ~Model3() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -323,23 +358,13 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", model * getTransform());
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f));
         glm::mat4 x2 = glm::scale(unitmat, glm::vec3(2.0f, 1.0f, 1.0f));
-
-        //draw H
-        shader.setMat4("local_transform", y5);
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(2.0f, 0.0f, 0.0f)));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        shader.setMat4("local_transform", glm::translate(unitmat, glm::vec3(1.0f, 2.0f, 0.0f)));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //draw 3
         shader.setMat4("local_transform", glm::translate(y5, glm::vec3(6.0f, 0.0f, 0.0f)));
@@ -357,15 +382,54 @@ public:
 };
 
 /// Model for a student
-class P6 : public Cube, public Drawable {
-public:
+class ModelH : public Cube, public Drawable {
+private:
     Shader shader{};
 
-    P6() {
+public:
+
+    ModelH() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
     }
 
-    ~P6() override {
+    ~ModelH() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
+
+        glBindVertexArray(vao);
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+
+        glm::mat4 unitmat = glm::mat4(1.0f);
+        glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f));
+        glm::mat4 x2 = glm::scale(unitmat, glm::vec3(2.0f, 1.0f, 1.0f));
+
+        //draw H
+        shader.setMat4("local_transform", y5);
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(2.0f, 0.0f, 0.0f)));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("local_transform", glm::translate(unitmat, glm::vec3(1.0f, 2.0f, 0.0f)));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+    }
+};
+
+/// Model for a student
+class ModelP : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    ModelP() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~ModelP() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -373,7 +437,7 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(-50.0f, 0.0f, -50.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
@@ -404,6 +468,36 @@ public:
         glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
         /* -------- */
 
+
+    }
+};
+
+/// Model for a student
+class Model6 : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    Model6() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~Model6() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
+        glm::mat4 unitmat4(1);
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+
+        glBindVertexArray(vao);
+
+        glm::mat4 transform = glm::translate(unitmat4, glm::vec3(0.0f, 0.0f, 0.0f));
+        glm::mat4 transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
+
         /* 6 ------ */
         transform = glm::translate(unitmat4, glm::vec3(4.0f, 0.0f, 0.0f));
         transformScaled = glm::scale(transform, glm::vec3(3.0f, 1.0f, 1.0f));
@@ -427,16 +521,15 @@ public:
     }
 };
 
-/// Model for a student
-class H7 : public Cube, public Drawable {
+class Model7 : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    H7() {
+    Model7() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
     }
 
-    ~H7() override {
+    ~Model7() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -444,23 +537,13 @@ public:
 
         glBindVertexArray(vao);
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(-49.5f, 0.1f, 49.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 
         glm::mat4 unitmat = glm::mat4(1.0f);
         glm::mat4 y5 = glm::scale(unitmat, glm::vec3(1.0f, 5.0f, 1.0f)); // 5 cubes stacked in y
         glm::mat4 x2 = glm::scale(unitmat, glm::vec3(2.0f, 1.0f, 1.0f)); // 2 cubes stacked in x
-
-        //draw H
-        shader.setMat4("local_transform", y5);
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        shader.setMat4("local_transform", glm::translate(y5, glm::vec3(2.0f, 0.0f, 0.0f)));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        shader.setMat4("local_transform", glm::translate(unitmat, glm::vec3(1.0f, 2.0f, 0.0f)));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
 
         //Draws the number 7
         shader.setMat4("local_transform", glm::translate(y5, glm::vec3(6.0f, 0.0f, 0.0f)));
@@ -478,15 +561,15 @@ public:
 };
 
 /// Model for a student
-class A2 : public Cube, public Drawable {
+class Model2 : public Cube, public Drawable {
 public:
     Shader shader{};
 
-    A2() {
+    Model2() {
         this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
     }
 
-    ~A2() override {
+    ~Model2() override {
         glDeleteProgram(shader.ID);
     }
 
@@ -503,39 +586,13 @@ public:
     void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
 
         shader.use();
-        shader.setMat4("model", glm::translate(model, glm::vec3(30.0f, 0.0f, -50.0f)) * getTransform());
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         glBindVertexArray(vao);
 
         glm::mat4 unitmat4(1);
-
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-
         glm::mat4 input(1);
-        /* A ------ */
-
-        //left side
-        shader.setMat4("local_transform", scaleandTranslate(0.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        //right side
-        shader.setMat4("local_transform", scaleandTranslate(6.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        //top
-        shader.setMat4("local_transform", scaleandTranslate(1.0, 8.0, 0.0, 6.0, 1.0, 1.0, unitmat4));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        shader.setMat4("local_transform", scaleandTranslate(2.0, 9.0, 0.0, 4.0, 1.0, 1.0, unitmat4));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        //middle
-        shader.setMat4("local_transform", scaleandTranslate(2.0, 4.0, 0.0, 4.0, 2.0, 1.0, unitmat4));
-        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
-
-        glm::mat4 movedTwo = scaleandTranslate(10, 0, 0, 6, 2, 1, unitmat4);
 
         /* 2 ------ */
 
@@ -563,5 +620,73 @@ public:
 
 };
 
+/// Model for a student
+class ModelA : public Cube, public Drawable {
+public:
+    Shader shader{};
+
+    ModelA() {
+        this->shader = Shader("resources/shaders/ModelVertexShader.glsl", "resources/shaders/ModelFragmentShader.glsl");
+    }
+
+    ~ModelA() override {
+        glDeleteProgram(shader.ID);
+    }
+
+    static glm::mat4
+    scaleandTranslate(int xTran, int yTran, int zTran, int xScale, int yScale, int zScale, glm::mat4 unitmat4) {
+
+
+        glm::mat4 output = glm::translate(unitmat4, glm::vec3(xTran, yTran, zTran));
+        output = glm::scale(output, glm::vec3(xScale, yScale, zScale));
+        return output;
+
+    }
+
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {
+
+        shader.use();
+        shader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        shader.setMat4("view", view);
+        shader.setMat4("projection", projection);
+        glBindVertexArray(vao);
+
+        glm::mat4 unitmat4(1);
+
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        glm::mat4 input(1);
+        /* A ------ */
+
+        //left side
+        shader.setMat4("local_transform", scaleandTranslate(0.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        //right side
+        shader.setMat4("local_transform", scaleandTranslate(6.0, 0.0, 0.0, 2.0, 8.0, 1.0, unitmat4));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        //top
+        shader.setMat4("local_transform", scaleandTranslate(1.0, 8.0, 0.0, 6.0, 1.0, 1.0, unitmat4));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        shader.setMat4("local_transform", scaleandTranslate(2.0, 9.0, 0.0, 4.0, 1.0, 1.0, unitmat4));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+
+        //middle
+        shader.setMat4("local_transform", scaleandTranslate(2.0, 4.0, 0.0, 4.0, 2.0, 1.0, unitmat4));
+        glDrawElements(renderMode, size, GL_UNSIGNED_SHORT, nullptr);
+    }
+};
+
+/** Special drawable that doesnt draw anything. Can be used to anchor multiple models together in the Scene.
+ *  You should only translate objects of this class by using setTransform()
+ */
+class Anchor : public Drawable {
+public:
+    Anchor() = default;
+
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection) const override {}
+};
 
 #endif //COMP_371_PROJECT_DRAW_H

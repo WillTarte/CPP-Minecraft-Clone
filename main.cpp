@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include "draw.h"
 #include "scene.h"
 
@@ -25,6 +26,9 @@ GLenum renderMode = GL_TRIANGLES;
 static const glm::vec3 WorldCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 static const glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+///last space bar action
+int lastSpaceAction = GLFW_RELEASE;
+
 /// Camera Struct to hold data for the current view
 struct Camera {
     float Yaw = -90.0f;
@@ -37,6 +41,10 @@ struct Camera {
     glm::vec3 Right = {1.0f, 0.0f, 0.0f};
 
 } worldCamera;
+
+void randomizePosition(Drawable *model) {
+    model->setPosition({rand() % 101 - 50, 0, rand() % 101 - 50});
+}
 
 /** Updates the camera vectors to update the current view correctly.
  *
@@ -104,7 +112,8 @@ enum class SelectedModel {
     FOUR,
     FIVE,
     RESET,
-    WORLD
+    WORLD,
+    RANDOMIZE
 };
 
 SelectedModel selectedModel = SelectedModel::WORLD;
@@ -138,6 +147,14 @@ void modelSelect(GLFWwindow *window, int key, int scancode, int action, int mods
 
     if (glfwGetKey(window, GLFW_KEY_HOME) == GLFW_PRESS)
         selectedModel = SelectedModel::RESET;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && lastSpaceAction == GLFW_RELEASE) {
+        selectedModel = SelectedModel::RANDOMIZE;
+        lastSpaceAction = GLFW_PRESS;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+        lastSpaceAction = GLFW_RELEASE;
 }
 
 /** Processes user input to control the models/world
@@ -325,30 +342,75 @@ int main(int argc, char *argv[]) {
     // Initialize models
     GroundGrid grid = GroundGrid();
     Axis axis = Axis();
-    L8 will = L8();
-    H3 h3 = H3();
-    A2 ewan = A2();
-    P6 phil = P6();
-    H7 moh = H7();
+    //L will = L();
+    Anchor anchorL8 = Anchor();
+    anchorL8.setPosition(glm::vec3(43.0f, 0.0f, 49.0f));
+    ModelL modelL = ModelL();
+    Model8 model8 = Model8();
+    //H3 h3 = H3();
+    Anchor anchorH3 = Anchor();
+    anchorH3.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    ModelH modelH = ModelH();
+    Model3 model3 = Model3();
+    //A2 ewan = A2();
+    Anchor anchorA2 = Anchor();
+    anchorA2.setPosition(glm::vec3(30.0f, 0.0f, -50.0f));
+    ModelA modelA = ModelA();
+    Model2 model2 = Model2();
+    //P6 phil = P6();
+    Anchor anchorP6 = Anchor();
+    anchorP6.setPosition(glm::vec3(-50.0f, 0.0f, -50.0f));
+    ModelP modelP = ModelP();
+    Model6 model6 = Model6();
+    //H7 moh = H7();
+    Anchor anchorH7 = Anchor();
+    anchorH7.setPosition(glm::vec3(-49.5f, 0.1f, 49.0f));
+    ModelH modelH_2 = ModelH();
+    Model7 model7 = Model7();
 
     // Initialize Nodes
     SceneNode gridNode = SceneNode(&grid, "GroundGrid");
     SceneNode axisNode = SceneNode(&axis, "Axis");
-    SceneNode willNode = SceneNode(&will, "Will");
-    SceneNode h3Node = SceneNode(&h3, "H3");
-    SceneNode ewanNode = SceneNode(&ewan, "Ewan");
-    SceneNode philNode = SceneNode(&phil, "Phil");
-    SceneNode mohNode = SceneNode(&moh, "Moh");
+
+    SceneNode l8AnchorNode = SceneNode(&anchorL8, "anchorL8");
+    SceneNode modelLNode = SceneNode(&modelL, "modelL");
+    SceneNode model8Node = SceneNode(&model8, "model8");
+    l8AnchorNode.addChild(&modelLNode);
+    l8AnchorNode.addChild(&model8Node);
+
+    SceneNode h3AnchorNode = SceneNode(&anchorH3, "anchorH3");
+    SceneNode modelHNode = SceneNode(&modelH, "modelH");
+    SceneNode model3Node = SceneNode(&model3, "model3");
+    h3AnchorNode.addChild(&modelHNode);
+    h3AnchorNode.addChild(&model3Node);
+
+    SceneNode a2AnchorNode = SceneNode(&anchorA2, "anchorA2");
+    SceneNode modelANode = SceneNode(&modelA, "modelA");
+    SceneNode model2Node = SceneNode(&model2, "model2");
+    a2AnchorNode.addChild(&modelANode);
+    a2AnchorNode.addChild(&model2Node);
+
+    SceneNode p6AnchorNode = SceneNode(&anchorP6, "anchorP6");
+    SceneNode modelPNode = SceneNode(&modelP, "modelP");
+    SceneNode model6Node = SceneNode(&model6, "model6");
+    p6AnchorNode.addChild(&modelPNode);
+    p6AnchorNode.addChild(&model6Node);
+
+    SceneNode h7AnchorNode = SceneNode(&anchorH7, "anchorH7");
+    SceneNode modelH_2Node = SceneNode(&modelH_2, "modelH_2");
+    SceneNode model7Node = SceneNode(&model7, "model7");
+    h7AnchorNode.addChild(&modelH_2Node);
+    h7AnchorNode.addChild(&model7Node);
 
     // Set up scene
     Scene world = Scene();
-    world.addNode(gridNode);
-    world.addNode(axisNode);
-    world.addNode(willNode);
-    world.addNode(h3Node);
-    world.addNode(ewanNode);
-    world.addNode(philNode);
-    world.addNode(mohNode);
+    world.addNode(&gridNode);
+    world.addNode(&axisNode);
+    world.addNode(&l8AnchorNode);
+    world.addNode(&h3AnchorNode);
+    world.addNode(&a2AnchorNode);
+    world.addNode(&p6AnchorNode);
+    world.addNode(&h7AnchorNode);
 
     // MVP matrices
     glm::mat4 worldModelMatrix = glm::mat4(1.0f);
@@ -373,31 +435,40 @@ int main(int argc, char *argv[]) {
 
         // Input Processing
         if (selectedModel == SelectedModel::ONE) {
-            processInput(window, deltaTime, &h3);
+            processInput(window, deltaTime, &anchorH3);
         }
         if (selectedModel == SelectedModel::TWO) {
-            processInput(window, deltaTime, &will);
+            processInput(window, deltaTime, &anchorL8);
         }
         if (selectedModel == SelectedModel::THREE) {
-            processInput(window, deltaTime, &ewan);
+            processInput(window, deltaTime, &anchorA2);
         }
         if (selectedModel == SelectedModel::FOUR) {
-            processInput(window, deltaTime, &phil);
+            processInput(window, deltaTime, &anchorP6);
         }
         if (selectedModel == SelectedModel::FIVE) {
-            processInput(window, deltaTime, &moh);
+            processInput(window, deltaTime, &anchorH7);
         }
         if (selectedModel == SelectedModel::WORLD) {
             processInputWorld(window, deltaTime, worldModelMatrix);
         }
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
-            will.setTransform(unitMat);
-            h3.setTransform(unitMat);
-            ewan.setTransform(unitMat);
-            phil.setTransform(unitMat);
-            moh.setTransform(unitMat);
+            anchorL8.setTransform(unitMat);
+            anchorH3.setTransform(unitMat);
+            anchorA2.setTransform(unitMat);
+            anchorP6.setTransform(unitMat);
+            anchorH7.setTransform(unitMat);
             worldModelMatrix = unitMat;
+        }
+
+        if (selectedModel == SelectedModel::RANDOMIZE) {
+            randomizePosition(&anchorL8);
+            randomizePosition(&anchorH3);
+            randomizePosition(&anchorA2);
+            randomizePosition(&anchorP6);
+            randomizePosition(&anchorH7);
+            selectedModel = SelectedModel::WORLD;
         }
 
         // Render
