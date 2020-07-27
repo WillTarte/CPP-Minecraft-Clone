@@ -209,15 +209,38 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
 
             glm::mat4 shear =
                     {
-                            { 1.0f, 0.0f, -2.0f, 0.0f },
-                            { 0.0f, 1.0f, -2.0f, 0.0f },
+                            { 1.0f, 0.0f, -1.0f, 0.0f },
+                            { 0.0f, 1.0f, -1.0f, 0.0f },
                             { 0.0f, 0.0f, 1.0f, 0.0f },
                             { 0.0f, 0.0f, 0.0f, 1.0f },
                     };
 
+            objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, 0.0, 1.0f));
             objectModel->setTransform(shear);
-            objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, 0.0, 2.0f));
+
         }
+
+
+
+        ///code for walking models
+        if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+
+            startWalking = 1;
+            //attempting to shear this model
+
+            glm::mat4 shear =
+                    {
+                            { 1.0f, 0.0f, 1.0f, 0.0f },
+                            { 0.0f, 1.0f, 1.0f, 0.0f },
+                            { 0.0f, 0.0f, 1.0f, 0.0f },
+                            { 0.0f, 0.0f, 0.0f, 1.0f },
+                    };
+
+            objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, 0.0, -1.0f));
+            objectModel->setTransform(shear);
+
+        }
+
 
     if(startWalking == 1){
 
@@ -234,8 +257,11 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
                             { 0.0f, 0.0f, 0.0f, 1.0f },
                     };
 
+
             objectModel->setTransform(stand);
         }
+
+
 
     }
 
