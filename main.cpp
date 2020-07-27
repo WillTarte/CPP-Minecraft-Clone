@@ -9,8 +9,8 @@
 #include "scene.h"
 
 /// Window size
-static const int WIDTH = 1024;
-static const int HEIGHT = 768;
+static int WIDTH = 1024;
+static int HEIGHT = 768;
 
 /// Some global vars
 float lastX = WIDTH / 2.0f;
@@ -215,7 +215,7 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
  * @param deltaTime
  * @param worldModelMatrix
  */
-void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldModelMatrix) {
+void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldModelMatrix, Light &lightSource) {
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
@@ -225,17 +225,23 @@ void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldMod
     /* ----------------- */
 
     /* Move and Rotate models */
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
+    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     /* ---------------------- */
 
@@ -289,6 +295,8 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    WIDTH = width;
+    HEIGHT = height;
 }
 
 /** Callback for mouse movement which controls the camera.
@@ -355,7 +363,7 @@ int main(int argc, char *argv[]) {
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetErrorCallback(errorCallback);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -372,23 +380,23 @@ int main(int argc, char *argv[]) {
     GroundGrid grid = GroundGrid();
     Axis axis = Axis();
     Light light = Light();
-    //L will = L();
+
     ModelL modelL = ModelL();
     modelL.setPosition(glm::vec3(43.0f, 0.0f, 49.0f));
     Model8 model8 = Model8();
-    //H3 h3 = H3();
+
     ModelH modelH = ModelH();
     modelH.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     Model3 model3 = Model3();
-    //A2 ewan = A2();
+
     ModelA modelA = ModelA();
     modelA.setPosition(glm::vec3(30.0f, 0.0f, -50.0f));
     Model2 model2 = Model2();
-    //P6 phil = P6();
+
     ModelP modelP = ModelP();
     modelP.setPosition(glm::vec3(-50.0f, 0.0f, -50.0f));
     Model6 model6 = Model6();
-    //H7 moh = H7();
+
     ModelH modelH_2 = ModelH();
     modelH_2.setPosition(glm::vec3(-49.5f, 0.1f, 49.0f));
     Model7 model7 = Model7();
@@ -444,9 +452,9 @@ int main(int argc, char *argv[]) {
 
     // Set up scene
     Scene world = Scene();
+    world.addNode(&lightNode);
     world.addNode(&gridNode);
     world.addNode(&axisNode);
-    world.addNode(&lightNode);
     world.addNode(&modelLNode);
     world.addNode(&modelHNode);
     world.addNode(&modelANode);
@@ -497,7 +505,7 @@ int main(int argc, char *argv[]) {
             processInput(window, deltaTime, &modelH_2);
         }
         if (selectedModel == SelectedModel::WORLD) {
-            processInputWorld(window, deltaTime, worldModelMatrix);
+            processInputWorld(window, deltaTime, worldModelMatrix, light);
         }
         if (selectedModel == SelectedModel::LIGHT) {
             processInputLightSource(window, deltaTime, light);
@@ -533,9 +541,9 @@ int main(int argc, char *argv[]) {
         glBindTexture(GL_TEXTURE_2D, world.depthMap);
         glm::mat4 lightProjection, lightView;
         glm::mat4 lightSpaceMatrix;
-        float near_plane = 0.1f, far_plane = 250.0f;
+        float near_plane = 0.1f, far_plane = 200.0f;
         //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)world.SHADOW_WIDTH / (GLfloat)world.SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-        lightProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, near_plane, far_plane);
+        lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
         lightView = glm::lookAt(light.getLightPos(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
@@ -558,12 +566,14 @@ int main(int argc, char *argv[]) {
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        //debugDepthQuad.use();
-        //debugDepthQuad.setFloat("near_plane", near_plane);
-        //debugDepthQuad.setFloat("far_plane", far_plane);
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, world.depthMap);
+        debugDepthQuad.use();
+        debugDepthQuad.setFloat("near_plane", near_plane);
+        debugDepthQuad.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, world.depthMap);
         //renderQuad();
+
+        //std::cout << light.getLightPos().x << " " << light.getLightPos().y << " " << light.getLightPos().z << std::endl;
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);

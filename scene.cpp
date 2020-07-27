@@ -22,10 +22,12 @@ void SceneNode::addChild(SceneNode *node) {
     this->children.emplace_back(node);
 }
 
-void SceneNode::drawShadows(const glm::mat4 &model, Shader &depthShader) {
-    this->drawable->drawShadows(model, depthShader);
+void SceneNode::drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) {
+    this->drawable->drawShadows(model, depthShader, lsm);
     for (auto *child : children) {
-        child->drawShadows(model, depthShader);
+        child->drawShadows(glm::translate(model, this->drawable->getPosition()) * this->drawable->getTransform(),
+                           depthShader,
+                           glm::translate(lsm, this->drawable->getPosition()) * this->drawable->getTransform());
     }
 }
 
@@ -61,6 +63,23 @@ void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 
     }
 }
 
+void Scene::drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix) {
+
+    // render scene from light's point of view
+    depthShader.use();
+
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glActiveTexture(GL_TEXTURE0);
+
+    for (auto *node : nodes) {
+        node->drawShadows(model, depthShader, lightSpaceMatrix);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Scene::addNode(SceneNode *node) {
     this->nodes.emplace_back(node);
     this->taggedNodes[node->getTag()] = node;
@@ -81,21 +100,3 @@ void Scene::changeRenderMode(GLenum renderMode) {
 std::optional<SceneNode *> Scene::getNodeByTag(const std::string &tag) {
     return this->taggedNodes[tag];
 };
-
-void Scene::drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix) {
-
-    // render scene from light's point of view
-    depthShader.use();
-    depthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    glClear(GL_DEPTH_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-
-    for (auto *node : nodes) {
-        node->drawShadows(model, depthShader);
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
