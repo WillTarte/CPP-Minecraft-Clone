@@ -128,21 +128,33 @@ public:
     // ------------------------------------------------------------------------
     void use() const {
         glUseProgram(ID);
+    }
+
+    void disableTexture() const {
+        if (textureID != -1) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            setBool("textureEnabled", false);
+        }
+    }
+
+    void enableTexture() const {
         if (textureID != -1) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureID);
             setInt("textureSampler", 0);
+            setBool("textureEnabled", true);
         }
     }
 
     // utility uniform functions
     // ------------------------------------------------------------------------
-    void setBool(const std::string& name, bool value) const {
+    void setBool(const std::string &name, bool value) const {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int) value);
     }
 
     // ------------------------------------------------------------------------
-    void setInt(const std::string& name, int value) const {
+    void setInt(const std::string &name, int value) const {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
 

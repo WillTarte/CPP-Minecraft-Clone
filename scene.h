@@ -45,6 +45,8 @@ public:
 
     /// Changes this node's render mode
     inline void setRenderMode(GLenum renderMode) { this->drawable->setRenderMode(renderMode); }
+
+    inline void setTextureState(bool newState) { this->drawable->setTextureState(newState); }
 };
 
 /** Defines the current scene to be rendered.
@@ -59,6 +61,11 @@ private:
     GLuint depthMapFBO{};
 
 public:
+
+    GLuint depthMap{};
+    const unsigned int SHADOW_WIDTH = 2048;
+    const unsigned int SHADOW_HEIGHT = 2048;
+
     Scene();
 
     ~Scene() {
@@ -91,9 +98,9 @@ public:
      */
     std::optional<SceneNode *> getNodeByTag(const std::string &tag);
 
-    GLuint depthMap{};
-    const unsigned int SHADOW_WIDTH = 2048;
-    const unsigned int SHADOW_HEIGHT = 2048;
+    void disableShadows();
+
+    void setTextureStates(bool state);
 };
 
 

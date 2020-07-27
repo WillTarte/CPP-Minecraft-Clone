@@ -46,7 +46,7 @@ __Method 2: Install Script__
  - Holding the MMB and moving forwards/backwards will tilt the camera.
  - Holding the RMB and moving left/right will pan the camera.
  - __With the light selected__, WASD move it up/down/left/right and UP/DOWN move it forward and backwards.
-
+ - X/B for Enabling/Disabling textures/shadows.
 ## Resources
  - https://learnopengl.com/
  - https://en.cppreference.com/w/

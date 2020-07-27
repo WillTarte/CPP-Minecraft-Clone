@@ -14,7 +14,9 @@ void SceneNode::draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) {
     for (auto *child : children) {
         child->draw(
                 {glm::translate(mvpl.model, this->drawable->getPosition()) * this->drawable->getTransform(), mvpl.view,
-                 mvpl.projection, mvpl.lsm}, lp, cameraPos);
+                 mvpl.projection,
+                 glm::translate(mvpl.lsm, this->drawable->getPosition()) * this->drawable->getTransform()}, lp,
+                cameraPos);
     }
 }
 
@@ -99,4 +101,20 @@ void Scene::changeRenderMode(GLenum renderMode) {
 
 std::optional<SceneNode *> Scene::getNodeByTag(const std::string &tag) {
     return this->taggedNodes[tag];
+}
+
+void Scene::disableShadows() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+void Scene::setTextureStates(bool state) {
+    for (auto *node : nodes) {
+        node->setTextureState(state);
+        for (auto *child : node->getChildren()) {
+            child->setTextureState(state);
+        }
+    }
+
 };
