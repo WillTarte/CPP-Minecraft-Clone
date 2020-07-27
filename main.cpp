@@ -117,6 +117,9 @@ enum class SelectedModel {
     RANDOMIZE
 };
 
+bool startWalking = 0;
+int walkingCount = 0;
+
 SelectedModel selectedModel = SelectedModel::WORLD;
 
 /** Method to consume keyboard inputs to control the camera.
@@ -197,6 +200,45 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         objectModel->setTransform(
                 glm::rotate(objectModel->getTransform(), glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    ///code for walking models
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
+
+        startWalking = 1;
+            //attempting to shear this model
+
+            glm::mat4 shear =
+                    {
+                            { 1.0f, 0.0f, -2.0f, 0.0f },
+                            { 0.0f, 1.0f, -2.0f, 0.0f },
+                            { 0.0f, 0.0f, 1.0f, 0.0f },
+                            { 0.0f, 0.0f, 0.0f, 1.0f },
+                    };
+
+            objectModel->setTransform(shear);
+            objectModel->setPosition(objectModel->getPosition() + glm::vec3(0.0f, 0.0, 2.0f));
+        }
+
+    if(startWalking == 1){
+
+        walkingCount += 1;
+
+        if(walkingCount ==30){
+            startWalking = 0;
+            walkingCount = 0;
+            glm::mat4 stand =
+                    {
+                            { 1.0f, 0.0f, 0.0f, 0.0f },
+                            { 0.0f, 1.0f, 0.0f, 0.0f },
+                            { 0.0f, 0.0f, 1.0f, 0.0f },
+                            { 0.0f, 0.0f, 0.0f, 1.0f },
+                    };
+
+            objectModel->setTransform(stand);
+        }
+
+    }
+
     /* ---------------------- */
 
     /* Change Render Mode */
@@ -388,6 +430,9 @@ int main(int argc, char *argv[]) {
     ModelH modelH = ModelH();
     modelH.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     Model3 model3 = Model3();
+
+
+
 
     ModelA modelA = ModelA();
     modelA.setPosition(glm::vec3(30.0f, 0.0f, -50.0f));
