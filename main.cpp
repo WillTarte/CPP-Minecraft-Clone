@@ -27,7 +27,11 @@ static const glm::vec3 WorldCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 static const glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 ///last space bar action
-int lastSpaceAction = GLFW_RELEASE;
+static int lastSpaceAction = GLFW_RELEASE;
+
+/// Options
+static bool SHADOWS = true;
+static bool TEXTURES = true;
 
 /// Camera Struct to hold data for the current view
 struct Camera {
@@ -157,6 +161,11 @@ void modelSelect(GLFWwindow *window, int key, int scancode, int action, int mods
         lastSpaceAction = GLFW_PRESS;
     }
 
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        SHADOWS = !SHADOWS;
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        TEXTURES = !TEXTURES;
+
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
         lastSpaceAction = GLFW_RELEASE;
 }
@@ -215,7 +224,7 @@ void processInput(GLFWwindow *window, double deltaTime, Drawable *objectModel) {
  * @param deltaTime
  * @param worldModelMatrix
  */
-void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldModelMatrix, Light &lightSource) {
+void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldModelMatrix) {
 
     /* Scale Up and Down */
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
@@ -227,20 +236,20 @@ void processInputWorld(GLFWwindow *window, double deltaTime, glm::mat4 &worldMod
     /* Move and Rotate models */
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
-        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
+        //lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, MoveSpeed * deltaTime, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
-        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
+        //lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(0.0f, -MoveSpeed * deltaTime, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
-        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
+        //lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(-MoveSpeed * deltaTime, 0.0f, 0.0f));
     } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
         worldModelMatrix = glm::translate(worldModelMatrix, glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
-        lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
+        //lightSource.setLightPosition(lightSource.getLightPos() + glm::vec3(MoveSpeed * deltaTime, 0.0f, 0.0f));
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         worldModelMatrix = glm::rotate(worldModelMatrix, glm::radians(-5.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     /* ---------------------- */
@@ -380,6 +389,7 @@ int main(int argc, char *argv[]) {
     GroundGrid grid = GroundGrid();
     Axis axis = Axis();
     Light light = Light();
+    light.setLightPosition(glm::vec3(0.0f, 30.0f, 0.0f));
 
     ModelL modelL = ModelL();
     modelL.setPosition(glm::vec3(43.0f, 0.0f, 49.0f));
@@ -469,10 +479,7 @@ int main(int argc, char *argv[]) {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
-    //TODO: fix light + culling
-    //glEnable(GL_CULL_FACE);
-
-    glLineWidth(3.0f);
+    //glLineWidth(3.0f);
 
     Shader debugDepthQuad("resources/shaders/DebugDepthQuadVertex.glsl",
                           "resources/shaders/DebugDepthQuadFragment.glsl");
@@ -505,7 +512,7 @@ int main(int argc, char *argv[]) {
             processInput(window, deltaTime, &modelH_2);
         }
         if (selectedModel == SelectedModel::WORLD) {
-            processInputWorld(window, deltaTime, worldModelMatrix, light);
+            processInputWorld(window, deltaTime, worldModelMatrix/*, light*/);
         }
         if (selectedModel == SelectedModel::LIGHT) {
             processInputLightSource(window, deltaTime, light);
@@ -513,10 +520,15 @@ int main(int argc, char *argv[]) {
         // Resets the world orientation and position
         if (selectedModel == SelectedModel::RESET) {
             modelL.setTransform(unitMat);
+            modelL.setPosition(glm::vec3(43.0f, 0.0f, 49.0f));
             modelH.setTransform(unitMat);
+            modelH.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
             modelA.setTransform(unitMat);
+            modelA.setPosition(glm::vec3(30.0f, 0.0f, -50.0f));
             modelP.setTransform(unitMat);
+            modelP.setPosition(glm::vec3(-50.0f, 0.0f, -50.0f));
             modelH_2.setTransform(unitMat);
+            modelH_2.setPosition(glm::vec3(-49.5f, 0.1f, 49.0f));
             light.setLightPosition(glm::vec3(0.0f, 30.0f, 0.0f));
             light.setTransform(unitMat);
             worldModelMatrix = unitMat;
@@ -547,9 +559,11 @@ int main(int argc, char *argv[]) {
         lightView = glm::lookAt(light.getLightPos(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
-        //TODO: once culling is fixed; glCullFace(GL_FRONT);
-        world.drawShadows(worldModelMatrix, lightSpaceMatrix);
-        //TODO: once culling is fixed; glCullFace(GL_BACK);
+        if (SHADOWS) {
+            world.drawShadows(worldModelMatrix, lightSpaceMatrix);
+        } else {
+            world.disableShadows();
+        }
 
         // Render Scene
         // reset viewport
@@ -560,17 +574,20 @@ int main(int argc, char *argv[]) {
         projection = glm::perspective(glm::radians(worldCamera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
         view = GetViewMatrix(worldCamera);
 
+        std::cout << TEXTURES << std::endl;
+        world.setTextureStates(TEXTURES);
+
         // Draw models
         world.changeRenderMode(renderMode);
         world.draw(worldModelMatrix, view, projection, lightSpaceMatrix, worldCamera.Position, light.getLightParams());
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        debugDepthQuad.use();
-        debugDepthQuad.setFloat("near_plane", near_plane);
-        debugDepthQuad.setFloat("far_plane", far_plane);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, world.depthMap);
+        //debugDepthQuad.use();
+        //debugDepthQuad.setFloat("near_plane", near_plane);
+        //debugDepthQuad.setFloat("far_plane", far_plane);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, world.depthMap);
         //renderQuad();
 
         //std::cout << light.getLightPos().x << " " << light.getLightPos().y << " " << light.getLightPos().z << std::endl;

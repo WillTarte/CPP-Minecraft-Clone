@@ -223,6 +223,7 @@ public:
 class Drawable {
 private:
     glm::vec3 position{};
+    bool textureState = true;
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
@@ -245,6 +246,13 @@ public:
 
     virtual void setPosition(glm::vec3 pos) { position = pos; }
 
+    [[nodiscard]] bool getTextureState() const {
+        return textureState;
+    }
+
+    void setTextureState(bool newState) {
+        this->textureState = newState;
+    }
 
     /// Render Mode setter
     virtual void setRenderMode(GLenum newRenderMode) { renderMode = newRenderMode; }
@@ -342,7 +350,12 @@ public:
 
         //took out the local transform
         shader.use();
-        shader.setMat4("model", mvpl.model * getTransform());
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
+
+        shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
 
@@ -362,8 +375,10 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -538,10 +553,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -698,10 +718,15 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -731,8 +756,10 @@ public:
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4 = glm::mat4(1.0f);
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -769,10 +796,15 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -819,8 +851,10 @@ public:
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4 = glm::mat4(1.0f);
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -876,10 +910,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -925,8 +964,10 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -971,10 +1012,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1007,8 +1053,10 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -1050,10 +1098,15 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1098,8 +1151,10 @@ public:
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4(1);
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -1152,10 +1207,15 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1199,8 +1259,10 @@ public:
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4(1);
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -1248,10 +1310,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1288,8 +1355,10 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -1343,10 +1412,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1391,8 +1465,10 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
@@ -1453,10 +1529,15 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
+        if (getTextureState())
+            shader.enableTexture();
+        else
+            shader.disableTexture();
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
         shader.setVec3("lightPos", lp.lightPos);
         // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
@@ -1502,8 +1583,11 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
-        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        //depthShader.setMat4("lightSpaceMatrix", lsm);
+        //depthShader.setMat4("model", model);
+
 
         glBindVertexArray(vao);
 
@@ -1541,11 +1625,12 @@ private:
 public:
 
     Light() {
-        this->shader = Shader("resources/shaders/LightVertexShader.glsl",
-                              "resources/shaders/LightFragmentShader.glsl");
+        this->shader = Shader("resources/shaders/LightVertexShader.glsl", "resources/shaders/LightFragmentShader.glsl");
+        this->lightParams = {glm::vec3(0.0f, 30.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)};
     }
 
     explicit Light(LightParams lp) {
+        this->shader = Shader("resources/shaders/LightVertexShader.glsl", "resources/shaders/LightFragmentShader.glsl");
         lightParams = lp;
     }
 
