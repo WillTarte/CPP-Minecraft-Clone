@@ -36,9 +36,9 @@ public:
     /// Getter for this node's children
     std::vector<SceneNode *> &getChildren() { return children; }
 
-    /// Draws this Node, AND its children relative to it.
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
-              const glm::vec3 &cameraPos);
+    void draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos);
+
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm);
 
     /// Getter for this node's tag
     inline std::string getTag() { return tag; }
@@ -55,10 +55,17 @@ class Scene {
 private:
     std::vector<SceneNode *> nodes;
     std::unordered_map<std::string, SceneNode *> taggedNodes;
-public:
-    Scene() = default;
+    Shader depthShader{};
+    GLuint depthMapFBO{};
 
-    ~Scene() = default;
+public:
+    Scene();
+
+    ~Scene() {
+        glDeleteProgram(depthShader.ID);
+        glDeleteTextures(1, &depthMap);
+        glDeleteFramebuffers(1, &depthMapFBO);
+    }
 
     /** Draws this scene
      *
@@ -66,8 +73,10 @@ public:
      * @param view the view matrix (world space -> view space)
      * @param projection the pojection matrix (view space -> clip space)
      */
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
-              const glm::vec3 &cameraPos);
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, const glm::mat4 &lsm,
+              const glm::vec3 &cameraPos, LightParams lp);
+
+    void drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix);
 
     /// Adds a node to the scene
     void addNode(SceneNode *node);
@@ -81,6 +90,10 @@ public:
      * @return
      */
     std::optional<SceneNode *> getNodeByTag(const std::string &tag);
+
+    GLuint depthMap{};
+    const unsigned int SHADOW_WIDTH = 2048;
+    const unsigned int SHADOW_HEIGHT = 2048;
 };
 
 
