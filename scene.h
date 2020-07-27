@@ -53,14 +53,11 @@ public:
  */
 class Scene {
 private:
-    std::vector<SceneNode> nodes;
+    std::vector<SceneNode *> nodes;
     std::unordered_map<std::string, SceneNode *> taggedNodes;
     Shader depthShader{};
     GLuint depthMapFBO{};
-    GLuint depthMap{};
 
-    const unsigned int SHADOW_HEIGHT = 1024;
-    const unsigned int SHADOW_WIDTH = 1024;
 public:
     Scene();
 
@@ -76,8 +73,8 @@ public:
      * @param view the view matrix (world space -> view space)
      * @param projection the pojection matrix (view space -> clip space)
      */
-    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
-              const glm::vec3 &cameraPos);
+    void draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, const glm::mat4 &lsm,
+              const glm::vec3 &cameraPos, LightParams lp);
 
     void drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix);
 
@@ -93,6 +90,10 @@ public:
      * @return
      */
     std::optional<SceneNode *> getNodeByTag(const std::string &tag);
+
+    GLuint depthMap{};
+    const unsigned int SHADOW_WIDTH = 2048;
+    const unsigned int SHADOW_HEIGHT = 2048;
 };
 
 

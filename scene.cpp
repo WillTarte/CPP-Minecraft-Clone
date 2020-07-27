@@ -9,17 +9,24 @@ SceneNode::SceneNode(Drawable *noderoot, std::string tag) {
     this->children = std::vector<SceneNode *>();
 };
 
-void SceneNode::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
-                     const glm::vec3 &cameraPos) {
-    this->drawable->draw(model, view, projection, lp, cameraPos);
+void SceneNode::draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) {
+    this->drawable->draw(mvpl, lp, cameraPos);
     for (auto *child : children) {
-        child->draw(glm::translate(model, this->drawable->getPosition()) * this->drawable->getTransform(), view,
-                    projection, lp, cameraPos);
+        child->draw(
+                {glm::translate(mvpl.model, this->drawable->getPosition()) * this->drawable->getTransform(), mvpl.view,
+                 mvpl.projection, mvpl.lsm}, lp, cameraPos);
     }
 }
 
 void SceneNode::addChild(SceneNode *node) {
     this->children.emplace_back(node);
+}
+
+void SceneNode::drawShadows(const glm::mat4 &model, Shader &depthShader) {
+    this->drawable->drawShadows(model, depthShader);
+    for (auto *child : children) {
+        child->drawShadows(model, depthShader);
+    }
 }
 
 Scene::Scene() {
@@ -37,8 +44,7 @@ Scene::Scene() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-    float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -48,10 +54,10 @@ Scene::Scene() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, LightParams lp,
-                 const glm::vec3 &cameraPos) {
+void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 &projection, const glm::mat4 &lsm,
+                 const glm::vec3 &cameraPos, LightParams lp) {
     for (auto *node : nodes) {
-        node->draw(model, view, projection, lp, cameraPos);
+        node->draw({model, view, projection, lsm}, lp, cameraPos);
     }
 }
 
@@ -85,13 +91,11 @@ void Scene::drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatri
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, woodTexture);
+    glActiveTexture(GL_TEXTURE0);
 
-    for (auto &node : nodes) {
-        node.drawShadows(model, depthShader);
+    for (auto *node : nodes) {
+        node->drawShadows(model, depthShader);
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }

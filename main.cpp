@@ -324,6 +324,7 @@ void errorCallback(int error, const char *description) {
     fputs(description, stderr);
 }
 
+void renderQuad();
 
 /// Main
 int main(int argc, char *argv[]) {
@@ -465,6 +466,11 @@ int main(int argc, char *argv[]) {
 
     glLineWidth(3.0f);
 
+    Shader debugDepthQuad("resources/shaders/DebugDepthQuadVertex.glsl",
+                          "resources/shaders/DebugDepthQuadFragment.glsl");
+    debugDepthQuad.use();
+    debugDepthQuad.setInt("depthMap", 0);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -523,19 +529,24 @@ int main(int argc, char *argv[]) {
 
         // 1. render depth of scene to texture (from light's perspective)
         // --------------------------------------------------------------
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, world.depthMap);
         glm::mat4 lightProjection, lightView;
         glm::mat4 lightSpaceMatrix;
-        float near_plane = 1.0f, far_plane = 7.5f;
-        //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-        lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-        lightView = glm::lookAt(light.getLightPos(), WorldCenter, WorldUp);
+        float near_plane = 0.1f, far_plane = 250.0f;
+        //lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)world.SHADOW_WIDTH / (GLfloat)world.SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+        lightProjection = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, near_plane, far_plane);
+        lightView = glm::lookAt(light.getLightPos(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
+        //TODO: once culling is fixed; glCullFace(GL_FRONT);
         world.drawShadows(worldModelMatrix, lightSpaceMatrix);
+        //TODO: once culling is fixed; glCullFace(GL_BACK);
 
         // Render Scene
         // reset viewport
         glViewport(0, 0, WIDTH, HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update Projection matrix
         projection = glm::perspective(glm::radians(worldCamera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
@@ -543,7 +554,7 @@ int main(int argc, char *argv[]) {
 
         // Draw models
         world.changeRenderMode(renderMode);
-        world.draw(worldModelMatrix, view, projection, light.getLightParams(), worldCamera.Position);
+        world.draw(worldModelMatrix, view, projection, lightSpaceMatrix, worldCamera.Position, light.getLightParams());
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
@@ -551,7 +562,7 @@ int main(int argc, char *argv[]) {
         //debugDepthQuad.setFloat("near_plane", near_plane);
         //debugDepthQuad.setFloat("far_plane", far_plane);
         //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, depthMap);
+        //glBindTexture(GL_TEXTURE_2D, world.depthMap);
         //renderQuad();
 
         // Swap buffers and poll events
@@ -562,4 +573,34 @@ int main(int argc, char *argv[]) {
     //Terminate once the window should be closed
     glfwTerminate();
     return 0;
+}
+
+// renderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+
+void renderQuad() {
+    if (quadVAO == 0) {
+        float quadVertices[] = {
+                // positions        // texture Coords
+                -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }

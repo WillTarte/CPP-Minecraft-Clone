@@ -1,48 +1,18 @@
 #version 330 core
 out vec4 FragColor;
 
-struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-};
-
-struct Light {
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-in vec2 TexCoord;
-
-uniform vec3 viewPos = vec3(0.0, 0.0, 0.0);
-
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
-//vec2 TexCoords;
+    vec2 TexCoords;
     vec4 FragPosLightSpace;
 } fs_in;
 
-uniform vec3 viewPos;
-
-//uniform sampler2D diffuseTexture;
+uniform sampler2D textureSampler;
 uniform sampler2D shadowMap;
 
-// Material
-uniform Material material;
-
-// Light
-uniform Light light;
-
-// texture sampler
-uniform sampler2D textureSampler;
-
-float constant = 1.0f;
-float linear= 0.007f;
-float quadratic=0.0002f;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
@@ -82,22 +52,15 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
 void main()
 {
-
-    //TODO: is this spot light?
-
-    vec3 objectColor = texture(textureSampler, TexCoord).rgb;
-    vec3 normal = normalize(Normal);
-
-    // ambient
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * objectColor;
-
-    // diffuse
+    vec3 color = texture(textureSampler, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
+    vec3 lightColor = vec3(1.0);
+    // ambient
+    vec3 ambient = 0.15 * color;
+    // diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = 2*diff * lightColor;
-
+    vec3 diffuse = diff * lightColor;
     // specular
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float spec = 0.0;
@@ -106,7 +69,7 @@ void main()
     vec3 specular = spec * lightColor;
     // calculate shadow
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
 
     FragColor = vec4(lighting, 1.0);
 }
