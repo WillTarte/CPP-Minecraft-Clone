@@ -379,7 +379,7 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+       /* depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
         depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         //depthShader.setMat4("lightSpaceMatrix", lsm);
         //depthShader.setMat4("model", model);
@@ -394,7 +394,7 @@ public:
                        GL_UNSIGNED_INT,                 // data type
                        (void *) nullptr);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
     }
 
     void createVertices() {
@@ -565,17 +565,18 @@ public:
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
         //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+
         shader.setInt("shadowMap", 1);
 
         glBindVertexArray(vao);
@@ -730,17 +731,17 @@ public:
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
         //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -807,18 +808,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -921,18 +922,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1023,18 +1024,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1109,18 +1110,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1218,18 +1219,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1321,18 +1322,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1423,18 +1424,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 
@@ -1540,18 +1541,18 @@ public:
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
-        //shader.setMat4("lightSpaceMatrix", mvpl.lsm);
-        shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
+        shader.setMat4("lightSpaceMatrix", mvpl.lsm);
+        //shader.setMat4("lightSpaceMatrix", glm::translate(mvpl.lsm, getPosition()) * getTransform());
         shader.setVec3("viewPos", cameraPos);
-        shader.setVec3("lightPos", lp.lightPos);
-        // shader.setVec3("light.ambient", lp.lightColor * 0.5f);
-        //shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
-        // shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("light.position", lp.lightPos);
+        shader.setVec3("light.ambient", lp.lightColor * 0.5f);
+        shader.setVec3("light.diffuse", lp.lightColor * 0.2f);
+        shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         // material properties
-        // shader.setVec3("material.ambient", material.ambient);
-        // shader.setVec3("material.diffuse", material.diffuse);
-        // shader.setVec3("material.specular", material.specular);
-        // shader.setFloat("material.shininess", material.shininess);
+        shader.setVec3("material.ambient", material.ambient);
+        shader.setVec3("material.diffuse", material.diffuse);
+        shader.setVec3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
 
         shader.setInt("shadowMap", 1);
 

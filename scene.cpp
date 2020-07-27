@@ -15,7 +15,7 @@ void SceneNode::draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) {
         child->draw(
                 {glm::translate(mvpl.model, this->drawable->getPosition()) * this->drawable->getTransform(), mvpl.view,
                  mvpl.projection,
-                 glm::translate(mvpl.lsm, this->drawable->getPosition()) * this->drawable->getTransform()}, lp,
+                 mvpl.lsm}, lp,
                 cameraPos);
     }
 }
@@ -28,8 +28,7 @@ void SceneNode::drawShadows(const glm::mat4 &model, Shader &depthShader, const g
     this->drawable->drawShadows(model, depthShader, lsm);
     for (auto *child : children) {
         child->drawShadows(glm::translate(model, this->drawable->getPosition()) * this->drawable->getTransform(),
-                           depthShader,
-                           glm::translate(lsm, this->drawable->getPosition()) * this->drawable->getTransform());
+                           depthShader, lsm);
     }
 }
 
