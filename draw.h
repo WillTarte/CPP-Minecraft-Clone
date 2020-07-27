@@ -297,9 +297,10 @@ public:
         this->transform = transform;
 
 
-        shader = Shader("resources/shaders/SphereVertexShader.glsl",
-                        "resources/shaders/SphereFragmentShader.glsl", "resources/textures/metallic_surface.png");
+
         //need to create interleaved ones
+        this->shader = Shader("resources/shaders/SphereVertexShader.glsl", "resources/shaders/SphereFragmentShader.glsl",
+                              "resources/textures/bubble.jpg");
 
         //runs the function to generate verts
         createVertices();
@@ -348,6 +349,9 @@ public:
     void
     draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         //took out the local transform
         shader.use();
         if (getTextureState())
@@ -362,14 +366,14 @@ public:
         glBindVertexArray(vao);
 
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // draw a sphere with VBO
         glDrawElements(GL_TRIANGLES,                    // primitive type
                        indices.size(),          // # of indices
                        GL_UNSIGNED_INT,                 // data type
                        (void *) nullptr);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     }
 
