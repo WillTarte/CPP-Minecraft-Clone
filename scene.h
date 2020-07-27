@@ -38,7 +38,7 @@ public:
 
     void draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos);
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader);
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm);
 
     /// Getter for this node's tag
     inline std::string getTag() { return tag; }

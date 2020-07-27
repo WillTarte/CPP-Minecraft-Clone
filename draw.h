@@ -262,7 +262,7 @@ public:
      * @param model the model matrix
      * @param depthShader the shader used to calculate depth information
      */
-    virtual void drawShadows(const glm::mat4 &model, Shader &depthShader) const = 0;
+    virtual void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const = 0;
 
 
     virtual ~Drawable() = default;
@@ -360,9 +360,10 @@ public:
 
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -558,13 +559,13 @@ public:
         glDrawArrays(GL_TRIANGLES, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         //TODO does this need anything?
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        /*depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, size);
+        glDrawArrays(GL_TRIANGLES, 0, size);*/
     }
 
     static constexpr glm::vec3 vertices[12] = {
@@ -671,7 +672,7 @@ public:
         glBindVertexArray(0);
     };
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         // Empty on purpose
     }
 };
@@ -727,10 +728,11 @@ public:
         /* -------- */
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4 = glm::mat4(1.0f);
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -814,11 +816,11 @@ public:
         /* -------- */
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4 = glm::mat4(1.0f);
 
-        // TODO light space matrix?
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -921,11 +923,10 @@ public:
         glDrawArrays(renderMode, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        //TODO light space matrix?
-
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1004,9 +1005,10 @@ public:
         glDrawArrays(renderMode, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1093,10 +1095,11 @@ public:
         /* -------- */
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4(1);
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1193,10 +1196,11 @@ public:
         glDrawArrays(renderMode, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         glm::mat4 unitmat4(1);
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1282,9 +1286,10 @@ public:
         glDrawArrays(renderMode, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1384,9 +1389,10 @@ public:
         /* -------- */
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1494,9 +1500,10 @@ public:
 
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-        depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * transform);
+        //depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
 
         glBindVertexArray(vao);
 
@@ -1568,7 +1575,7 @@ public:
         glDrawArrays(renderMode, 0, size);
     }
 
-    void drawShadows(const glm::mat4 &model, Shader &depthShader) const override {
+    void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
         //TODO probably nothing here
     }
 };

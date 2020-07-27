@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 aPos;
 
 uniform mat4 lightSpaceMatrix;
-uniform mat4 model;
+uniform mat4 model = mat4(1.0f);
 uniform mat4 local_transform = mat4(1.0f);
 
 void main()
