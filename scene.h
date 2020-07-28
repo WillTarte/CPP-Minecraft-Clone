@@ -18,8 +18,6 @@ class SceneNode {
 private:
     /// The node's "name"
     std::string tag;
-    /// The underlying drawable object
-    Drawable *drawable{};
     /// The children of this node
     std::vector<SceneNode *> children;
 public:
@@ -44,9 +42,10 @@ public:
     inline std::string getTag() { return tag; }
 
     /// Changes this node's render mode
-    inline void setRenderMode(GLenum renderMode) { this->drawable->setRenderMode(renderMode); }
+    inline void setRenderMode(GLenum renderMode) const { this->drawable->setRenderMode(renderMode); }
 
-    inline void setTextureState(bool newState) { this->drawable->setTextureState(newState); }
+    /// The underlying drawable object
+    Drawable *drawable{};
 };
 
 /** Defines the current scene to be rendered.
@@ -57,8 +56,6 @@ class Scene {
 private:
     std::vector<SceneNode *> nodes;
     std::unordered_map<std::string, SceneNode *> taggedNodes;
-    Shader depthShader{};
-    GLuint depthMapFBO{};
 
 public:
 
@@ -100,7 +97,14 @@ public:
 
     void disableShadows();
 
-    void setTextureStates(bool state);
+    void enableShadows();
+
+    void disableTextures();
+
+    void enableTextures();
+
+    Shader depthShader{};
+    GLuint depthMapFBO{};
 };
 
 

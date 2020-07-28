@@ -128,22 +128,10 @@ public:
     // ------------------------------------------------------------------------
     void use() const {
         glUseProgram(ID);
-    }
-
-    void disableTexture() const {
-        if (textureID != -1) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            setBool("textureEnabled", false);
-        }
-    }
-
-    void enableTexture() const {
         if (textureID != -1) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureID);
             setInt("textureSampler", 0);
-            setBool("textureEnabled", true);
         }
     }
 

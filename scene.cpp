@@ -107,17 +107,37 @@ std::optional<SceneNode *> Scene::getNodeByTag(const std::string &tag) {
 }
 
 void Scene::disableShadows() {
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-}
-
-void Scene::setTextureStates(bool state) {
     for (auto *node : nodes) {
-        node->setTextureState(state);
+        node->drawable->disableShadows();
         for (auto *child : node->getChildren()) {
-            child->setTextureState(state);
+            child->drawable->disableShadows();
         }
     }
+}
 
-};
+void Scene::enableShadows() {
+    for (auto *node : nodes) {
+        node->drawable->enableShadows();
+        for (auto *child : node->getChildren()) {
+            child->drawable->enableShadows();
+        }
+    }
+}
+
+void Scene::disableTextures() {
+    for (auto *node : nodes) {
+        node->drawable->disableTextures();
+        for (auto *child : node->getChildren()) {
+            child->drawable->disableTextures();
+        }
+    }
+}
+
+void Scene::enableTextures() {
+    for (auto *node : nodes) {
+        node->drawable->enableTextures();
+        for (auto *child : node->getChildren()) {
+            child->drawable->enableTextures();
+        }
+    }
+}
