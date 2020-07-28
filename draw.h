@@ -223,12 +223,15 @@ public:
 class Drawable {
 private:
     glm::vec3 position{};
-    bool textureState = true;
+
 protected:
 /// Render Mode
     GLenum renderMode = GL_TRIANGLES;
 /// Matrix for transformations when drawing the object(example is object rotating on itself)
     glm::mat4 transform{};
+
+    bool textures = true;
+    bool shadows = true;
 public:
 
     Drawable() {
@@ -246,13 +249,13 @@ public:
 
     virtual void setPosition(glm::vec3 pos) { position = pos; }
 
-    [[nodiscard]] bool getTextureState() const {
-        return textureState;
-    }
+    void inline enableShadows() { shadows = true; }
 
-    void setTextureState(bool newState) {
-        this->textureState = newState;
-    }
+    void inline disableShadows() { shadows = false; }
+
+    void inline enableTextures() { textures = true; }
+
+    void inline disableTextures() { textures = false; }
 
     /// Render Mode setter
     virtual void setRenderMode(GLenum newRenderMode) { renderMode = newRenderMode; }
@@ -292,11 +295,8 @@ public:
 
     explicit Sphere(const glm::mat4 transform) {
 
-
         //getting the size displacement
         this->transform = transform;
-
-
 
         //need to create interleaved ones
         this->shader = Shader("resources/shaders/SphereVertexShader.glsl", "resources/shaders/SphereFragmentShader.glsl",
@@ -345,7 +345,6 @@ public:
         glDeleteVertexArrays(1, &vao);
     }
 
-
     void
     draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
@@ -354,11 +353,8 @@ public:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         //took out the local transform
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
-
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -379,22 +375,21 @@ public:
 
     void drawShadows(const glm::mat4 &model, Shader &depthShader, const glm::mat4 &lsm) const override {
 
-       /* depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
+        depthShader.setMat4("lightSpaceMatrix", glm::translate(lsm, getPosition()) * getTransform());
         depthShader.setMat4("model", glm::translate(model, getPosition()) * getTransform());
         //depthShader.setMat4("lightSpaceMatrix", lsm);
         //depthShader.setMat4("model", model);
 
         glBindVertexArray(vao);
 
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // draw a sphere with VBO
         glDrawElements(GL_TRIANGLES,                    // primitive type
                        indices.size(),          // # of indices
                        GL_UNSIGNED_INT,                 // data type
                        (void *) nullptr);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     void createVertices() {
@@ -557,10 +552,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -723,10 +716,8 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -801,10 +792,8 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -915,10 +904,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1017,10 +1004,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1103,10 +1088,8 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1212,10 +1195,8 @@ public:
         glm::mat4 unitmat4(1);
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1315,10 +1296,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1417,10 +1396,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);
@@ -1534,10 +1511,8 @@ public:
     draw(const MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) const override {
 
         shader.use();
-        if (getTextureState())
-            shader.enableTexture();
-        else
-            shader.disableTexture();
+        shader.setBool("shadows", shadows);
+        shader.setBool("textures", textures);
         shader.setMat4("model", glm::translate(mvpl.model, getPosition()) * getTransform());
         shader.setMat4("view", mvpl.view);
         shader.setMat4("projection", mvpl.projection);

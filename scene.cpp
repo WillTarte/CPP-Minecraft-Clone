@@ -15,7 +15,7 @@ void SceneNode::draw(MVPL mvpl, LightParams lp, const glm::vec3 &cameraPos) {
         child->draw(
                 {glm::translate(mvpl.model, this->drawable->getPosition()) * this->drawable->getTransform(), mvpl.view,
                  mvpl.projection,
-                 mvpl.lsm}, lp,
+                 glm::translate(mvpl.lsm, this->drawable->getPosition()) * this->drawable->getTransform()}, lp,
                 cameraPos);
     }
 }
@@ -28,7 +28,8 @@ void SceneNode::drawShadows(const glm::mat4 &model, Shader &depthShader, const g
     this->drawable->drawShadows(model, depthShader, lsm);
     for (auto *child : children) {
         child->drawShadows(glm::translate(model, this->drawable->getPosition()) * this->drawable->getTransform(),
-                           depthShader, lsm);
+                           depthShader,
+                           glm::translate(lsm, this->drawable->getPosition()) * this->drawable->getTransform());
     }
 }
 
@@ -103,17 +104,37 @@ std::optional<SceneNode *> Scene::getNodeByTag(const std::string &tag) {
 }
 
 void Scene::disableShadows() {
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-}
-
-void Scene::setTextureStates(bool state) {
     for (auto *node : nodes) {
-        node->setTextureState(state);
+        node->drawable->disableShadows();
         for (auto *child : node->getChildren()) {
-            child->setTextureState(state);
+            child->drawable->disableShadows();
         }
     }
+}
 
-};
+void Scene::enableShadows() {
+    for (auto *node : nodes) {
+        node->drawable->enableShadows();
+        for (auto *child : node->getChildren()) {
+            child->drawable->enableShadows();
+        }
+    }
+}
+
+void Scene::disableTextures() {
+    for (auto *node : nodes) {
+        node->drawable->disableTextures();
+        for (auto *child : node->getChildren()) {
+            child->drawable->disableTextures();
+        }
+    }
+}
+
+void Scene::enableTextures() {
+    for (auto *node : nodes) {
+        node->drawable->enableTextures();
+        for (auto *child : node->getChildren()) {
+            child->drawable->enableTextures();
+        }
+    }
+}

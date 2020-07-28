@@ -10,7 +10,8 @@ in VS_OUT {
 
 uniform sampler2D textureSampler;
 uniform sampler2D shadowMap;
-
+uniform bool textures;
+uniform bool shadows;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -52,7 +53,9 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
 void main()
 {
-    vec3 color = texture(textureSampler, fs_in.TexCoords).rgb;
+    vec3 color = vec3(0, 255, 255);
+    if (textures)
+    color = texture(textureSampler, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightColor = vec3(1.0);
     // ambient
@@ -68,7 +71,7 @@ void main()
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
     vec3 specular = spec * lightColor;
     // calculate shadow
-    float shadow = ShadowCalculation(fs_in.FragPosLightSpace);
+    float shadow = shadows? ShadowCalculation(fs_in.FragPosLightSpace): 0.0;
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
 
     FragColor = vec4(lighting, 0.5);

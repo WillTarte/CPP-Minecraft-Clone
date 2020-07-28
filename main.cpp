@@ -559,11 +559,17 @@ int main(int argc, char *argv[]) {
         lightView = glm::lookAt(light.getLightPos(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
-        if (SHADOWS) {
-            world.drawShadows(worldModelMatrix, lightSpaceMatrix);
-        } else {
+        if (SHADOWS)
+            world.enableShadows();
+        else
             world.disableShadows();
-        }
+
+        if (TEXTURES)
+            world.enableTextures();
+        else
+            world.disableTextures();
+
+        world.drawShadows(worldModelMatrix, lightSpaceMatrix);
 
         // Render Scene
         // reset viewport
@@ -574,19 +580,17 @@ int main(int argc, char *argv[]) {
         projection = glm::perspective(glm::radians(worldCamera.Zoom), (float) WIDTH / (float) HEIGHT, 0.1f, 250.0f);
         view = GetViewMatrix(worldCamera);
 
-        world.setTextureStates(TEXTURES);
-
         // Draw models
         world.changeRenderMode(renderMode);
         world.draw(worldModelMatrix, view, projection, lightSpaceMatrix, worldCamera.Position, light.getLightParams());
 
         // render Depth map to quad for visual debugging
         // ---------------------------------------------
-        //debugDepthQuad.use();
-        //debugDepthQuad.setFloat("near_plane", near_plane);
-        //debugDepthQuad.setFloat("far_plane", far_plane);
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, world.depthMap);
+        debugDepthQuad.use();
+        debugDepthQuad.setFloat("near_plane", near_plane);
+        debugDepthQuad.setFloat("far_plane", far_plane);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, world.depthMap);
         //renderQuad();
 
         //std::cout << light.getLightPos().x << " " << light.getLightPos().y << " " << light.getLightPos().z << std::endl;
