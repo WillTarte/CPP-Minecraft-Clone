@@ -752,6 +752,7 @@ public:
         shader.setMat4("local_transform", glm::scale(unitmat4, glm::vec3(3.0f, 1.0f, 1.0f)));
         glDrawArrays(renderMode, 0, size);
 
+
         shader.setMat4("local_transform", glm::scale(unitmat4, glm::vec3(1.0f, 5.0f, 1.0f)));
         glDrawArrays(renderMode, 0, size);
         /* -------- */

@@ -65,6 +65,9 @@ void Scene::draw(const glm::mat4 &model, const glm::mat4 &view, const glm::mat4 
     }
 }
 
+
+
+
 void Scene::drawShadows(const glm::mat4 &model, const glm::mat4 &lightSpaceMatrix) {
 
     // render scene from light's point of view
