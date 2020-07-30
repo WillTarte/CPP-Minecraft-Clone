@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
+set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/texture.h)
+set(SOURCE_FILES src/camera.cpp src/engine.cpp src/model.cpp src/texture.cpp)
+set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp)
+
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM.cmake")
 set(CPM_DOWNLOAD_VERSION 0.27)
 
@@ -20,7 +24,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Don't add this line if you will try_compile with boost.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(${PROJECT_NAME} main.cpp libs/stb_image.h libs/stb_image_impl.cpp shader.h draw.h scene.h scene.cpp)
+add_executable(${PROJECT_NAME} main.cpp ${LIB_FILES} ${HEADER_FILES} ${SOURCE_FILES})
 
 #glfw
 CPMAddPackage(
