@@ -29,17 +29,26 @@ inline std::string loadOBJ(const char * path, std::vector<Vertex>& verticesOut) 
         exit(1);
     }
 
+    for (int i = 0; i < attrib.vertices.size() - 2; i += 3) {
+        std::cout << attrib.vertices.at(i) << " ";
+        std::cout << attrib.vertices.at(i + 1) << " ";
+        std::cout << attrib.vertices.at(i + 2) << std::endl << std::endl;
+    }
+
     verticesOut.clear();
     std::string meshName;
     for (unsigned int i = 0; i < shapes.size(); i++) {
         for (auto index : shapes.at(i).mesh.indices) {
             auto vertInd = index.vertex_index;
+            //std::cout << vertInd << std::endl;
             auto normInd = index.normal_index;
             auto texInd = index.texcoord_index;
             auto vertex = Vertex{};
-            vertex.position = {attrib.vertices.at(vertInd), attrib.vertices.at(vertInd+1), attrib.vertices.at(vertInd+2)};
-            vertex.normal = {attrib.normals.at(normInd), attrib.normals.at(normInd + 1), attrib.normals.at(normInd + 2)};
-            vertex.textureCoordinate = {attrib.texcoords.at(texInd), attrib.texcoords.at(texInd + 1)};
+            vertex.position = {attrib.vertices.at(3 * vertInd), attrib.vertices.at(3 * vertInd + 1),
+                               attrib.vertices.at(3 * vertInd + 2)};
+            vertex.normal = {attrib.normals.at(3 * normInd), attrib.normals.at(3 * normInd + 1),
+                             attrib.normals.at(3 * normInd + 2)};
+            vertex.textureCoordinate = {attrib.texcoords.at(2 * texInd), attrib.texcoords.at(2 * texInd + 1)};
             verticesOut.emplace_back(vertex);
             meshName = shapes.at(i).name;
         }

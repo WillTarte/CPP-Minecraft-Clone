@@ -43,7 +43,8 @@ Engine::Engine(Config config) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetErrorCallback(errorCallback);
 
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     glEnable(GL_DEPTH_TEST);
 
     // Initialize GLEW
