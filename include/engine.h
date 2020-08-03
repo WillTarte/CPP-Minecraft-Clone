@@ -7,19 +7,22 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "camera.h"
-#include "../include/mesh.h"
-#include "../include/objloader.h"
-#include "../include/texture.h"
-#include "../include/shader.h"
-#include "../include/model.h"
+#include "mesh.h"
+#include "objloader.h"
+#include "texture.h"
+#include "shader.h"
+#include "model.h"
+#include "texture_database.h"
 
+/// Config for the application
 struct Config {
     int windowWidth = 1024;
     int windowHeight = 768;
     float fov = 45.0f;
 };
 
-class Engine{
+/// Basically the entry point into the game. Orchestrates all the systems.
+class Engine {
 private:
 
     Config config;
@@ -32,12 +35,16 @@ public:
 
     explicit Engine(Config config);
 
+    /// Runs the main game loop.
     void runLoop();
+
     void processInput(float deltatime);
+
     void mouseCallbackFunc(double xpos, double ypos);
 
     GLFWwindow *getWindow() const;
 
     Engine(const Engine &) = delete;
+
     Engine & operator=(const Engine &) = delete;
 };
