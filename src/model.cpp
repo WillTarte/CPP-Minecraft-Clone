@@ -36,7 +36,7 @@ Model::Model(Mesh &mesh) {
     glBindVertexArray(0);
 }
 
-void Model::bindBuffers() {
+void Model::bindBuffers() const {
     glBindVertexArray(vaoID);
 }
 
@@ -46,5 +46,5 @@ void Model::draw(Shader &shader) {
     shader.setMat4("model", glm::mat4(1.0f));
     shader.setInt("texture1", 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
 }

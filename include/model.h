@@ -19,7 +19,7 @@ public:
     Model(Mesh &mesh);
 
     /// Binds this model's buffers for rendering
-    void bindBuffers();
+    void bindBuffers() const;
 
     /** Draws this model with the given shader.
      *
