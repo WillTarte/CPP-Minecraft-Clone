@@ -8,8 +8,12 @@
 
 INITIALIZE_EASYLOGGINGPP
 
+void initLogging();
+
 /// Main
 int main(int argc, char *argv[]) {
+
+    initLogging();
 
     auto engine = Engine({});
 
@@ -27,4 +31,16 @@ int main(int argc, char *argv[]) {
     });
 
     engine.runLoop();
+}
+
+/// Sets up some logging attributes from config file and flags
+void initLogging() {
+
+    // Load logging config from file
+    el::Configurations conf("easylogging.config");
+
+    el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+
+    //Reconfigure all loggers
+    el::Loggers::reconfigureAllLoggers(conf);
 }

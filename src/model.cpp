@@ -1,10 +1,7 @@
 //
 // Created by Willi on 7/30/2020.
 //
-
-#include <glm/gtx/matrix_decompose.hpp>
 #include "../include/model.h"
-#include "../include/objloader.h"
 
 Model::Model(Mesh &mesh) {
 
@@ -40,11 +37,7 @@ void Model::bindBuffers() const {
     glBindVertexArray(vaoID);
 }
 
-void Model::draw(Shader &shader) {
-
+void Model::draw() const {
     bindBuffers();
-    shader.setMat4("model", glm::mat4(1.0f));
-    shader.setInt("texture1", 0);
-
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 }

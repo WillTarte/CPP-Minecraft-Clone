@@ -5,6 +5,9 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <iostream>
+#include <vector>
+#include "../libs/stb_image.h"
 
 /// The types of textures supported.
 enum TextureType {

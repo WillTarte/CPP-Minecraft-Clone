@@ -8,18 +8,23 @@
 #include <string>
 #include "shader.h"
 #include "texture_database.h"
+#include "model_database.h"
 
+/// An entity is an object that exists within the world
 class Entity {
 
 private:
-    std::string modelName; // should we do by ID ?
-    /* Transform transform; */
-    /* AABB boundingBox; */
+    std::string modelName;
+    /* Transform transform; */ //TODO: see task on github
+    /* AABB boundingBox; */ //TODO: see task on github
     BlockID blockId;
 public:
 
-    Entity(std::string &modelName, BlockID blockId1);
+    Entity(std::string modelName, BlockID blockId1);
 
+    /** Draws the entity into the world
+     * @param shader the shader used to customize the render pipeline
+     */
     void draw(Shader &shader);
 };
 

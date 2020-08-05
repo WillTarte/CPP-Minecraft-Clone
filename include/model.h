@@ -4,6 +4,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include "objloader.h"
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
@@ -25,7 +26,7 @@ public:
      *
      * @param shader the shader
      */
-    void draw(Shader &shader);
+    void draw() const;
 
     inline std::string getModelName() const { return this->modelName; }
 };

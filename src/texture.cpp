@@ -1,11 +1,8 @@
 //
 // Created by Willi on 7/30/2020.
 //
-
-#include <iostream>
-#include <vector>
 #include "../include/texture.h"
-#include "../libs/stb_image.h"
+
 
 void Texture::loadFromFile(const std::string &filePath) {
     GLuint tempId = 0;

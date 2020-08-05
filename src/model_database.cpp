@@ -1,9 +1,7 @@
 //
 // Created by Willi on 8/5/2020.
 //
-
 #include "../include/model_database.h"
-#include "../include/objloader.h"
 
 ModelDatabase ModelDatabase::instance;
 

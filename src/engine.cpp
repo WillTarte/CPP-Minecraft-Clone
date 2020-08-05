@@ -1,11 +1,7 @@
 //
 // Created by Willi on 7/30/2020.
 //
-
-#include <functional>
-#include "../libs/easylogging++.h"
 #include "../include/engine.h"
-
 
 Engine::Engine(Config config) {
 
@@ -33,7 +29,7 @@ Engine::Engine(Config config) {
         glfwTerminate();
         return;
     }
-    LOG(INFO) << "Successfully initialized GLFW version " << glfwGetVersionString;
+    LOG(INFO) << "Successfully initialized GLFW version " << glfwGetVersionString();
 
     LOG(DEBUG) << "Setting up GLFW callbacks.";
     auto keyCallback = [](GLFWwindow *windowParam, int key, int scancode, int action, int mods) {
@@ -87,8 +83,7 @@ void Engine::runLoop() {
                                 "../resources/shaders/ModelFragmentShader.glsl");
     Shader basicShaderCubeMap = Shader("../resources/shaders/ModelVertexShader.glsl",
                                        "../resources/shaders/ModelFragmentShaderCubeMap.glsl");
-    Model dirtBlock = Model(mesh, TextureDatabase::getTextureByBlockID(BlockID::DIRT_GRASS));
-    //Entity dirtBlock = Entity
+    Entity dirtBlock = Entity(ModelType::CUBE, BlockID::DIRT_GRASS);
 
     glfwSwapInterval(1);
     // Render loop
