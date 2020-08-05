@@ -6,10 +6,9 @@
 #include "../include/model.h"
 #include "../include/objloader.h"
 
-Model::Model(Mesh &mesh, Texture texture1) {
+Model::Model(Mesh &mesh) {
 
     this->modelName = mesh.meshName + "Model";
-    this->texture = texture1;
     this->numVertices = mesh.vertices.size();
 
     glGenVertexArrays(1, &vaoID);
@@ -44,8 +43,7 @@ void Model::bindBuffers() {
 void Model::draw(Shader &shader) {
 
     bindBuffers();
-    this->texture.bindTexture();
-    shader.setMat4("model",glm::mat4(1.0f));
+    shader.setMat4("model", glm::mat4(1.0f));
     shader.setInt("texture1", 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 36);

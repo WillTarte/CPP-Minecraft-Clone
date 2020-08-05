@@ -8,17 +8,24 @@
 #include "shader.h"
 #include "texture.h"
 
+/// A model is an object that is renderable by OpenGL
 class Model {
 private:
     GLuint vaoID, vboID, iboId;
     GLuint numVertices;
-    Texture texture;
     std::string modelName;
 public:
 
-    Model(Mesh& mesh, Texture texture1);
+    Model(Mesh &mesh);
 
+    /// Binds this model's buffers for rendering
     void bindBuffers();
 
-    void draw(Shader& shader);
+    /** Draws this model with the given shader.
+     *
+     * @param shader the shader
+     */
+    void draw(Shader &shader);
+
+    inline std::string getModelName() const { return this->modelName; }
 };

@@ -3,14 +3,20 @@
 //
 
 #include <functional>
+#include "../libs/easylogging++.h"
 #include "../include/engine.h"
 
+
 Engine::Engine(Config config) {
+
+    LOG(INFO) << "Initializing Engine ...";
     //do some processing based on config
+    LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     this->config = config;
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
 
+    LOG(INFO) << "Initializing GLFW ...";
     // Initialize GLFW
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -20,14 +26,16 @@ Engine::Engine(Config config) {
     this->
             window = glfwCreateWindow(config.windowWidth, config.windowHeight, "COMP 371 Final Project", nullptr,
                                       nullptr);
-    glfwSetWindowUserPointer( window, this);
+    glfwSetWindowUserPointer(window, this);
 
     if (window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
         return;
     }
+    LOG(INFO) << "Successfully initialized GLFW version " << glfwGetVersionString;
 
+    LOG(DEBUG) << "Setting up GLFW callbacks.";
     auto keyCallback = [](GLFWwindow *windowParam, int key, int scancode, int action, int mods) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
             glfwSetWindowShouldClose(windowParam, true);
@@ -47,6 +55,7 @@ Engine::Engine(Config config) {
 
     glEnable(GL_DEPTH_TEST);
 
+    LOG(INFO) << "Initializing GLEW ...";
     // Initialize GLEW
     GLenum err = glewInit();
     if (GLEW_OK != err) {
@@ -54,7 +63,13 @@ Engine::Engine(Config config) {
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
         return;
     }
-    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    int glMajor;
+    int glMinor;
+    glGetIntegerv(GL_MAJOR_VERSION, &glMajor);
+    glGetIntegerv(GL_MINOR_VERSION, &glMinor);
+    LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
+    LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
+    LOG(INFO) << "Engine is primed and ready.";
 }
 
 void Engine::runLoop() {
@@ -68,14 +83,14 @@ void Engine::runLoop() {
     glm::mat4 projection = glm::mat4(1.0f);*/
 
     //TODO this should not be here
-    Mesh mesh{};
-    makeMeshFromFile("../resources/models/cube.obj", mesh);
+    Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
+                                "../resources/shaders/ModelFragmentShader.glsl");
+    Shader basicShaderCubeMap = Shader("../resources/shaders/ModelVertexShader.glsl",
+                                       "../resources/shaders/ModelFragmentShaderCubeMap.glsl");
+    Model dirtBlock = Model(mesh, TextureDatabase::getTextureByBlockID(BlockID::DIRT_GRASS));
+    //Entity dirtBlock = Entity
 
-    Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl", "../resources/shaders/ModelFragmentShader.glsl");
-    Texture dirtTexture = Texture("../resources/textures/dirt.png");
-    Model dirtBlock = Model(mesh, dirtTexture);
-
-    glfwSwapInterval( 1 );
+    glfwSwapInterval(1);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -96,10 +111,10 @@ void Engine::runLoop() {
 
         // rendering stuff here
         // TODO this should be a for loop over entities to draw them
-        basicShader.use();
+        basicShaderCubeMap.use();
         basicShader.setMat4("view", camera.getViewMatrix());
         basicShader.setMat4("projection", projection);
-        dirtBlock.draw(basicShader);
+        dirtBlock.draw(basicShaderCubeMap);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

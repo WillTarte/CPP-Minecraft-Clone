@@ -1,0 +1,17 @@
+name: dirt
+
+ID: 2
+
+model: cube.obj
+
+right: grass_block_side.png
+
+left: grass_block_side.png
+
+top: grass_path_top.png
+
+bottom: dirt.png
+
+back: grass_block_side.png
+
+front: grass_block_side.png
