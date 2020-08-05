@@ -1,0 +1,7 @@
+name: dirt
+
+ID: 1
+
+model: cube.obj
+
+all: dirt.png

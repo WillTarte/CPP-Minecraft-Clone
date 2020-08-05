@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/texture.h)
-set(SOURCE_FILES src/camera.cpp src/engine.cpp src/model.cpp src/texture.cpp)
-set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp)
+set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/block.h include/texture.h include/texture_database.h)
+set(SOURCE_FILES src/camera.cpp src/engine.cpp src/model.cpp src/texture.cpp src/texture_database.cpp)
+set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp libs/easylogging++.h libs/easylogging++.cpp)
 
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM.cmake")
 set(CPM_DOWNLOAD_VERSION 0.27)
 
-if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION} AND CPM_VERSION STREQUAL CPM_DOWNLOAD_VERSION))
+if (NOT (EXISTS ${CPM_DOWNLOAD_LOCATION} AND CPM_VERSION STREQUAL CPM_DOWNLOAD_VERSION))
     message(STATUS "Downloading CPM.cmake")
     file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
-endif()
+endif ()
 
 include(${CPM_DOWNLOAD_LOCATION})
 
@@ -62,7 +62,8 @@ if (MSVC)
     add_compile_options(/W4 /WX)
 else()
     # lots of warnings and all warnings as errors
-    add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -lstdc++fs)
+    target_link_libraries(${PROJECT_NAME} stdc++fs)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
@@ -72,5 +73,4 @@ target_link_libraries(${PROJECT_NAME}
             glm
 )
 
-message(STATUS test)
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
