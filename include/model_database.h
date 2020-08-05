@@ -22,7 +22,7 @@ private:
     ModelDatabase &operator=(const ModelDatabase &) = delete;
 
     static ModelDatabase instance;
-    std::unordered_map<std::string, Model *> models;
+    std::unordered_map<std::string, std::shared_ptr<Model>> models;
 
 public:
 
@@ -34,7 +34,7 @@ public:
      * @param modelName the model to look for
      * @return a pointer to the model if it exists, otherwise a nullptr.
      */
-    static Model *getModelByName(std::string &modelName);
+    static std::shared_ptr<Model> getModelByName(std::string &modelName);
 };
 
 /// Different model names namespace, since enums don't support strings

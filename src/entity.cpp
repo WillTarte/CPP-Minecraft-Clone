@@ -15,9 +15,8 @@ void Entity::draw(Shader &shader) {
     // set shader uniforms from transform and stuff
 
     // Get texture and bind
-    TextureDatabase::getTextureByBlockID(blockId)->bindTexture();
+    TextureDatabase::getTextureByBlockId(blockId)->bindTexture();
 
-    // Get Model through ModelDatabase, bind and draw
-    const Model *model = ModelDatabase::getModelByName(this->modelName);
-    model->draw();
+    // Get Model through ModelDatabase and draw
+    ModelDatabase::getModelByName(this->modelName)->draw();
 }

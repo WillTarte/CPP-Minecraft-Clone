@@ -6,7 +6,7 @@
 TextureDatabase TextureDatabase::instance;
 
 TextureDatabase::TextureDatabase() {
-    this->textures = std::unordered_map<BlockID, TextureInterface *>();
+    this->textures = std::unordered_map<BlockID, std::shared_ptr<TextureInterface>>();
 }
 
 void TextureDatabase::init() {
@@ -20,16 +20,15 @@ void TextureDatabase::init() {
         BlockFileData texData = readBlockFile("./resources/blocks/" + file.path().filename().string());
         TextureInterface *tex = nullptr;
         if (texData.textureType == TEXTURE2D) {
-            tex = new Texture(texData.textureFile);
+            instance.textures.insert({texData.ID, std::make_shared<Texture>(texData.textureFile)});
         } else if (texData.textureType == CUBEMAP) {
-            tex = new CubeMap(texData.cubeFaceFiles);
+            instance.textures.insert({texData.ID, std::make_shared<CubeMap>(texData.cubeFaceFiles)});
         }
-        instance.textures.insert({texData.ID, tex});
 
         LOG(INFO) << "Finished processing " + file.path().filename().string() + ".";
     }
 }
 
-TextureInterface *TextureDatabase::getTextureByBlockID(BlockID id) {
+std::shared_ptr<TextureInterface> TextureDatabase::getTextureByBlockId(BlockID id) {
     return instance.textures[id];
 }

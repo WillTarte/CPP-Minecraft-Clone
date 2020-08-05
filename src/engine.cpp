@@ -73,11 +73,6 @@ void Engine::runLoop() {
     double deltaTime = 0.0f;    // time between current frame and last frame
     double lastFrame = 0.0f;
 
-    /*glm::mat4 worldModelMatrix = glm::mat4(1.0f);
-    glm::mat4 view = glm::lookAt(worldCamera.Position, WorldCenter, WorldUp);
-
-    glm::mat4 projection = glm::mat4(1.0f);*/
-
     //TODO this should not be here
     Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
                                 "../resources/shaders/ModelFragmentShader.glsl");

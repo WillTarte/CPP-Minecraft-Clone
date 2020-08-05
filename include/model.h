@@ -15,12 +15,13 @@ private:
     GLuint vaoID, vboID, iboId;
     GLuint numVertices;
     std::string modelName;
-public:
-
-    Model(Mesh &mesh);
 
     /// Binds this model's buffers for rendering
     void bindBuffers() const;
+
+public:
+
+    Model(Mesh &mesh);
 
     /** Draws this model with the given shader.
      *
