@@ -34,7 +34,7 @@ public:
      * @param modelName the model to look for
      * @return a pointer to the model if it exists, otherwise a nullptr.
      */
-    static std::shared_ptr<Model> getModelByName(std::string &modelName);
+    static std::shared_ptr<Model> getModelByName(const std::string &modelName);
 };
 
 /// Different model names namespace, since enums don't support strings

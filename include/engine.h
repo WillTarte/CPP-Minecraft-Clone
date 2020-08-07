@@ -33,7 +33,7 @@ private:
     int windowWidth;
     int windowHeight;
     //TODO: camera should be part of / attached to Player
-    Camera camera = Camera(glm::vec3(5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+    Camera camera = Camera(glm::vec3(-5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
 
 public:

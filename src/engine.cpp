@@ -82,13 +82,6 @@ void Engine::runLoop() {
     Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
                                 "../resources/shaders/ModelFragmentShader.glsl");
     basicShader.use();
-
-    Entity dirtBlock = Entity(ModelType::CUBE, BlockID::DIRT_GRASS);
-    Entity dirtBlock2 = Entity(ModelType::CUBE, BlockID::DIRT);
-    dirtBlock2.getTransform().translate({2.0f, 2.0f, 2.0f});
-
-    addEntity(std::move(dirtBlock));
-    addEntity(std::move(dirtBlock2));
     // ***********
 
     glfwSwapInterval(1);
@@ -103,7 +96,6 @@ void Engine::runLoop() {
 
         processInput(deltaTime);
 
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -115,7 +107,6 @@ void Engine::runLoop() {
         basicShader.setMat4("projection", projection);
 
         for (auto &blocksByID : this->entities) {
-            LOG(DEBUG) << "\nRendering blocks of type " << blocksByID.first << std::endl;
             // do some setting up per block type
             //iterate trough entites of that block type
             for (auto &blocks : blocksByID.second) {
