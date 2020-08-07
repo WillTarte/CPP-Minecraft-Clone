@@ -6,6 +6,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "../libs/easylogging++.h"
 #include "camera.h"
 #include "mesh.h"
 #include "objloader.h"
@@ -13,6 +14,8 @@
 #include "shader.h"
 #include "model.h"
 #include "texture_database.h"
+#include "entity.h"
+#include "model_database.h"
 
 /// Config for the application
 struct Config {
@@ -38,6 +41,7 @@ public:
     /// Runs the main game loop.
     void runLoop();
 
+    /// Processes keyboard + mouse inputs
     void processInput(float deltatime);
 
     void mouseCallbackFunc(double xpos, double ypos);

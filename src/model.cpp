@@ -1,15 +1,11 @@
 //
 // Created by Willi on 7/30/2020.
 //
-
-#include <glm/gtx/matrix_decompose.hpp>
 #include "../include/model.h"
-#include "../include/objloader.h"
 
-Model::Model(Mesh &mesh, TextureInterface *pTexture) {
+Model::Model(Mesh &mesh) {
 
     this->modelName = mesh.meshName + "Model";
-    this->texture = pTexture;
     this->numVertices = mesh.vertices.size();
 
     glGenVertexArrays(1, &vaoID);
@@ -37,16 +33,12 @@ Model::Model(Mesh &mesh, TextureInterface *pTexture) {
     glBindVertexArray(0);
 }
 
-void Model::bindBuffers() {
+void Model::bindBuffers() const {
     glBindVertexArray(vaoID);
 }
 
-void Model::draw(Shader &shader) {
-
+void Model::draw() const {
     bindBuffers();
-    this->texture->bindTexture();
-    shader.setMat4("model", glm::mat4(1.0f));
-    shader.setInt("texture1", 0);
-
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
+    glBindVertexArray(0);
 }

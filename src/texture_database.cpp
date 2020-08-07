@@ -6,14 +6,13 @@
 TextureDatabase TextureDatabase::instance;
 
 TextureDatabase::TextureDatabase() {
-    this->textures = std::unordered_map<BlockID, TextureInterface *>();
+    this->textures = std::unordered_map<BlockID, std::shared_ptr<TextureInterface>>();
 }
 
 void TextureDatabase::init() {
 
     LOG(INFO) << "Initializing Texture Database ...";
 
-    std::vector<std::string> blockFiles;
     for (const auto &file : fs::directory_iterator(fs::current_path().parent_path().string() + "/resources/blocks/")) {
         LOG(INFO) << "Processing " + file.path().filename().string() << " for textures.";
 
@@ -21,16 +20,15 @@ void TextureDatabase::init() {
         BlockFileData texData = readBlockFile("./resources/blocks/" + file.path().filename().string());
         TextureInterface *tex = nullptr;
         if (texData.textureType == TEXTURE2D) {
-            tex = new Texture(texData.textureFile);
+            instance.textures.insert({texData.ID, std::make_shared<Texture>(texData.textureFile)});
         } else if (texData.textureType == CUBEMAP) {
-            tex = new CubeMap(std::move(texData.cubeFaceFiles));
+            instance.textures.insert({texData.ID, std::make_shared<CubeMap>(texData.cubeFaceFiles)});
         }
-        instance.textures.insert({texData.ID, tex});
 
         LOG(INFO) << "Finished processing " + file.path().filename().string() + ".";
     }
 }
 
-TextureInterface *TextureDatabase::getTextureByBlockID(BlockID id) {
+std::shared_ptr<TextureInterface> TextureDatabase::getTextureByBlockId(BlockID id) {
     return instance.textures[id];
 }

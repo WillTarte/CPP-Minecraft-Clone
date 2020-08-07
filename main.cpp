@@ -4,17 +4,23 @@
 #include <glm/glm.hpp>
 #include "libs/easylogging++.h"
 #include "include/engine.h"
+#include "include/model_database.h"
 
 INITIALIZE_EASYLOGGINGPP
 
+void initLogging();
+
 /// Main
 int main(int argc, char *argv[]) {
+
+    initLogging();
 
     auto engine = Engine({});
 
     LOG(INFO) << "Initializing resource databases.";
 
     TextureDatabase::init();
+    ModelDatabase::init();
 
     LOG(INFO) << "Primary initialization done.";
 
@@ -25,4 +31,16 @@ int main(int argc, char *argv[]) {
     });
 
     engine.runLoop();
+}
+
+/// Sets up some logging attributes from config file and flags
+void initLogging() {
+
+    // Load logging config from file
+    el::Configurations conf("easylogging.config");
+
+    el::Loggers::addFlag(el::LoggingFlag::ColoredTerminalOutput);
+
+    //Reconfigure all loggers
+    el::Loggers::reconfigureAllLoggers(conf);
 }

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <GL/glew.h>
+#include "objloader.h"
 #include "mesh.h"
 #include "shader.h"
 #include "texture.h"
@@ -13,18 +14,20 @@ class Model {
 private:
     GLuint vaoID, vboID, iboId;
     GLuint numVertices;
-    TextureInterface *texture;
     std::string modelName;
-public:
-
-    Model(Mesh &mesh, TextureInterface *pTexture);
 
     /// Binds this model's buffers for rendering
-    void bindBuffers();
+    void bindBuffers() const;
+
+public:
+
+    Model(Mesh &mesh);
 
     /** Draws this model with the given shader.
      *
      * @param shader the shader
      */
-    void draw(Shader &shader);
+    void draw() const;
+
+    inline std::string getModelName() const { return this->modelName; }
 };

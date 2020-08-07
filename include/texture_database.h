@@ -23,7 +23,7 @@ private:
     TextureDatabase &operator=(const TextureDatabase &) = delete;
 
     static TextureDatabase instance;
-    std::unordered_map<BlockID, TextureInterface *> textures;
+    std::unordered_map<BlockID, std::shared_ptr<TextureInterface>> textures;
 
 public:
 
@@ -32,8 +32,8 @@ public:
 
     /** Returns a texture based on the block ID provided.
      *
-     * @param blockId the block to fetch a texture for.
+     * @param id the block to fetch a texture for.
      * @return NULL if blockId is not registered. Otherwise returns a pointer to a texture.
      */
-    static TextureInterface *getTextureByBlockID(BlockID blockId);
+    static std::shared_ptr<TextureInterface> getTextureByBlockId(BlockID id);
 };
