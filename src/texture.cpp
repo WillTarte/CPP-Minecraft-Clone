@@ -4,7 +4,7 @@
 #include "../include/texture.h"
 
 
-void Texture::loadFromFile(const std::string &filePath) {
+void Texture2D::loadFromFile(const std::string &filePath) {
     GLuint tempId = 0;
     glGenTextures(1, &tempId);
     setTexId(tempId);
@@ -36,12 +36,12 @@ void Texture::loadFromFile(const std::string &filePath) {
     stbi_image_free(data);
 }
 
-void Texture::bindTexture() {
+void Texture2D::bindTexture() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, getTexId());
 }
 
-void Texture::loadFromFaceFiles(const std::vector<std::string> &filePaths) {
+void Texture2D::loadFromFaceFiles(const std::vector<std::string> &filePaths) {
     GLuint tempId = 0;
     glGenTextures(1, &tempId);
     setTexId(tempId);
@@ -77,7 +77,7 @@ void Texture::loadFromFaceFiles(const std::vector<std::string> &filePaths) {
 
 }
 
-Texture::Texture(std::string filePath) {
+Texture2D::Texture2D(std::string filePath) {
     loadFromFile(filePath);
 }
 
@@ -169,6 +169,6 @@ void CubeMap::loadFromFaceFiles(const std::vector<std::string> &filePaths) {
 }
 
 void CubeMap::bindTexture() {
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE1); // Cannot have different type of textures bound to same texture unit
     glBindTexture(GL_TEXTURE_CUBE_MAP, getTexId());
 }

@@ -32,21 +32,14 @@ __Method 2: Install Script__
 3. Open the project folder, and right-click on install.bat > run as administrator and accept.
 4. If there are no errors, there should be a new folder called "build". Open it and the .exe should be there.
 
-## Controls
- - Numpad 1 to 7 selects the currently controlled model.  
-    - 1 to 5 selects one of the student models.
-    - 6 selects the world.
-    - 7 selects the light source.
- - Left-Shift + (W,A,S,D) moves the currently selected model up, left, down, right respectively.
- - A/D rotates the currently selected model on the Y axis.
- - U/J scales the currently selected model up/down respectively.
- - __With the world selected,__ the arrow keys rotate the world on the Y and X axis.
- - The _Home_ button resets the world/models to their original position/orientation.
- - Holding the LMB and moving forwards/backwards will change the current zoom.
- - Holding the MMB and moving forwards/backwards will tilt the camera.
- - Holding the RMB and moving left/right will pan the camera.
- - __With the light selected__, WASD move it up/down/left/right and UP/DOWN move it forward and backwards.
- - X/B for Enabling/Disabling textures/shadows.
+## Controls - SOME TODO once Player is implemented
+ - WS/AD moves the camera forwards/backwards and left/right.
+ - Using the mouse, you can change the direction/orientation of the camera.
+
+## Adding Blocks to the game
+ - When adding new blocks to the game, you need to create a new <block_name>.block file under `resources/blocks` based off `dirt.block`. You then need to add the ID of your block (has to be unique) to the `BlockID` enum in `block.h`.
+ Also, make sure to add the appropriate switch case to the `operator<<` overload for debugging purposes.
+
 ## Resources
  - https://learnopengl.com/
  - https://en.cppreference.com/w/
@@ -79,4 +72,3 @@ void someMethod() {
 ## A few Gotchas with C++
  - For Singletons: Once you write the implementation in the .cpp file, make sure you declare the singleton instance at the top of the file. See texture_database.cpp for an example.
  - If you define a function (not a class method) in a header file, make sure it is defined as `inline`.
- - When adding new blocks to the game, you need to create a new <block_name>.block file under `resources/blocks` based off `dirt.block`. You then need to add the ID of your block (has to be unique) to the `BlockID` enum in `block.h`.
