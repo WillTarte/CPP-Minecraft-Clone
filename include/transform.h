@@ -6,7 +6,7 @@
 #define COMP_371_PROJECT_TRANSFORM_H
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 
 /// Class that holds transform information: position, scale and rotation
