@@ -10,7 +10,12 @@
 #include "../libs/easylogging++.h"
 #include "objloader.h"
 #include "model.h"
+
+#ifdef __unix__
+namespace fs = std::filesystem;
+#else
 namespace fs = std::experimental::filesystem::v1;
+#endif
 
 /// The Model Database loads models in the resources/models/ folder to be available at run time.
 class ModelDatabase {

@@ -11,7 +11,11 @@
 #include "block.h"
 #include "texture.h"
 
+#ifdef __unix__
+namespace fs = std::filesystem;
+#else
 namespace fs = std::experimental::filesystem::v1;
+#endif
 
 /// The Texture Database loads available textures according to the defined blocks and stores them for easy access.
 class TextureDatabase {
