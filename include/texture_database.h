@@ -11,7 +11,7 @@
 #include "block.h"
 #include "texture.h"
 
-namespace fs = std::experimental::filesystem::v1;
+namespace fs = std::filesystem;
 
 /// The Texture Database loads available textures according to the defined blocks and stores them for easy access.
 class TextureDatabase {

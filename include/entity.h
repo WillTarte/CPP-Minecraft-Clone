@@ -35,6 +35,8 @@ public:
 
     /// Gets this entity's transform
     inline Transform &getTransform() { return this->transform; }
+
+
 };
 
 #endif //COMP_371_PROJECT_ENTITY_H

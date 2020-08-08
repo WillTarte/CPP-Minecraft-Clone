@@ -71,6 +71,8 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
     LOG(INFO) << "Engine is primed and ready.";
+
+
 }
 
 void Engine::runLoop() {
@@ -103,7 +105,7 @@ void Engine::runLoop() {
                                                 0.1f, 100.0f);
 
         // rendering stuff here
-        basicShader.setMat4("view", camera.getViewMatrix());
+        basicShader.setMat4("view", player.getPlayerView());
         basicShader.setMat4("projection", projection);
 
         for (auto &blocksByID : this->entities) {
@@ -113,6 +115,8 @@ void Engine::runLoop() {
                 blocks.draw(basicShader);
             }
         }
+
+        player.draw(basicShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -127,13 +131,13 @@ void Engine::processInput(float deltaTime)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        player.walk(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        player.walk(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        player.walk(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        player.walk(RIGHT, deltaTime);
 }
 
 GLFWwindow* Engine::getWindow() const {
@@ -144,22 +148,5 @@ GLFWwindow* Engine::getWindow() const {
 // -------------------------------------------------------
 void Engine::mouseCallbackFunc(double xpos, double ypos)
 {
-    static bool firstMouse = true;
-    static float lastX = 1024.0f/2.0f;
-    static float lastY = 768.0f/2.0f;
-
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset, true);
+    player.look(xpos,ypos);
 }

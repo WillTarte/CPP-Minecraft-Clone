@@ -7,7 +7,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "../libs/easylogging++.h"
-#include "camera.h"
 #include "mesh.h"
 #include "objloader.h"
 #include "texture.h"
@@ -16,7 +15,7 @@
 #include "texture_database.h"
 #include "entity.h"
 #include "model_database.h"
-
+#include "player.h"
 /// Config for the application
 struct Config {
     int windowWidth = 1024;
@@ -26,6 +25,9 @@ struct Config {
 
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
+
+public:
+    Player player = Player();
 private:
 
     Config config;
@@ -33,7 +35,9 @@ private:
     int windowWidth;
     int windowHeight;
     //TODO: camera should be part of / attached to Player
-    Camera camera = Camera(glm::vec3(-5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+   // Camera camera = Camera(glm::vec3(-5.0f, 10.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+
+
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
 
 public:
