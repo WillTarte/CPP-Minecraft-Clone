@@ -1,0 +1,7 @@
+name: stone
+
+ID: 4
+
+model: cube.obj
+
+all: stone.png
