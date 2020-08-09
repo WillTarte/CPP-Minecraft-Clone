@@ -20,7 +20,7 @@ void TextureDatabase::init() {
         BlockFileData texData = readBlockFile("./resources/blocks/" + file.path().filename().string());
         TextureInterface *tex = nullptr;
         if (texData.textureType == TEXTURE2D) {
-            instance.textures.insert({texData.ID, std::make_shared<Texture>(texData.textureFile)});
+            instance.textures.insert({texData.ID, std::make_shared<Texture2D>(texData.textureFile)});
         } else if (texData.textureType == CUBEMAP) {
             instance.textures.insert({texData.ID, std::make_shared<CubeMap>(texData.cubeFaceFiles)});
         }

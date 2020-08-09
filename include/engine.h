@@ -32,7 +32,9 @@ private:
     GLFWwindow* window;
     int windowWidth;
     int windowHeight;
-    Camera camera = Camera(glm::vec3(5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+    //TODO: camera should be part of / attached to Player
+    Camera camera = Camera(glm::vec3(-5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
+    std::unordered_map<BlockID, std::vector<Entity>> entities{};
 
 public:
 
@@ -44,11 +46,15 @@ public:
     /// Processes keyboard + mouse inputs
     void processInput(float deltatime);
 
+    /// Adds an entity to the world. NB: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std::move.
+    /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
+    inline void addEntity(Entity &&entity) { entities[entity.getBlockID()].push_back(entity); }
+
     void mouseCallbackFunc(double xpos, double ypos);
 
     GLFWwindow *getWindow() const;
 
     Engine(const Engine &) = delete;
 
-    Engine & operator=(const Engine &) = delete;
+    Engine &operator=(const Engine &) = delete;
 };
