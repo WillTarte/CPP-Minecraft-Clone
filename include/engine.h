@@ -23,6 +23,9 @@ struct Config {
     float fov = 45.0f;
 };
 
+
+
+
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 
@@ -48,7 +51,7 @@ public:
     void runLoop();
 
     /// Processes keyboard + mouse inputs
-    void processInput(float deltatime);
+    void processInput(float deltatime, bool onGround);
 
     /// Adds an entity to the world. NB: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std::move.
     /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
@@ -56,6 +59,8 @@ public:
 
 
     bool checkCollision(Entity &a, Entity &b);
+
+    Direction Engine::collisionDirection(Entity &a, Entity &b);
 
     void mouseCallbackFunc(double xpos, double ypos);
 

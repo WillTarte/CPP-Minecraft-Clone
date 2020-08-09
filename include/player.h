@@ -10,6 +10,14 @@
 #include "entity.h"
 #include "camera.h"
 
+
+//damn opengl does it in 2d need to figure out 3D
+enum Direction {
+    POSX,
+    NEGX,
+    POSZ,
+    NEGZ
+};
 class Player : public Entity {
 
 public:
@@ -24,6 +32,8 @@ public:
     void jump(float deltaTime);
 
     void gravity(float deltaTime);
+
+    void horizontalCollision(Direction direction, float deltaTime);
 
 private:
     Camera camera;

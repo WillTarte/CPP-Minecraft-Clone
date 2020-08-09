@@ -96,7 +96,7 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(deltaTime);
+
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -119,7 +119,10 @@ void Engine::runLoop() {
 
                  if(check == 1){
                      onGround = true;
-                     std::cout << "collision at" << player.minX << " " << player.minY<< " " << player.minZ << "\n";
+                     if((blocks.minY - player.minY)>0){
+                         Direction output = collisionDirection(player,blocks);
+                         player.horizontalCollision(output, deltaTime);
+                     }
                  }
             }
         }
@@ -130,6 +133,7 @@ void Engine::runLoop() {
         }
 
 
+        processInput(deltaTime, onGround);
         player.draw(basicShader);
 
 
@@ -140,7 +144,7 @@ void Engine::runLoop() {
     glfwTerminate();
 }
 
-void Engine::processInput(float deltaTime)
+void Engine::processInput(float deltaTime, bool onGround)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -153,8 +157,10 @@ void Engine::processInput(float deltaTime)
         player.walk(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         player.walk(RIGHT, deltaTime);
-    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        player.jump(deltaTime);
+    if(onGround) {
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            player.jump(deltaTime);
+    }
 }
 
 
@@ -170,6 +176,29 @@ bool Engine::checkCollision(Entity &a, Entity &b){
 
 }
 
+Direction Engine::collisionDirection(Entity &a, Entity &b){
+   //we know theres a collison just have to figure out where
+   //three outcomes +x , -x, +z, -z
+   //checks are done by the minimum point
+
+   if(b.minX > a.minX){
+        return Direction::POSX;
+   }
+   else if (b.minX < a.minX){
+       return Direction::NEGX;
+   }
+
+    if(b.minZ > a.minZ){
+        return Direction::POSZ;
+    }
+    else if (b.minZ < a.minZ){
+        return Direction::NEGZ;
+    }
+
+
+
+
+}
 GLFWwindow* Engine::getWindow() const {
     return window;
 }

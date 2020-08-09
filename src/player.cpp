@@ -36,7 +36,7 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
 
 
 void Player::jump(float deltaTime) {
-    this->getTransform().translate(glm::vec3(0.0f, 0.25f, 0.0));
+    this->getTransform().translate(glm::vec3(0.0f, 2.0f, 0.0));
     camera.ProcessKeyboard(UP, deltaTime);
 
     this->updateHitbox();
@@ -70,5 +70,21 @@ void Player::look(double xpos, double ypos) {
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset, true);
+}
+
+void Player::horizontalCollision(Direction direction, float deltaTime) {
+
+    if(direction == Direction::POSX)
+        this->getTransform().translate(glm::vec3(-0.15f, 0.0f, 0.0));
+    if(direction == Direction::NEGX)
+        this->getTransform().translate(glm::vec3(0.15f, 0.0f, 0.0));
+    if(direction == Direction::POSZ)
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, -0.15));
+    if(direction == Direction::NEGZ)
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, 0.15));
+
+
+    //TODO update camera on collision
+    this->updateHitbox();
 }
 

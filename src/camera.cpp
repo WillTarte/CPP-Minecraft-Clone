@@ -34,7 +34,7 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
 
     //not sure about these
     if (direction == UP)
-        Position += glm::vec3(0.0, 0.25f, 0.0) ;
+        Position += glm::vec3(0.0, 2.0f, 0.0) ;
     if (direction == DOWN)
         Position -= glm::vec3(0.0, 0.05f, 0.0);
 }
