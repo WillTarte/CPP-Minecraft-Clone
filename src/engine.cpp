@@ -1,7 +1,10 @@
 //
 // Created by Willi on 7/30/2020.
 //
+#include <random>
+
 #include "../include/engine.h"
+#include "../include/world.h"
 
 Engine::Engine(Config config) {
 
@@ -81,6 +84,14 @@ void Engine::runLoop() {
     Entity dirtBlock = Entity(ModelType::CUBE, BlockID::DIRT_GRASS);
 
     glfwSwapInterval(1);
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1.0, 1000000000.0);
+    int seed = dist(mt);
+
+    auto world = World(seed);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -104,7 +115,8 @@ void Engine::runLoop() {
         basicShaderCubeMap.use();
         basicShader.setMat4("view", camera.getViewMatrix());
         basicShader.setMat4("projection", projection);
-        dirtBlock.draw(basicShaderCubeMap);
+
+        world.render(camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
