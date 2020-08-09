@@ -2,9 +2,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <cstdlib>
 #include "libs/easylogging++.h"
 #include "include/engine.h"
-#include "include/model_database.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -29,6 +29,20 @@ int main(int argc, char *argv[]) {
         Engine *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
         engine->mouseCallbackFunc(x, y);
     });
+
+    LOG(INFO) << "ADDING SOME ENTITIES";
+
+    for (int x = 0; x < 40; x++) {
+        for (int z = 0; z < 40; z++) {
+            int rd = rand() % 2;
+            if (rd) {
+                engine.addEntity(
+                        Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, 0, z}, {1, 1, 1}, {0, 0, 0})));
+            } else {
+                engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, 0, z}, {1, 1, 1}, {0, 0, 0})));
+            }
+        }
+    }
 
     engine.runLoop();
 }

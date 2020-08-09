@@ -15,13 +15,16 @@ Engine::Engine(Config config) {
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
 
+    LOG(INFO) << "Inserting Entities into the World ...";
+    this->entities = std::unordered_map<BlockID, std::vector<Entity>>();
+    for (auto ent : allBlockIDs) {
+        entities.insert({ent, std::vector<Entity>()});
+    }
+
     LOG(INFO) << "Initializing GLFW ...";
+
     // Initialize GLFW
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     this->
             window = glfwCreateWindow(config.windowWidth, config.windowHeight, "COMP 371 Final Project", nullptr,
                                       nullptr);
@@ -55,6 +58,7 @@ Engine::Engine(Config config) {
     glEnable(GL_DEPTH_TEST);
 
     LOG(INFO) << "Initializing GLEW ...";
+
     // Initialize GLEW
     GLenum err = glewInit();
     if (GLEW_OK != err) {
@@ -68,6 +72,7 @@ Engine::Engine(Config config) {
     glGetIntegerv(GL_MINOR_VERSION, &glMinor);
     LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
+
     LOG(INFO) << "Engine is primed and ready.";
 }
 
@@ -79,9 +84,8 @@ void Engine::runLoop() {
     //TODO this should not be here
     Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
                                 "../resources/shaders/ModelFragmentShader.glsl");
-    Shader basicShaderCubeMap = Shader("../resources/shaders/ModelVertexShader.glsl",
-                                       "../resources/shaders/ModelFragmentShaderCubeMap.glsl");
-    Entity dirtBlock = Entity(ModelType::CUBE, BlockID::DIRT_GRASS);
+    basicShader.use();
+    // ***********
 
     glfwSwapInterval(1);
 
@@ -103,7 +107,6 @@ void Engine::runLoop() {
 
         processInput(deltaTime);
 
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -111,12 +114,18 @@ void Engine::runLoop() {
                                                 0.1f, 100.0f);
 
         // rendering stuff here
-        // TODO this should be a for loop over entities to draw them
-        basicShaderCubeMap.use();
         basicShader.setMat4("view", camera.getViewMatrix());
         basicShader.setMat4("projection", projection);
 
         world.render(camera);
+
+        for (auto &blocksByID : this->entities) {
+            // do some setting up per block type
+            //iterate trough entites of that block type
+            for (auto &blocks : blocksByID.second) {
+                blocks.draw(basicShader);
+            }
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();

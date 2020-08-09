@@ -12,6 +12,19 @@ enum BlockID {
     BEDROCK = 3,
     STONE = 4,
 };
+static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS};
+
+inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
+    switch (blockId) {
+        case DIRT:
+            os << "DIRT";
+            break;
+        case DIRT_GRASS:
+            os << "DIRT GRASS";
+            break;
+    }
+    return os;
+}
 
 /** Struct that holds the data read from a .block file.
  *

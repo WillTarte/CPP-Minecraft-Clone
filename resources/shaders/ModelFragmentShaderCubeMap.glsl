@@ -9,6 +9,6 @@ uniform samplerCube texture1;
 
 void main()
 {
-    vec3 texDir = Pos - vec3(0.5, 0.5, 0.5);
+    vec3 texDir = Pos - vec3(0.5, 0.5, 0.5);//Because the origin of our blocks is a corner of the model
     FragColor = vec4(texture(texture1, texDir).rgb, 1.0f);
 }
