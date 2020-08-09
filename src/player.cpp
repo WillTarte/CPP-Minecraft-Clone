@@ -35,9 +35,16 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
 }
 
 
-void Player::jump() {
-    this->getTransform().translate(glm::vec3(0.0f, 1.0f, 0.0));
+void Player::jump(float deltaTime) {
+    this->getTransform().translate(glm::vec3(0.0f, 0.25f, 0.0));
+    camera.ProcessKeyboard(UP, deltaTime);
 
+    this->updateHitbox();
+}
+
+void Player::gravity(float deltaTime) {
+    this->getTransform().translate(glm::vec3(0.0f, -0.05f, 0.0));
+    camera.ProcessKeyboard(DOWN, deltaTime);
 
     this->updateHitbox();
 }

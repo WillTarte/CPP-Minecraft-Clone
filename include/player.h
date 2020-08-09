@@ -21,7 +21,9 @@ public:
 
     void look(double xpos, double ypos);
 
-    void jump();
+    void jump(float deltaTime);
+
+    void gravity(float deltaTime);
 
 private:
     Camera camera;

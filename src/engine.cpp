@@ -108,6 +108,8 @@ void Engine::runLoop() {
         basicShader.setMat4("view", player.getPlayerView());
         basicShader.setMat4("projection", projection);
 
+
+        bool onGround = false;
         for (auto &blocksByID : this->entities) {
             // do some setting up per block type
             //iterate trough entites of that block type
@@ -116,12 +118,20 @@ void Engine::runLoop() {
                  bool check = checkCollision(player, blocks);
 
                  if(check == 1){
+                     onGround = true;
                      std::cout << "collision at" << player.minX << " " << player.minY<< " " << player.minZ << "\n";
                  }
             }
         }
 
+
+        if(onGround == false){
+            player.gravity(deltaTime);
+        }
+
+
         player.draw(basicShader);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -144,7 +154,7 @@ void Engine::processInput(float deltaTime)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         player.walk(RIGHT, deltaTime);
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        player.jump();
+        player.jump(deltaTime);
 }
 
 
