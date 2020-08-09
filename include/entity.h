@@ -16,10 +16,14 @@ class Entity {
 
 private:
     std::string modelName;
-    /* AABB boundingBox; */ //TODO: see task on github
+
+    //bounding box is defined by the min point and the max
+
     BlockID blockId;
     Transform transform;
 public:
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
 
     Entity(std::string modelName, BlockID blockId1);
 
@@ -36,6 +40,7 @@ public:
     /// Gets this entity's transform
     inline Transform &getTransform() { return this->transform; }
 
+    void updateHitbox();
 
 };
 

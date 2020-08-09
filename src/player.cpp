@@ -4,18 +4,22 @@
 
 #include "../include/player.h"
 
-Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER, Transform({10, 2, 10}, {0.5, 0.5, 0.5}, {0, 0, 0})),
-                   camera(glm::vec3(12.0f, 3.0f, 8.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH) {
+
+//.23 makes it approximatly 3 tall
+Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER, Transform({10, 1, 10}, {0.23, 0.23, 0.23}, {0, 0, 0})),
+                   camera(glm::vec3(11.0f, 4.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH) {
 
 
 }
 
 
+//TODO need to also move the hitbox while moving
+
 //walk needs to update location of model and update the camera
 void Player::walk(Camera_Movement direction, float deltaTime) {
 
     //not sure what global movement speed is iv replaced it with 0.5 for now
-    float velocity = 0.75 * deltaTime;
+    float velocity = 2.5 * deltaTime;
     camera.ProcessKeyboard(direction, deltaTime);
     if (direction == FORWARD)
         this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * velocity);
@@ -26,9 +30,17 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
     if (direction == RIGHT)
         this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * velocity);
 
+    this->updateHitbox();
+
 }
 
 
+void Player::jump() {
+    this->getTransform().translate(glm::vec3(0.0f, 1.0f, 0.0));
+
+
+    this->updateHitbox();
+}
 //TODO if player looks the model should rotate
 void Player::look(double xpos, double ypos) {
 
@@ -52,3 +64,4 @@ void Player::look(double xpos, double ypos) {
 
     camera.ProcessMouseMovement(xoffset, yoffset, true);
 }
+

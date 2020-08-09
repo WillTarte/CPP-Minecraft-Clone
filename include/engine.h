@@ -54,6 +54,9 @@ public:
     /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
     inline void addEntity(Entity &&entity) { entities[entity.getBlockID()].push_back(entity); }
 
+
+    bool checkCollision(Entity &a, Entity &b);
+
     void mouseCallbackFunc(double xpos, double ypos);
 
     GLFWwindow *getWindow() const;

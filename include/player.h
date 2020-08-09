@@ -21,6 +21,10 @@ public:
 
     void look(double xpos, double ypos);
 
+    void jump();
+
 private:
     Camera camera;
+
+
 };

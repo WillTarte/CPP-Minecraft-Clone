@@ -113,6 +113,11 @@ void Engine::runLoop() {
             //iterate trough entites of that block type
             for (auto &blocks : blocksByID.second) {
                 blocks.draw(basicShader);
+                 bool check = checkCollision(player, blocks);
+
+                 if(check == 1){
+                     std::cout << "collision at" << player.minX << " " << player.minY<< " " << player.minZ << "\n";
+                 }
             }
         }
 
@@ -138,6 +143,21 @@ void Engine::processInput(float deltaTime)
         player.walk(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         player.walk(RIGHT, deltaTime);
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        player.jump();
+}
+
+
+bool Engine::checkCollision(Entity &a, Entity &b){
+
+   // std::cout << "steve" << a.minX << a.minZ <<  a.minY << a.maxX << a.maxZ <<  a.maxY;
+
+    bool collisionX = (a.minX <= b.maxX && a.maxX >= b.minX);
+    bool collisionY = (a.minY <= b.maxY && a.maxY >= b.minY);
+    bool collisionZ =  (a.minZ <= b.maxZ && a.maxZ >= b.minZ);
+    // collision only if on both axes
+    return collisionX && collisionY && collisionZ;
+
 }
 
 GLFWwindow* Engine::getWindow() const {
