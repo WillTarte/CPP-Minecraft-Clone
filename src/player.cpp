@@ -4,8 +4,8 @@
 
 #include "../include/player.h"
 
-Player::Player() : Entity(ModelType::CUBE , BlockID::DIRT_GRASS, Transform({10, 2, 10}, {1, 1, 1}, {0, 0, 0})), camera(glm::vec3(-5.0f, 10.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH){
-
+Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER, Transform({10, 2, 10}, {0.5, 0.5, 0.5}, {0, 0, 0})),
+                   camera(glm::vec3(12.0f, 3.0f, 8.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH) {
 
 
 }
@@ -18,13 +18,13 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
     float velocity = 0.75 * deltaTime;
     camera.ProcessKeyboard(direction, deltaTime);
     if (direction == FORWARD)
-        this->getTransform().translate(glm::vec3(velocity,0.0f,0.0f));
+        this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * velocity);
     if (direction == BACKWARD)
-        this->getTransform().translate(glm::vec3(-velocity,0.0f,0.0f));
+        this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * -velocity);
     if (direction == LEFT)
-        this->getTransform().translate(glm::vec3(0.0f,0.0f,-velocity));
+        this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * -velocity);
     if (direction == RIGHT)
-        this->getTransform().translate(glm::vec3(0.0f,0.0f,+velocity));
+        this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * velocity);
 
 }
 

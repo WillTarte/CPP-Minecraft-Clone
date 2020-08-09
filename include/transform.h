@@ -81,6 +81,19 @@ public:
         return glm::translate(glm::mat4(1.0f), this->position) * glm::toMat4(this->rotation) *
                glm::scale(glm::mat4(1.0f), this->scale);
     }
+
+    const glm::vec3 getPosition() const {
+        return position;
+    }
+
+    const glm::vec3 getScale() const {
+        return scale;
+    }
+
+    const glm::quat getRotation() const {
+        return rotation;
+    }
+
 };
 
 

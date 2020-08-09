@@ -23,27 +23,14 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 //changing this to only move on one plane
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
     float velocity = MovementSpeed * deltaTime;
-    float posX = Position.x;
-    float posZ = Position.z;
-    float posY = Position.y;
     if (direction == FORWARD)
-        Position = glm::vec3(posX + velocity, posY, posZ);
+        Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;
     if (direction == BACKWARD)
-        Position = glm::vec3(posX - velocity, posY, posZ);
+        Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity;
     if (direction == LEFT)
-        Position = glm::vec3(posX, posY, posZ- velocity);
+        Position -= glm::vec3(Right.x, 0.0f, Right.z) * velocity;
     if (direction == RIGHT)
-        Position = glm::vec3(posX, posY, posZ + velocity);
-
-//    float velocity = MovementSpeed * deltaTime;
-//    if (direction == FORWARD)
-//        Position += Front * velocity;
-//    if (direction == BACKWARD)
-//        Position -= Front * velocity;
-//    if (direction == LEFT)
-//        Position -= Right * velocity;
-//    if (direction == RIGHT)
-//        Position += Right * velocity;
+        Position += glm::vec3(Right.x, 0.0f, Right.z) * velocity;
 }
 
 
