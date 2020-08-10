@@ -75,11 +75,12 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
         this->minZ = Pos.z;
 
         this->maxX= Pos.x +1.0;
-        this->maxY= Pos.y +1.0;
+        this->maxY= Pos.y +2.0;
         this->maxZ= Pos.z + 1.0;
     }
 }
 
+//update hitbox is only called for the player so the increases are to that
 void Entity::updateHitbox() {
     glm::vec3 Pos = this->transform.getPosition();
     this->minX = Pos.x;
@@ -87,7 +88,7 @@ void Entity::updateHitbox() {
     this->minZ = Pos.z;
 
     this->maxX= Pos.x +1.0;
-    this->maxY= Pos.y +1.0;
+    this->maxY= Pos.y +2.0;
     this->maxZ= Pos.z + 1.0;
 
 }

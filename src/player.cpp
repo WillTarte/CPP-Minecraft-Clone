@@ -20,7 +20,7 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
 
     //not sure what global movement speed is iv replaced it with 0.5 for now
     float velocity = 2.5 * deltaTime;
-    camera.ProcessKeyboard(direction, deltaTime);
+
     if (direction == FORWARD)
         this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * velocity);
     if (direction == BACKWARD)
@@ -31,6 +31,11 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
         this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * velocity);
 
     this->updateHitbox();
+
+
+
+
+    camera.changePosition(glm::vec3(this->maxX,  this->maxY, this->maxZ));
 
 }
 
@@ -84,7 +89,25 @@ void Player::horizontalCollision(Direction direction, float deltaTime) {
         this->getTransform().translate(glm::vec3(0.0f, 0.0f, 0.15));
 
 
+
+    //TODO just attach camera to location of player
+    Camera_Movement cameraDirection;
+
+    if (direction == Direction::POSX)
+        cameraDirection = Camera_Movement::FORWARD;
+    if (direction == Direction::NEGX)
+        cameraDirection = Camera_Movement::BACKWARD;
+    if (direction == Direction::POSZ)
+        cameraDirection = Camera_Movement::LEFT;
+    if (direction == Direction::NEGZ)
+        cameraDirection = Camera_Movement::RIGHT;
+
+
+    //camera.ProcessKeyboard(cameraDirection, deltaTime);
+
     //TODO update camera on collision
     this->updateHitbox();
+
+    camera.changePosition(glm::vec3(this->maxX,  this->maxY, this->maxZ));
 }
 
