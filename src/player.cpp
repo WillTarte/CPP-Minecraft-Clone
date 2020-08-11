@@ -34,8 +34,7 @@ void Player::walk(Camera_Movement direction, float deltaTime) {
 
 
 
-
-    camera.changePosition(glm::vec3(this->maxX,  this->maxY, this->maxZ));
+    camera.changePosition(glm::vec3(this->maxX-0.75f,  this->maxY, this->maxZ-0.75f));
 
 }
 
@@ -75,18 +74,38 @@ void Player::look(double xpos, double ypos) {
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset, true);
+
+    ////TODO needs to be a better way of attaching the camera to the box
+    //this->getTransform().rotate(glm::vec3(0.0f,1.0f,0.0f),glm::radians(xoffset));
+   // this->updateHitbox();
+
+
+
+
+  //  glm::vec3 noRotation = glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75);
+   // currentYaw += (xoffset *0.1);
+   //    float yawRadians = glm::radians(currentYaw);
+    //    glm::vec3 noRotation = glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75);
+    //    float rotatedX = cos(currentYaw) * (point.x - center.x) - sin(currentYaw) * (point.y-center.y) + center.x;
+    //    float rotatedZ = sin(currentYaw) * (point.x - center.x) + cos(currentYaw) * (point.y - center.y) + center.y;
+    //return new createjs.Point(rotatedX,rotatedY);
+    //need to get a current angle and then apply that to the change
+
+
+    //glm::vec3 rotation = glm::normalize(this->getTransform().getRotation() * noRotation)
+   // camera.changePosition(noRotation);
 }
 
 void Player::horizontalCollision(Direction direction, float deltaTime) {
 
     if(direction == Direction::POSX)
-        this->getTransform().translate(glm::vec3(-0.15f, 0.0f, 0.0));
+        this->getTransform().translate(glm::vec3(-0.25f, 0.0f, 0.0));
     if(direction == Direction::NEGX)
-        this->getTransform().translate(glm::vec3(0.15f, 0.0f, 0.0));
+        this->getTransform().translate(glm::vec3(0.25f, 0.0f, 0.0));
     if(direction == Direction::POSZ)
-        this->getTransform().translate(glm::vec3(0.0f, 0.0f, -0.15));
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, -0.25));
     if(direction == Direction::NEGZ)
-        this->getTransform().translate(glm::vec3(0.0f, 0.0f, 0.15));
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, 0.25));
 
 
 
@@ -108,6 +127,6 @@ void Player::horizontalCollision(Direction direction, float deltaTime) {
     //TODO update camera on collision
     this->updateHitbox();
 
-    camera.changePosition(glm::vec3(this->maxX,  this->maxY, this->maxZ));
+    camera.changePosition(glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75));
 }
 

@@ -86,13 +86,14 @@ public:
         return position;
     }
 
+    const glm::quat getRotation() const {
+        return rotation;
+    }
+
     const glm::vec3 getScale() const {
         return scale;
     }
 
-    const glm::quat getRotation() const {
-        return rotation;
-    }
 
 };
 

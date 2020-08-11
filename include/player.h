@@ -18,6 +18,12 @@ enum Direction {
     POSZ,
     NEGZ
 };
+
+
+//putting it here for now bc of compile errors
+
+
+
 class Player : public Entity {
 
 public:

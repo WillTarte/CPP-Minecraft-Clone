@@ -26,9 +26,9 @@ Entity::Entity(std::string modelName, BlockID blockId) {
         this->minY = Pos.y;
         this->minZ = Pos.z;
 
-        this->maxX= Pos.x +1.0f;
+        this->maxX= Pos.x +0.5f;
         this->maxY= Pos.y +2.0;
-        this->maxZ= Pos.z + 1.0;
+        this->maxZ= Pos.z + 0.5;
     }
 }
 
@@ -74,9 +74,9 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
         this->minY = Pos.y;
         this->minZ = Pos.z;
 
-        this->maxX= Pos.x +1.0;
+        this->maxX= Pos.x +0.5;
         this->maxY= Pos.y +2.0;
-        this->maxZ= Pos.z + 1.0;
+        this->maxZ= Pos.z + 0.5;
     }
 }
 
@@ -87,8 +87,8 @@ void Entity::updateHitbox() {
     this->minY = Pos.y;
     this->minZ = Pos.z;
 
-    this->maxX= Pos.x +1.0;
+    this->maxX= Pos.x +0.5;
     this->maxY= Pos.y +2.0;
-    this->maxZ= Pos.z + 1.0;
+    this->maxZ= Pos.z + 0.5;
 
 }
