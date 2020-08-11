@@ -1,13 +1,10 @@
 //
 // Created by Willi on 8/6/2020.
 //
-
-#ifndef COMP_371_PROJECT_TRANSFORM_H
-#define COMP_371_PROJECT_TRANSFORM_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
-
 
 /// Class that holds transform information: position, scale and rotation
 class Transform {
@@ -93,9 +90,4 @@ public:
     const glm::vec3 getScale() const {
         return scale;
     }
-
-
 };
-
-
-#endif //COMP_371_PROJECT_TRANSFORM_H

@@ -1,132 +1,136 @@
 //
 // Created by Ewan on 8/8/2020.
 //
-
 #include "../include/player.h"
+#include "../include/engine.h"
 
 
 //.23 makes it approximatly 3 tall
-Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER, Transform({10, 1, 10}, {0.23, 0.23, 0.23}, {0, 0, 0})),
-                   camera(glm::vec3(11.0f, 4.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH) {
-
-
+Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER,
+                          Transform({20.0, 2.0, 20.0}, {0.23, 0.23, 0.23}, {0, 0, 0})) {
+    this->box.updateBox(this->getTransform().getPosition());
+    this->camera = Camera{};
+    this->camera.Position = this->getTransform().getPosition();
 }
 
-
-//TODO need to also move the hitbox while moving
-
-//walk needs to update location of model and update the camera
-void Player::walk(Camera_Movement direction, float deltaTime) {
-
-    //not sure what global movement speed is iv replaced it with 0.5 for now
-    float velocity = 2.5 * deltaTime;
-
-    if (direction == FORWARD)
-        this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * velocity);
-    if (direction == BACKWARD)
-        this->getTransform().translate(glm::vec3(camera.Front.x, 0.0f, camera.Front.z) * -velocity);
-    if (direction == LEFT)
-        this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * -velocity);
-    if (direction == RIGHT)
-        this->getTransform().translate(glm::vec3(camera.Right.x, 0.0f, camera.Right.z) * velocity);
-
-    this->updateHitbox();
-
-
-
-    camera.changePosition(glm::vec3(this->maxX-0.75f,  this->maxY, this->maxZ-0.75f));
-
+void Player::jump() {
+    if (onGround) {
+        onGround = false;
+        this->acceleration.y += 500;
+    }
 }
 
-
-void Player::jump(float deltaTime) {
-    this->getTransform().translate(glm::vec3(0.0f, 2.0f, 0.0));
-    camera.ProcessKeyboard(UP, deltaTime);
-
-    this->updateHitbox();
-}
-
-void Player::gravity(float deltaTime) {
-    this->getTransform().translate(glm::vec3(0.0f, -0.05f, 0.0));
-    camera.ProcessKeyboard(DOWN, deltaTime);
-
-    this->updateHitbox();
-}
 //TODO if player looks the model should rotate
-void Player::look(double xpos, double ypos) {
+void Player::look(GLFWwindow *window, double xpos, double ypos) {
 
+    static double lastXpos = 0.0, lastYpos = 0.0;
+    double changeX = xpos - lastXpos, changeY = ypos - lastYpos;
 
-    static bool firstMouse = true;
-    static float lastX = 1024.0f/2.0f;
-    static float lastY = 768.0f/2.0f;
+    // Player can rotate on Y axis
+    this->getTransform().rotate({0.0, 1.0, 0.0}, glm::radians(changeX * 0.05f));
 
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+    this->camera.Pitch += changeY * 0.5;
+    this->camera.Yaw += changeX * 0.5;
+
+    this->camera.updateCameraVectors();
+    glfwGetCursorPos(window, &lastXpos, &lastYpos);
+}
+
+void Player::update(Engine *engine, float dt) {
+
+    this->velocity += this->acceleration;
+    this->acceleration = {0, 0, 0};
+
+    if (!onGround) {
+        this->velocity.y -= 40 * dt;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    this->getTransform().translate(glm::vec3(velocity.x * dt, 0.0, 0.0));
 
-    lastX = xpos;
-    lastY = ypos;
+    std::optional<BoundingBox> optEntity = engine->getEntityBoxByWorldPos(
+            {this->getTransform().getPosition().x, 0.0, 0.0});
+    if (optEntity.has_value())
+        collide(optEntity.value(), glm::vec3(velocity.x, 0.0, 0.0), dt);
 
-    camera.ProcessMouseMovement(xoffset, yoffset, true);
+    this->getTransform().translate(glm::vec3(0.0, velocity.y * dt, 0.0));
 
-    ////TODO needs to be a better way of attaching the camera to the box
-    //this->getTransform().rotate(glm::vec3(0.0f,1.0f,0.0f),glm::radians(xoffset));
-   // this->updateHitbox();
+    optEntity = engine->getEntityBoxByWorldPos({0.0, this->getTransform().getPosition().y, 0.0});
+    if (optEntity.has_value())
+        collide(optEntity.value(), glm::vec3(0.0, velocity.y, 0.0), dt);
 
+    this->getTransform().translate(glm::vec3(0.0, 0.0, velocity.z * dt));
 
-
-
-  //  glm::vec3 noRotation = glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75);
-   // currentYaw += (xoffset *0.1);
-   //    float yawRadians = glm::radians(currentYaw);
-    //    glm::vec3 noRotation = glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75);
-    //    float rotatedX = cos(currentYaw) * (point.x - center.x) - sin(currentYaw) * (point.y-center.y) + center.x;
-    //    float rotatedZ = sin(currentYaw) * (point.x - center.x) + cos(currentYaw) * (point.y - center.y) + center.y;
-    //return new createjs.Point(rotatedX,rotatedY);
-    //need to get a current angle and then apply that to the change
+    optEntity = engine->getEntityBoxByWorldPos({0.0, 0.0, this->getTransform().getPosition().z});
+    if (optEntity.has_value())
+        collide(optEntity.value(), glm::vec3(0.0, 0.0, velocity.z), dt);
 
 
-    //glm::vec3 rotation = glm::normalize(this->getTransform().getRotation() * noRotation)
-   // camera.changePosition(noRotation);
+    this->box.updateBox(this->getTransform().getPosition());
+    this->camera.Position = this->getTransform().getPosition();
+
+    this->velocity.x *= 0.95; //slows down
+    this->velocity.z *= 0.95;
 }
 
-void Player::horizontalCollision(Direction direction, float deltaTime) {
+void Player::processInput(GLFWwindow *window) {
 
-    if(direction == Direction::POSX)
-        this->getTransform().translate(glm::vec3(-0.25f, 0.0f, 0.0));
-    if(direction == Direction::NEGX)
-        this->getTransform().translate(glm::vec3(0.25f, 0.0f, 0.0));
-    if(direction == Direction::POSZ)
-        this->getTransform().translate(glm::vec3(0.0f, 0.0f, -0.25));
-    if(direction == Direction::NEGZ)
-        this->getTransform().translate(glm::vec3(0.0f, 0.0f, 0.25));
+    glm::vec3 rotAngles = glm::eulerAngles(this->getTransform().getRotation());
 
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        this->acceleration.x += -glm::cos(glm::radians(rotAngles.y + 90));
+        this->acceleration.z += -glm::sin(glm::radians(rotAngles.y + 90));
+    }
 
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        this->acceleration.x += glm::cos(glm::radians(rotAngles.y + 90));
+        this->acceleration.z += glm::sin(glm::radians(rotAngles.y + 90));
+    }
 
-    //TODO just attach camera to location of player
-    Camera_Movement cameraDirection;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        this->acceleration.x += -glm::cos(glm::radians(rotAngles.y));
+        this->acceleration.z += -glm::sin(glm::radians(rotAngles.y));
+    }
 
-    if (direction == Direction::POSX)
-        cameraDirection = Camera_Movement::FORWARD;
-    if (direction == Direction::NEGX)
-        cameraDirection = Camera_Movement::BACKWARD;
-    if (direction == Direction::POSZ)
-        cameraDirection = Camera_Movement::LEFT;
-    if (direction == Direction::NEGZ)
-        cameraDirection = Camera_Movement::RIGHT;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        this->acceleration.x += glm::cos(glm::radians(rotAngles.y));
+        this->acceleration.z += glm::sin(glm::radians(rotAngles.y));
+    }
 
-
-    //camera.ProcessKeyboard(cameraDirection, deltaTime);
-
-    //TODO update camera on collision
-    this->updateHitbox();
-
-    camera.changePosition(glm::vec3(this->maxX-0.75,  this->maxY, this->maxZ-0.75));
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        this->jump();
+    }
 }
 
+void Player::collide(const BoundingBox &entityBox, glm::vec3 vel, float dt) {
+
+    if (vel.y > 0) {
+        float yDisp = (this->getTransform().getPosition().y + this->box.dimensions.y) - entityBox.position.y;
+        this->getTransform().translate(glm::vec3(0.0f, -yDisp, 0.0f));
+        this->velocity.y = 0;
+    } else if (vel.y < 0) {
+        float yDisp = (entityBox.position.y + entityBox.dimensions.y) - this->getTransform().getPosition().y;
+        this->getTransform().translate(glm::vec3(0.0f, yDisp, 0.0f));
+        this->velocity.y = 0;
+        this->onGround = true;
+    }
+
+    if (vel.x > 0) {
+        float xDisp = (this->getTransform().getPosition().x + this->box.dimensions.x) - entityBox.position.x;
+        this->getTransform().translate(glm::vec3(-xDisp, 0.0f, 0.0f));
+        this->velocity.x = 0;
+    } else if (vel.x < 0) {
+        float xDisp = (entityBox.position.x + entityBox.dimensions.x) - this->getTransform().getPosition().x;
+        this->getTransform().translate(glm::vec3(xDisp, 0.0f, 0.0f));
+        this->velocity.x = 0;
+    }
+
+    if (vel.z > 0) {
+        float zDisp = (this->getTransform().getPosition().z + this->box.dimensions.z) - entityBox.position.z;
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, -zDisp));
+        this->velocity.z = 0;
+    } else if (vel.z < 0) {
+        float zDisp = (entityBox.position.z + entityBox.dimensions.z) - this->getTransform().getPosition().z;
+        this->getTransform().translate(glm::vec3(0.0f, 0.0f, zDisp));
+        this->velocity.z = 0;
+    }
+}

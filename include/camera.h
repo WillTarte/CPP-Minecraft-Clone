@@ -1,11 +1,10 @@
 //
 // Created by Willi on 7/30/2020.
-// https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h
+//
 #pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GL/glew.h>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -24,34 +23,23 @@ const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
-class Camera {
-public:
+struct Camera {
+    float Yaw = YAW;
+    float Pitch = PITCH;
+    glm::vec3 Up = {0.0, 1.0, 0.0};
+    glm::vec3 Front{1.0, 0.0, 0.0};
+    glm::vec3 Right{0.0, 0.0, 1.0};
+    glm::vec3 Position = {0, 0, 0};
 
-    // camera Attributes
-    glm::vec3 Position{};
-    glm::vec3 Front{};
-    glm::vec3 Up{};
-    glm::vec3 Right{};
-    glm::vec3 WorldUp{};
-
-    // euler Angles
-    float Yaw;
-    float Pitch;
-
-    // camera options
-    float MovementSpeed;
-    float MouseSensitivity;
-    float Zoom;
-
-    Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch);
-    Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
-
-    glm::mat4 getViewMatrix() { return glm::lookAt(Position, Position + Front, Up); }
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime);
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch);
-    void changePosition(glm::vec3 pos);
-
-private:
-    void updateCameraVectors();
+    void updateCameraVectors() {
+        glm::vec3 front;
+        front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+        front.y = sin(glm::radians(Pitch));
+        front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+        Front = glm::normalize(front);
+        // also re-calculate the Right and Up vector
+        Right = glm::normalize(glm::cross(Front, {0.0, 1.0,
+                                                  0.0}));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+        Up = glm::normalize(glm::cross(Right, Front));
+    }
 };
-

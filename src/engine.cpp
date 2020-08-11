@@ -96,7 +96,8 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-
+        player.processInput(this->window);
+        player.update(this, deltaTime);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -108,32 +109,14 @@ void Engine::runLoop() {
         basicShader.setMat4("view", player.getPlayerView());
         basicShader.setMat4("projection", projection);
 
-
-        bool onGround = false;
         for (auto &blocksByID : this->entities) {
             // do some setting up per block type
             //iterate trough entites of that block type
             for (auto &blocks : blocksByID.second) {
                 blocks.draw(basicShader);
-                 bool check = checkCollision(player, blocks);
-
-                 if(check == 1){
-                     onGround = true;
-                     if((blocks.minY - player.minY)>0){
-                         Direction output = collisionDirection(player,blocks);
-                         player.horizontalCollision(output, deltaTime);
-                     }
-                 }
             }
         }
 
-
-        if(onGround == false){
-            player.gravity(deltaTime);
-        }
-
-
-        processInput(deltaTime, onGround);
         player.draw(basicShader);
 
 
@@ -144,68 +127,30 @@ void Engine::runLoop() {
     glfwTerminate();
 }
 
-void Engine::processInput(float deltaTime, bool onGround)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        player.walk(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        player.walk(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        player.walk(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        player.walk(RIGHT, deltaTime);
-    if(onGround) {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-            player.jump(deltaTime);
-    }
-}
-
-
-bool Engine::checkCollision(Entity &a, Entity &b){
-
-   // std::cout << "steve" << a.minX << a.minZ <<  a.minY << a.maxX << a.maxZ <<  a.maxY;
-
-    bool collisionX = (a.minX <= b.maxX && a.maxX >= b.minX);
-    bool collisionY = (a.minY <= b.maxY && a.maxY >= b.minY);
-    bool collisionZ =  (a.minZ <= b.maxZ && a.maxZ >= b.minZ);
-    // collision only if on both axes
-    return collisionX && collisionY && collisionZ;
-
-}
-
-Direction Engine::collisionDirection(Entity &a, Entity &b){
-   //we know theres a collison just have to figure out where
-   //three outcomes +x , -x, +z, -z
-   //checks are done by the minimum point
-
-   if(b.minX > a.minX){
-        return Direction::POSX;
-   }
-   else if (b.minX < a.minX){
-       return Direction::NEGX;
-   }
-
-    if(b.minZ > a.minZ){
-        return Direction::POSZ;
-    }
-    else if (b.minZ < a.minZ){
-        return Direction::NEGZ;
-    }
-
-
-
-
-}
-GLFWwindow* Engine::getWindow() const {
+GLFWwindow *Engine::getWindow() const {
     return window;
 }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void Engine::mouseCallbackFunc(double xpos, double ypos)
-{
-    player.look(xpos,ypos);
+void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
+    player.look(windowParam, xpos, ypos);
+}
+
+std::optional<BoundingBox> Engine::getEntityBoxByWorldPos(const glm::vec3 worldPos) {
+    for (auto &blocksById : entities) {
+        for (auto &ent : blocksById.second) {
+            glm::vec3 entityPostion = ent.getTransform().getPosition();
+            glm::vec3 entityBoxDim = ent.box.dimensions;
+
+            bool withinX = worldPos.x > entityPostion.x && worldPos.x < entityPostion.x + entityBoxDim.x;
+            bool withinY = worldPos.y > entityPostion.y && worldPos.y < entityPostion.y + entityBoxDim.y;
+            bool withinZ = worldPos.z > entityPostion.z && worldPos.z < entityPostion.z + entityBoxDim.z;
+
+            if (withinX || withinY || withinZ) {
+                return {ent.box};
+            }
+        }
+    }
+    return {};
 }

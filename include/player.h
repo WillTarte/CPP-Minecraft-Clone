@@ -1,48 +1,33 @@
 //
 // Created by Ewan on 8/8/2020.
 //
+#pragma once
 
-#ifndef COMP_371_PROJECT_PLAYER_H
-#define COMP_371_PROJECT_PLAYER_H
-
-#endif //COMP_371_PROJECT_PLAYER_
-
-#include "entity.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <optional>
 #include "camera.h"
+#include "entity.h"
 
-
-//damn opengl does it in 2d need to figure out 3D
-enum Direction {
-    POSX,
-    NEGX,
-    POSZ,
-    NEGZ
-};
-
-
-//putting it here for now bc of compile errors
-
-
+class Engine;
 
 class Player : public Entity {
-
 public:
     Player();
 
-    glm::mat4 getPlayerView() { return camera.getViewMatrix(); }
+    glm::mat4 getPlayerView() { return glm::lookAt(camera.Position, camera.Position + camera.Front, camera.Up); }
 
-    void walk(Camera_Movement direction, float deltaTime);
+    void update(Engine *engine, float dt);
 
-    void look(double xpos, double ypos);
+    void processInput(GLFWwindow *window);
 
-    void jump(float deltaTime);
-
-    void gravity(float deltaTime);
-
-    void horizontalCollision(Direction direction, float deltaTime);
+    void look(GLFWwindow *window, double xpos, double ypos);
 
 private:
     Camera camera;
+    bool onGround;
 
+    void jump();
 
+    void collide(const BoundingBox &entityBox, glm::vec3 vel, float dt);
 };

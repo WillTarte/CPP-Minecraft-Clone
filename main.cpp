@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
 
     //TODO: Would it be possible to move this to the engine constructor?
     glfwSetCursorPosCallback(engine.getWindow(), [](GLFWwindow *window, double x, double y) {
-        Engine *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
-        engine->mouseCallbackFunc(x, y);
+        auto *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
+        engine->mouseCallbackFunc(window, x, y);
     });
 
     LOG(INFO) << "ADDING SOME ENTITIES";
