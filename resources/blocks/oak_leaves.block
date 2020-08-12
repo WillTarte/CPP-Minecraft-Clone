@@ -1,0 +1,7 @@
+name: dirt
+
+ID: 6
+
+model: cube.obj
+
+all: oak_leaves.png

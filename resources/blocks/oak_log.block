@@ -1,0 +1,17 @@
+name: oak log
+
+ID: 5
+
+model: cube.obj
+
+right: oak_log.png
+
+left: oak_log.png
+
+top: oak_log_top.png
+
+bottom: oak_log_top.png
+
+back: oak_log.png
+
+front: oak_log.png

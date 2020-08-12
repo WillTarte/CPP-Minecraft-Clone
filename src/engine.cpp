@@ -160,6 +160,29 @@ void Engine::generateSeed() {
     world->seed = dist(mt);
 }
 
+void Engine::drawTree(int x, int y, int z) {
+    for (int h = 0; h < 4; h++) {
+        this->addEntity(
+                Entity(ModelType::CUBE, BlockID::OAK_LOG, Transform({x, y+h+1, z}, {1, 1, 1}, {0, 0, 0})));
+    }
+
+    for (int l = -2; l < 3; l++) {
+        for (int w = -2; w < 3; w++) {
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+4, z+w}, {1, 1, 1}, {0, 0, 0})));
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+5, z+w}, {1, 1, 1}, {0, 0, 0})));
+        }
+    }
+
+    for (int l = -1; l < 2; l++) {
+        for (int w = -1; w < 2; w++) {
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+6, z+w}, {1, 1, 1}, {0, 0, 0})));
+        }
+    }
+}
+
 void Engine::generateWorld() {
     auto noiseGen = FastNoise(world->seed);
     noiseGen.SetNoiseType(FastNoise::Simplex);
@@ -168,10 +191,15 @@ void Engine::generateWorld() {
         for (int z = 0; z < 128; z++) {
             float height = noiseGen.GetNoise(x,0,z);
             height = height < 0 ? height * -1 : height;
-            height = round(height * 10);
+            height = round((height * 10)+1);
 
             this->addEntity(
                     Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, (int) height, z}, {1, 1, 1}, {0, 0, 0})));
+
+            int tree = (x * (int)height * z) ^ world->seed;
+            if (tree % 61 == 0) {
+                drawTree(x, height, z);
+            }
         }
         std::cout << std::endl;
     }

@@ -42,6 +42,7 @@ private:
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
     void generateWorld();
     void generateSeed();
+    void drawTree(int x, int y, int z);
     World* world;
 
 public:

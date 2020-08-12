@@ -11,6 +11,8 @@ enum BlockID {
     DIRT_GRASS = 2,
     BEDROCK = 3,
     STONE = 4,
+    OAK_LOG = 5,
+    OAK_LEAVES = 6,
 };
 static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS};
 
