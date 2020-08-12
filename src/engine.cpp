@@ -71,6 +71,8 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
     LOG(INFO) << "Engine is primed and ready.";
+
+
 }
 
 void Engine::runLoop() {
@@ -94,7 +96,8 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(deltaTime);
+        player->processInput(this->window, deltaTime);
+        player->update(this, deltaTime);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -103,7 +106,7 @@ void Engine::runLoop() {
                                                 0.1f, 100.0f);
 
         // rendering stuff here
-        basicShader.setMat4("view", camera.getViewMatrix());
+        basicShader.setMat4("view", player->getPlayerView());
         basicShader.setMat4("projection", projection);
 
         for (auto &blocksByID : this->entities) {
@@ -114,6 +117,9 @@ void Engine::runLoop() {
             }
         }
 
+        player->draw(basicShader);
+
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -121,45 +127,47 @@ void Engine::runLoop() {
     glfwTerminate();
 }
 
-void Engine::processInput(float deltaTime)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
-}
-
-GLFWwindow* Engine::getWindow() const {
+GLFWwindow *Engine::getWindow() const {
     return window;
 }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void Engine::mouseCallbackFunc(double xpos, double ypos)
-{
-    static bool firstMouse = true;
-    static float lastX = 1024.0f/2.0f;
-    static float lastY = 768.0f/2.0f;
+void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
+    player->look(windowParam, xpos, ypos);
+}
 
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+std::optional<Entity *> Engine::getEntityByWorldPos(const glm::vec3 worldPos) {
+    for (auto &blocksById : entities) {
+        for (auto &ent : blocksById.second) {
+            glm::vec3 entityPos = ent.getTransform().getPosition();
+
+            bool withinX = (int) worldPos.x == (int) entityPos.x;
+            bool withinY = (int) worldPos.y == (int) entityPos.y;
+            bool withinZ = (int) worldPos.z == (int) entityPos.z;
+
+            if (withinX && withinZ && withinY) {
+                return {&ent};
+            }
+        }
     }
+    return {};
+}
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
+    for (auto &blocksById : entities) {
+        for (auto &ent : blocksById.second) {
 
-    lastX = xpos;
-    lastY = ypos;
+            bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
+                          ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
+            bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
+                          ent.getTransform().getPosition().y + ent.box.dimensions.y >= worldPos.y);
+            bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
+                          ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
 
-    camera.ProcessMouseMovement(xoffset, yoffset, true);
+            if (xColl && yColl && zColl)
+                return {&ent};
+        }
+    }
+    return {};
 }

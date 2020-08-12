@@ -1,9 +1,7 @@
 //
 // Created by Willi on 8/5/2020.
 //
-
-#ifndef COMP_371_PROJECT_ENTITY_H
-#define COMP_371_PROJECT_ENTITY_H
+#pragma once
 
 #include <string>
 #include "shader.h"
@@ -11,15 +9,26 @@
 #include "model_database.h"
 #include "transform.h"
 
+struct BoundingBox {
+    BoundingBox(glm::vec3 dim) {
+        this->dimensions = dim;
+    }
+
+    BoundingBox() = default;
+
+    glm::vec3 dimensions = {1.0f, 1.0f, 1.0f};
+};
+
 /// An entity is an object that exists within the world
 class Entity {
 
 private:
     std::string modelName;
-    /* AABB boundingBox; */ //TODO: see task on github
     BlockID blockId;
+protected:
     Transform transform;
 public:
+    BoundingBox box{};
 
     Entity(std::string modelName, BlockID blockId1);
 
@@ -34,7 +43,5 @@ public:
     inline BlockID getBlockID() const { return this->blockId; }
 
     /// Gets this entity's transform
-    inline Transform &getTransform() { return this->transform; }
+    inline Transform getTransform() { return this->transform; }
 };
-
-#endif //COMP_371_PROJECT_ENTITY_H

@@ -26,8 +26,8 @@ int main(int argc, char *argv[]) {
 
     //TODO: Would it be possible to move this to the engine constructor?
     glfwSetCursorPosCallback(engine.getWindow(), [](GLFWwindow *window, double x, double y) {
-        Engine *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
-        engine->mouseCallbackFunc(x, y);
+        auto *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
+        engine->mouseCallbackFunc(window, x, y);
     });
 
     LOG(INFO) << "ADDING SOME ENTITIES";
@@ -43,6 +43,16 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 1, 12.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 2, 12.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 3, 12.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({11.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({13.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({11.0f, 3, 10.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({13.0f, 3, 10.0f}, {1, 1, 1}, {0, 0, 0})));
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({5.0f, 1, 5.0f}, {1, 1, 1}, {0, 0, 0})));
 
     engine.runLoop();
 }
