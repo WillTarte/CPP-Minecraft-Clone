@@ -16,7 +16,7 @@ struct BoundingBox {
 
     BoundingBox() = default;
 
-    glm::vec3 dimensions;
+    glm::vec3 dimensions = {1.0f, 1.0f, 1.0f};
 };
 
 /// An entity is an object that exists within the world

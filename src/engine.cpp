@@ -96,7 +96,7 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        player->processInput(this->window);
+        player->processInput(this->window, deltaTime);
         player->update(this, deltaTime);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -140,12 +140,11 @@ void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos
 std::optional<Entity *> Engine::getEntityByWorldPos(const glm::vec3 worldPos) {
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
-            glm::vec3 entityPostion = ent.getTransform().getPosition();
-            glm::vec3 entityBoxDim = ent.box.dimensions;
+            glm::vec3 entityPos = ent.getTransform().getPosition();
 
-            bool withinX = worldPos.x < entityPostion.x + entityBoxDim.x && worldPos.x + 1.0f > entityPostion.x;
-            bool withinY = worldPos.y < entityPostion.y + entityBoxDim.y && worldPos.y + 1.0f > entityPostion.y;
-            bool withinZ = worldPos.z < entityPostion.z + entityBoxDim.z && worldPos.z + 1.0f > entityPostion.z;
+            bool withinX = (int) worldPos.x == (int) entityPos.x;
+            bool withinY = (int) worldPos.y == (int) entityPos.y;
+            bool withinZ = (int) worldPos.z == (int) entityPos.z;
 
             if (withinX && withinZ && withinY) {
                 return {&ent};

@@ -6,16 +6,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-// Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN,
-};
-
 // Default camera values
 const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
@@ -29,7 +19,7 @@ struct Camera {
     glm::vec3 Up = {0.0, 1.0, 0.0};
     glm::vec3 Front{1.0, 0.0, 0.0};
     glm::vec3 Right{0.0, 0.0, 1.0};
-    glm::vec3 Position = {0, 0, 0};
+    glm::vec3 Position = {0, 4, 10};
 
     void updateCameraVectors() {
         glm::vec3 front;

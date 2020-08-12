@@ -11,6 +11,12 @@
 
 class Engine;
 
+enum VelocityComponent {
+    X,
+    Y,
+    Z
+};
+
 class Player : public Entity {
 public:
     Player();
@@ -19,7 +25,7 @@ public:
 
     void update(Engine *engine, float dt);
 
-    void processInput(GLFWwindow *window);
+    void processInput(GLFWwindow *window, float dt);
 
     void look(GLFWwindow *window, double xpos, double ypos);
 
@@ -29,7 +35,7 @@ private:
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
 
-    void jump();
+    void jump(float dt);
 
-    void collide(Engine *engine, const glm::vec3 vel, float dt);
+    void collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp, float dt);
 };

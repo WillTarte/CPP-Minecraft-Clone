@@ -6,16 +6,16 @@
 
 
 //.23 makes it approximatly 3 tall
-Player::Player() : Entity(ModelType::STEVE, BlockID::PLAYER,
-                          Transform({20.0, 2.0, 20.0}, {0.23, 0.23, 0.23}, {0, 0, 0})) {
+Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
+                          Transform({20.0, 2.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
     this->camera = Camera{};
-    this->camera.Position = this->getTransform().getPosition();
+    //this->camera.Position = this->getTransform().getPosition();
 }
 
-void Player::jump() {
+void Player::jump(float dt) {
     if (onGround) {
         onGround = false;
-        this->acceleration.y += 20.0f;
+        this->acceleration.y += 100;
     }
 }
 
@@ -50,20 +50,24 @@ void Player::update(Engine *engine, float dt) {
         velocity.y -= 2 * dt;
     }
 
-    this->transform.translate({velocity.x, velocity.y, velocity.z});
+    //std::cout << "Before: " << velocity.x << " " << velocity.y << " " << velocity.z << std::endl;
 
-    collide(engine, {velocity.x, 0.0f, 0.0f}, dt);
-    collide(engine, {0.0f, velocity.y, 0.0f}, dt);
-    collide(engine, {0.0f, 0.0f, velocity.z}, dt);
+    collide(engine, velocity, VelocityComponent::Y, dt);
+    collide(engine, velocity, VelocityComponent::X, dt);
+    collide(engine, velocity, VelocityComponent::Z, dt);
 
+    //std::cout << "After: " << velocity.x << " " << velocity.y << " " << velocity.z << std::endl << std::endl;
 
-    this->camera.Position = this->getTransform().getPosition() + glm::vec3(1.0f, 1.0f, 1.0f);
-    velocity.x *= 0.95;
-    velocity.z *= 0.95;
+    this->transform.translate(velocity);
+
+    std::cout << this->getTransform().getPosition().x << " " << this->getTransform().getPosition().y << " "
+              << this->getTransform().getPosition().z << std::endl;
+
+    this->camera.Position = this->getTransform().getPosition() + glm::vec3(0.5f, 1.5f, 0.5f);
 }
 
 
-void Player::processInput(GLFWwindow *window) {
+void Player::processInput(GLFWwindow *window, float dt) {
 
     float speed = 5;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -87,102 +91,68 @@ void Player::processInput(GLFWwindow *window) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        this->jump();
+        this->jump(dt);
     }
 }
 
-void Player::collide(Engine *engine, glm::vec3 vel, float dt) {
+void Player::collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp, float dt) {
 
-    for (int x : {0, 1}) {
-        for (int y : {0, 1}) {
-            for (int z : {0, 1}) {
-                std::optional<Entity *> optEntity = engine->getEntityByWorldPos(
-                        this->transform.getPosition() + glm::vec3(x, y, z));
+    std::optional<Entity *> optEnt;
 
-                if (optEntity.has_value()) {
+    if (comp == VelocityComponent::Y) {
+        if (vel.y > 0) {
+            optEnt = engine->getEntityByWorldPos(
+                    this->getTransform().position + glm::vec3(0, this->box.dimensions.y, 0) +
+                    glm::vec3(0, velocity.y, 0));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Positive Y \n";
+                this->transform.position.y = glm::ceil((*optEnt)->getTransform().getPosition().y - 1);
+                velocity.y = 0;
+            }
+        } else if (vel.y < 0) {
+            optEnt = engine->getEntityByWorldPos(this->getTransform().position + glm::vec3(velocity.x, 0, 0));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Negative Y \n";
+                this->transform.position.y = glm::floor((*optEnt)->getTransform().getPosition().y + 1);
+                onGround = true;
+                velocity.y = 0;
+            }
+        }
+    }
 
-                    std::cout << "Player " << this->getTransform().getPosition().x << " "
-                              << this->getTransform().getPosition().y << " " << this->getTransform().getPosition().z;
-                    std::cout << " Cube " << (*optEntity)->getTransform().getPosition().x << " "
-                              << (*optEntity)->getTransform().getPosition().y << " "
-                              << (*optEntity)->getTransform().getPosition().z << std::endl;
+    if (comp == VelocityComponent::X) {
+        if (vel.x > 0) {
+            optEnt = engine->getEntityByWorldPos(
+                    this->getTransform().position + glm::vec3(this->box.dimensions.x, 0, 0) +
+                    glm::vec3(velocity.x, 0, 0));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Positive X \n";
+                velocity.x = 0;
+            }
+        } else if (vel.x < 0) {
+            optEnt = engine->getEntityByWorldPos(this->getTransform().position + glm::vec3(velocity.x, 0, 0));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Negative X \n";
+                velocity.x = 0;
+            }
+        }
 
-                    /*if (vel.y > 0) {
-                        this->transform.position.y += y - box.dimensions.y;
-                        velocity.y = 0;
-                    }
-                    else if (vel.y < 0) {
-                        onGround = true;
-                        this->transform.position.y += y + box.dimensions.y + 1;
-                        velocity.y = 0;
-                    }
+    }
 
-                    if (vel.x > 0) {
-                        this->transform.position.x += x - box.dimensions.x;
-                    }
-                    else if (vel.x < 0) {
-                        this->transform.position.x += x + box.dimensions.x + 1;
-                    }
-
-                    if (vel.z > 0) {
-                        this->transform.position.z += z - box.dimensions.z;
-                    }
-                    else if (vel.z < 0) {
-                        this->transform.position.z += z + box.dimensions.z + 1;
-                    }*/
-
-                    if (vel.y > 0) {
-                        this->transform.position.y += 1;
-                        velocity.y = 0;
-                    } else if (vel.y < 0) {
-                        onGround = true;
-                        this->transform.position.y += 1;
-                        velocity.y = 0;
-                    }
-
-                    if (vel.x > 0) {
-                        this->transform.position.x += 1;
-                    } else if (vel.x < 0) {
-                        this->transform.position.x += 1;
-                    }
-
-                    if (vel.z > 0) {
-                        this->transform.position.z += 1;
-                    } else if (vel.z < 0) {
-                        this->transform.position.z += 1;
-                    }
-
-                    /*if (vel.y > 0) {
-                        float yDisp = -(this->getTransform().getPosition().y + this->box.dimensions.y) - (*optEntity)->getTransform().getPosition().y;
-                        this->transform.translate({0.0f, yDisp, 0.0f});
-                        velocity.y = 0;
-                    } else if (vel.y < 0) {
-                        float yDisp = ((*optEntity)->getTransform().getPosition().y + (*optEntity)->box.dimensions.y) - this->getTransform().getPosition().y;
-                        onGround = true;
-                        this->transform.translate({0.0f, yDisp, 0.0f});
-                        velocity.y = 0;
-                    }
-
-                    if (vel.x > 0) {
-                        float xDisp = -(this->getTransform().getPosition().x + this->box.dimensions.x) - (*optEntity)->getTransform().getPosition().x;
-                        this->transform.translate({ xDisp, 0.0f, 0.0f});
-                        velocity.x = 0;
-                    } else if (vel.x < 0) {
-                        float xDisp = ((*optEntity)->getTransform().getPosition().x + (*optEntity)->box.dimensions.x) - this->getTransform().getPosition().x;
-                        this->transform.translate({ xDisp, 0.0f, 0.0f});
-                        velocity.x = 0;
-                    }
-
-                    if (vel.z > 0) {
-                        float zDisp = -(this->getTransform().getPosition().z + this->box.dimensions.z) - (*optEntity)->getTransform().getPosition().z;
-                        this->transform.translate({0.0f, 0.0f, zDisp});
-                        velocity.z = 0;
-                    } else if (vel.z < 0) {
-                        float zDisp = ((*optEntity)->getTransform().getPosition().z + (*optEntity)->box.dimensions.z) - this->getTransform().getPosition().z;
-                        this->transform.translate({0.0f, 0.0f,zDisp});
-                        velocity.z = 0;
-                    }*/
-                }
+    if (comp == VelocityComponent::Z) {
+        if (vel.z > 0) {
+            optEnt = engine->getEntityByWorldPos(
+                    this->getTransform().position + glm::vec3(0, 0, this->box.dimensions.z) +
+                    glm::vec3(0, 0, velocity.z));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Positive Z \n";
+                velocity.z = 0;
+            }
+        } else if (vel.z < 0) {
+            optEnt = engine->getEntityByWorldPos(this->getTransform().position + glm::vec3(0, 0, velocity.z));
+            if (optEnt.has_value() && checkCollision(*this, *(*optEnt))) {
+                std::cout << " Negative Z \n";
+                velocity.z = 0;
             }
         }
     }

@@ -56,3 +56,15 @@ public:
 
     Engine &operator=(const Engine &) = delete;
 };
+
+inline bool checkCollision(Entity &a, Entity &b) {
+
+    bool collisionX = (a.getTransform().position.x < b.getTransform().position.x + b.box.dimensions.x &&
+                       a.getTransform().position.x + a.box.dimensions.y > b.getTransform().position.x);
+    bool collisionY = (a.getTransform().position.y < b.getTransform().position.y + b.box.dimensions.y &&
+                       a.getTransform().position.y + a.box.dimensions.y > b.getTransform().position.y);
+    bool collisionZ = (a.getTransform().position.z < b.getTransform().position.z + b.box.dimensions.z &&
+                       a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+
+    return collisionX && collisionY && collisionZ;
+}
