@@ -49,9 +49,9 @@ void Player::update(Engine *engine, float dt) {
         acceleration.y -= 20 * dt;
     }
 
-    collide(engine, velocity, VelocityComponent::Y);
-    collide(engine, velocity, VelocityComponent::X);
-    collide(engine, velocity, VelocityComponent::Z);
+    collide(engine, VelocityComponent::Y);
+    collide(engine, VelocityComponent::X);
+    collide(engine, VelocityComponent::Z);
     checkOnGround(engine);
 
     this->transform.translate(velocity);
@@ -87,20 +87,20 @@ void Player::processInput(GLFWwindow *window, float dt) {
     }
 }
 
-void Player::collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp) {
+void Player::collide(Engine *engine, VelocityComponent comp) {
 
     std::optional<Entity *> optEnt;
 
     if (comp == VelocityComponent::Y) {
         optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(0, velocity.y, 0),
                                                  this->box);
-        if (vel.y > 0) {
+        if (velocity.y > 0) {
             if (optEnt.has_value() && checkCollisionY(*this, *(*optEnt))) {
                 std::cout << "\nBONK\n";
                 this->transform.position.y = glm::ceil((*optEnt)->getTransform().getPosition().y - 1) - 0.01;
                 velocity.y = 0;
             }
-        } else if (vel.y < 0) {
+        } else if (velocity.y < 0) {
             if (optEnt.has_value() && checkCollisionY(*this, *(*optEnt))) {
                 this->transform.position.y = glm::floor((*optEnt)->getTransform().getPosition().y + 1) + 0.01;
                 onGround = true;
@@ -112,11 +112,11 @@ void Player::collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp) {
     if (comp == VelocityComponent::X) {
         optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(velocity.x, 0, 0),
                                                  this->box);
-        if (vel.x > 0) {
+        if (velocity.x > 0) {
             if (optEnt.has_value() && checkCollisionX(*this, *(*optEnt))) {
                 velocity.x = 0;
             }
-        } else if (vel.x < 0) {
+        } else if (velocity.x < 0) {
             if (optEnt.has_value() && checkCollisionX(*this, *(*optEnt))) {
                 velocity.x = 0;
             }
@@ -126,12 +126,12 @@ void Player::collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp) {
     if (comp == VelocityComponent::Z) {
         optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(0, 0, velocity.z),
                                                  this->box);
-        if (vel.z > 0) {
+        if (velocity.z > 0) {
             if (optEnt.has_value() && checkCollisionZ(*this, *(*optEnt))) {
                 velocity.z = 0;
                 acceleration.z = 0;
             }
-        } else if (vel.z < 0) {
+        } else if (velocity.z < 0) {
             if (optEnt.has_value() && checkCollisionZ(*this, *(*optEnt))) {
                 velocity.z = 0;
             }
