@@ -25,7 +25,7 @@ struct Config {
 };
 
 struct World {
-    std::vector<std::vector<std::vector<int>>> map;
+    int map[512][16][512];
     int seed;
 };
 

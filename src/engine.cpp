@@ -164,21 +164,16 @@ void Engine::generateWorld() {
     auto noiseGen = FastNoise(world->seed);
     noiseGen.SetNoiseType(FastNoise::Simplex);
 
-    for (int x = 0; x < 16; x++) {
-        world->map.emplace_back();
-        for (int y = 0; y < 16; y++) {
-            world->map[x].emplace_back();
-            for (int z = 0; z < 16; z++) {
-                float height = noiseGen.GetNoise(x,y,z);
-                height = height < 0 ? height * -1 : height;
-                height = round(height * 10);
+    for (int x = 0; x < 128; x++) {
+        for (int z = 0; z < 128; z++) {
+            float height = noiseGen.GetNoise(x,0,z);
+            height = height < 0 ? height * -1 : height;
+            height = round(height * 10);
 
-                std::cout << height << " ";
-
-//                world->map[x][y][z] = (int)height;
-            }
-            std::cout << std::endl;
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, (int) height, z}, {1, 1, 1}, {0, 0, 0})));
         }
+        std::cout << std::endl;
     }
 }
 
