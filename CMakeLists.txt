@@ -63,7 +63,7 @@ if (MSVC)
 else()
     # lots of warnings and all warnings as errors
     add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -lstdc++fs)
-    target_link_libraries(${PROJECT_NAME} stdc++fs)
+    target_link_libraries(${PROJECT_NAME} PUBLIC stdc++fs)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
