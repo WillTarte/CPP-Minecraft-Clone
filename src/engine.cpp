@@ -96,8 +96,8 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        player.processInput(this->window);
-        player.update(this, deltaTime);
+        player->processInput(this->window);
+        player->update(this, deltaTime);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,7 +106,7 @@ void Engine::runLoop() {
                                                 0.1f, 100.0f);
 
         // rendering stuff here
-        basicShader.setMat4("view", player.getPlayerView());
+        basicShader.setMat4("view", player->getPlayerView());
         basicShader.setMat4("projection", projection);
 
         for (auto &blocksByID : this->entities) {
@@ -117,7 +117,7 @@ void Engine::runLoop() {
             }
         }
 
-        player.draw(basicShader);
+        player->draw(basicShader);
 
 
         glfwSwapBuffers(window);
@@ -134,21 +134,21 @@ GLFWwindow *Engine::getWindow() const {
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
-    player.look(windowParam, xpos, ypos);
+    player->look(windowParam, xpos, ypos);
 }
 
-std::optional<BoundingBox> Engine::getEntityBoxByWorldPos(const glm::vec3 worldPos) {
+std::optional<Entity *> Engine::getEntityByWorldPos(const glm::vec3 worldPos) {
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
             glm::vec3 entityPostion = ent.getTransform().getPosition();
             glm::vec3 entityBoxDim = ent.box.dimensions;
 
-            bool withinX = worldPos.x > entityPostion.x && worldPos.x < entityPostion.x + entityBoxDim.x;
-            bool withinY = worldPos.y > entityPostion.y && worldPos.y < entityPostion.y + entityBoxDim.y;
-            bool withinZ = worldPos.z > entityPostion.z && worldPos.z < entityPostion.z + entityBoxDim.z;
+            bool withinX = worldPos.x < entityPostion.x + entityBoxDim.x && worldPos.x + 1.0f > entityPostion.x;
+            bool withinY = worldPos.y < entityPostion.y + entityBoxDim.y && worldPos.y + 1.0f > entityPostion.y;
+            bool withinZ = worldPos.z < entityPostion.z + entityBoxDim.z && worldPos.z + 1.0f > entityPostion.z;
 
-            if (withinX || withinY || withinZ) {
-                return {ent.box};
+            if (withinX && withinZ && withinY) {
+                return {&ent};
             }
         }
     }

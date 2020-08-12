@@ -33,7 +33,7 @@ private:
     int windowWidth;
     int windowHeight;
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
-    Player player = Player();
+    std::unique_ptr<Player> player = std::make_unique<Player>();
 
 public:
 
@@ -46,7 +46,7 @@ public:
     /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
     inline void addEntity(Entity &&entity) { entities[entity.getBlockID()].push_back(entity); }
 
-    std::optional<BoundingBox> getEntityBoxByWorldPos(const glm::vec3 worldPos);
+    std::optional<Entity *> getEntityByWorldPos(const glm::vec3 worldPos);
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 

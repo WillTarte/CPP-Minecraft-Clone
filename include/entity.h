@@ -10,16 +10,12 @@
 #include "transform.h"
 
 struct BoundingBox {
-    BoundingBox(glm::vec3 pos, glm::vec3 dim) {
-        this->position = pos;
+    BoundingBox(glm::vec3 dim) {
         this->dimensions = dim;
     }
 
     BoundingBox() = default;
 
-    void updateBox(const glm::vec3 pos) { this->position = pos; }
-
-    glm::vec3 position;
     glm::vec3 dimensions;
 };
 
@@ -29,11 +25,10 @@ class Entity {
 private:
     std::string modelName;
     BlockID blockId;
+protected:
     Transform transform;
 public:
     BoundingBox box{};
-    glm::vec3 velocity{};
-    glm::vec3 acceleration{};
 
     Entity(std::string modelName, BlockID blockId1);
 
@@ -48,5 +43,5 @@ public:
     inline BlockID getBlockID() const { return this->blockId; }
 
     /// Gets this entity's transform
-    inline Transform &getTransform() { return this->transform; }
+    inline Transform getTransform() { return this->transform; }
 };

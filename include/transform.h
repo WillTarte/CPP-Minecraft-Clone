@@ -9,11 +9,12 @@
 /// Class that holds transform information: position, scale and rotation
 class Transform {
 private:
-    glm::vec3 position{};
+
     glm::vec3 scale{};
     glm::quat rotation{};
 
 public:
+    glm::vec3 position{};
 
     Transform() {
         this->position = {0.0f, 0.0f, 0.0f};
@@ -79,7 +80,7 @@ public:
                glm::scale(glm::mat4(1.0f), this->scale);
     }
 
-    const glm::vec3 getPosition() const {
+    const glm::vec3 getPosition() {
         return position;
     }
 

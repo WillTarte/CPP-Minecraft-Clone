@@ -7,14 +7,14 @@ Entity::Entity(std::string modelName, BlockID blockId) {
     this->modelName = std::move(modelName);
     this->blockId = blockId;
     this->transform = Transform();
-    this->box = BoundingBox({0.0, 0.0, 0.0}, {1.0, 1.0, 1.0});
+    this->box = BoundingBox({1.0, 1.0, 1.0});
 }
 
 Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
     this->modelName = std::move(modelName);
     this->blockId = blockId1;
     this->transform = transform1;
-    this->box = BoundingBox(this->transform.getPosition(), {1.0, 1.0, 1.0});
+    this->box = BoundingBox({1.0, 1.0, 1.0});
 }
 
 void Entity::draw(Shader &shader) {

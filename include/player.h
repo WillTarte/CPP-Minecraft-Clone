@@ -25,9 +25,11 @@ public:
 
 private:
     Camera camera;
-    bool onGround;
+    bool onGround = true;
+    glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
+    glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
 
     void jump();
 
-    void collide(const BoundingBox &entityBox, glm::vec3 vel, float dt);
+    void collide(Engine *engine, const glm::vec3 vel, float dt);
 };
