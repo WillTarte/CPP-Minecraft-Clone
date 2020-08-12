@@ -153,3 +153,21 @@ std::optional<Entity *> Engine::getEntityByWorldPos(const glm::vec3 worldPos) {
     }
     return {};
 }
+
+std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
+    for (auto &blocksById : entities) {
+        for (auto &ent : blocksById.second) {
+
+            bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
+                          ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
+            bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
+                          ent.getTransform().getPosition().y + ent.box.dimensions.y >= worldPos.y);
+            bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
+                          ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
+
+            if (xColl && yColl && zColl)
+                return {&ent};
+        }
+    }
+    return {};
+}

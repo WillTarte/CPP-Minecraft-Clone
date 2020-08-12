@@ -48,6 +48,8 @@ public:
 
     std::optional<Entity *> getEntityByWorldPos(const glm::vec3 worldPos);
 
+    std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
+
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
     GLFWwindow *getWindow() const;
@@ -57,14 +59,32 @@ public:
     Engine &operator=(const Engine &) = delete;
 };
 
-inline bool checkCollision(Entity &a, Entity &b) {
+inline bool checkCollisionX(Entity &a, Entity &b) {
 
-    bool collisionX = (a.getTransform().position.x < b.getTransform().position.x + b.box.dimensions.x &&
-                       a.getTransform().position.x + a.box.dimensions.y > b.getTransform().position.x);
-    bool collisionY = (a.getTransform().position.y < b.getTransform().position.y + b.box.dimensions.y &&
-                       a.getTransform().position.y + a.box.dimensions.y > b.getTransform().position.y);
-    bool collisionZ = (a.getTransform().position.z < b.getTransform().position.z + b.box.dimensions.z &&
-                       a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+    bool collisionMinX = (a.getTransform().position.x < b.getTransform().position.x + b.box.dimensions.x &&
+                          a.getTransform().position.x > b.getTransform().position.x);
+    bool collisionMaxX = (
+            a.getTransform().position.x + a.box.dimensions.x < b.getTransform().position.x + b.box.dimensions.x &&
+            a.getTransform().position.x + a.box.dimensions.x > b.getTransform().position.x);
+    return collisionMinX || collisionMaxX;
+}
 
-    return collisionX && collisionY && collisionZ;
+inline bool checkCollisionY(Entity &a, Entity &b) {
+
+    bool collisionMinY = (a.getTransform().position.y < b.getTransform().position.y + b.box.dimensions.y &&
+                          a.getTransform().position.y > b.getTransform().position.y);
+    bool collisionMaxY = (
+            a.getTransform().position.y + a.box.dimensions.y < b.getTransform().position.y + b.box.dimensions.y &&
+            a.getTransform().position.y + a.box.dimensions.y > b.getTransform().position.y);
+    return collisionMinY || collisionMaxY;
+}
+
+inline bool checkCollisionZ(Entity &a, Entity &b) {
+
+    bool collisionMinZ = (a.getTransform().position.z < b.getTransform().position.z + b.box.dimensions.z &&
+                          a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+    bool collisionMaxZ = (
+            a.getTransform().position.z + a.box.dimensions.z < b.getTransform().position.z + b.box.dimensions.z &&
+            a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+    return collisionMinZ || collisionMaxZ;
 }

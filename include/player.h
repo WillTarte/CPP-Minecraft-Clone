@@ -35,7 +35,9 @@ private:
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
 
-    void jump(float dt);
+    void jump();
 
-    void collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp, float dt);
+    void collide(Engine *engine, glm::vec3 &vel, VelocityComponent comp);
+
+    void checkOnGround(Engine *engine);
 };
