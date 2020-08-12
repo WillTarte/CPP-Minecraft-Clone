@@ -30,6 +30,17 @@ int main(int argc, char *argv[]) {
         engine->mouseCallbackFunc(window, x, y);
     });
 
+
+
+
+    //glfwSetMouseButtonCallback(window,this->mouse_click_callback());
+
+
+    glfwSetMouseButtonCallback(engine.getWindow(), [](GLFWwindow *window, int b, int s, int mouse_x, int mouse_y) {
+        auto *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
+        engine->mouse_click_callback(b,s,mouse_x,mouse_y);
+    });
+
     LOG(INFO) << "ADDING SOME ENTITIES";
 
     for (int x = 0; x < 40; x++) {

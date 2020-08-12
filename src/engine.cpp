@@ -73,6 +73,8 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Engine is primed and ready.";
 
 
+
+
 }
 
 void Engine::runLoop() {
@@ -130,6 +132,41 @@ void Engine::runLoop() {
 GLFWwindow *Engine::getWindow() const {
     return window;
 }
+
+//whenever the mouse is clicked this is called
+//built with help from
+//https://antongerdelan.net/opengl/raycasting.html
+
+void Engine::mouse_click_callback(int b, int s, int mouse_x, int mouse_y){
+
+    //normalized device coords
+    //width and height are the window size
+    float x = (2.0f * mouse_x) / this->windowWidth - 1.0f;
+    float y = 1.0f - (2.0f * mouse_y) / this->windowHeight;
+    float z = 1.0f;
+    glm::vec3 ray_nds = glm::vec3(x, y, z);
+
+
+    glm::vec4 ray_clip = glm::vec4(ray_nds.x,ray_nds.y, -1.0, 1.0);
+
+
+    glm::mat4 projection = glm::perspective(glm::radians(config.fov), (float) windowWidth / (float) windowHeight,
+                                            0.1f, 100.0f);
+
+    glm::mat4 view_matrix = player->getPlayerView();
+
+    glm::vec4 ray_eye = inverse(projection) * ray_clip;
+
+    glm::vec4 inverseView = (inverse(view_matrix) * ray_eye);
+    glm::vec3 ray_wor = glm::vec3(inverseView.x,inverseView.y,inverseView.z);
+// don't forget to normalise the vector at some point
+
+    ray_wor = glm::normalize(ray_wor);
+
+    //now we can compare with surfaces in the world space
+    std::cout << "ran mouseclick";
+}
+
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------

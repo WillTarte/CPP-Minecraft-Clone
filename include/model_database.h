@@ -14,7 +14,7 @@
 #ifdef __unix__
 namespace fs = std::filesystem;
 #else
-namespace fs = std::experimental::filesystem::v1;
+namespace fs = std::filesystem;
 #endif
 
 /// The Model Database loads models in the resources/models/ folder to be available at run time.
