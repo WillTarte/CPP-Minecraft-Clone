@@ -2,9 +2,11 @@
 // Created by Willi on 7/30/2020.
 //
 #include <random>
+#include <vector>
+#include <math.h>
 
 #include "../include/engine.h"
-#include "../include/world.h"
+#include "../libs/FastNoise.h"
 
 Engine::Engine(Config config) {
 
@@ -73,6 +75,11 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
+    this->world = new World();
+    generateSeed();
+    generateWorld();
+
+    LOG(INFO) << "Generated world using seed " << world->seed << ".";
     LOG(INFO) << "Engine is primed and ready.";
 }
 
@@ -89,12 +96,7 @@ void Engine::runLoop() {
 
     glfwSwapInterval(1);
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(1.0, 1000000000.0);
-    int seed = dist(mt);
 
-    auto world = World(seed);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -116,8 +118,6 @@ void Engine::runLoop() {
         // rendering stuff here
         basicShader.setMat4("view", camera.getViewMatrix());
         basicShader.setMat4("projection", projection);
-
-        world.render(camera);
 
         for (auto &blocksByID : this->entities) {
             // do some setting up per block type
@@ -151,6 +151,35 @@ void Engine::processInput(float deltaTime)
 
 GLFWwindow* Engine::getWindow() const {
     return window;
+}
+
+void Engine::generateSeed() {
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1.0, 1000000000.0);
+    world->seed = dist(mt);
+}
+
+void Engine::generateWorld() {
+    auto noiseGen = FastNoise(world->seed);
+    noiseGen.SetNoiseType(FastNoise::Simplex);
+
+    for (int x = 0; x < 16; x++) {
+        world->map.emplace_back();
+        for (int y = 0; y < 16; y++) {
+            world->map[x].emplace_back();
+            for (int z = 0; z < 16; z++) {
+                float height = noiseGen.GetNoise(x,y,z);
+                height = height < 0 ? height * -1 : height;
+                height = round(height * 10);
+
+                std::cout << height << " ";
+
+//                world->map[x][y][z] = (int)height;
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
 // glfw: whenever the mouse moves, this callback is called
