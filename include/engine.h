@@ -24,6 +24,11 @@ struct Config {
     float fov = 45.0f;
 };
 
+struct World {
+    std::vector<std::vector<std::vector<int>>> map;
+    int seed;
+};
+
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
@@ -35,6 +40,9 @@ private:
     //TODO: camera should be part of / attached to Player
     Camera camera = Camera(glm::vec3(-5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
+    void generateWorld();
+    void generateSeed();
+    World* world;
 
 public:
 
