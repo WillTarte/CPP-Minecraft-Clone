@@ -7,6 +7,7 @@
 
 /// Block ID maps .block file to a specific type of block
 enum BlockID {
+    PLAYER = 0,
     DIRT = 1,
     DIRT_GRASS = 2,
     BEDROCK = 3,
@@ -24,6 +25,9 @@ inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
             break;
         case DIRT_GRASS:
             os << "DIRT GRASS";
+            break;
+        case PLAYER:
+            os << "STEVE";
             break;
     }
     return os;

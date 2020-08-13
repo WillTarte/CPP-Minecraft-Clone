@@ -6,8 +6,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <optional>
 #include "../libs/easylogging++.h"
-#include "camera.h"
 #include "mesh.h"
 #include "objloader.h"
 #include "texture.h"
@@ -16,6 +16,7 @@
 #include "texture_database.h"
 #include "entity.h"
 #include "model_database.h"
+#include "player.h"
 
 /// Config for the application
 struct Config {
@@ -32,18 +33,16 @@ struct World {
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
-
     Config config;
     GLFWwindow* window;
     int windowWidth;
     int windowHeight;
-    //TODO: camera should be part of / attached to Player
-    Camera camera = Camera(glm::vec3(-5.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), YAW, PITCH);
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
     void generateWorld();
     void generateSeed();
     void drawTree(int x, int y, int z);
     World* world;
+    std::unique_ptr<Player> player = std::make_unique<Player>();
 
 public:
 
@@ -52,14 +51,26 @@ public:
     /// Runs the main game loop.
     void runLoop();
 
-    /// Processes keyboard + mouse inputs
-    void processInput(float deltatime);
-
     /// Adds an entity to the world. NB: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std::move.
     /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
     inline void addEntity(Entity &&entity) { entities[entity.getBlockID()].push_back(entity); }
 
-    void mouseCallbackFunc(double xpos, double ypos);
+    /** Returns an entity in absolute world position
+     *
+     * @param worldPos the world pos (truncates to integers)
+     * @return an optional pointer to an entity
+     */
+    std::optional<Entity *> getEntityByWorldPos(const glm::vec3 worldPos);
+
+    /** Returns an entity based on a bounding box overlap
+     *
+     * @param worldPos the world position
+     * @param box the bounding box
+     * @return an optional pointer to an entity
+     */
+    std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
+
+    void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
     GLFWwindow *getWindow() const;
 
@@ -67,3 +78,51 @@ public:
 
     Engine &operator=(const Engine &) = delete;
 };
+
+/** Check if there is a collision between 2 entities on the X axis
+ *
+ * @param a first entity
+ * @param b second entity
+ * @return if the entities collide
+ */
+inline bool checkCollisionX(Entity &a, Entity &b) {
+
+    bool collisionMinX = (a.getTransform().position.x < b.getTransform().position.x + b.box.dimensions.x &&
+            a.getTransform().position.x > b.getTransform().position.x);
+    bool collisionMaxX = (
+            a.getTransform().position.x + a.box.dimensions.x < b.getTransform().position.x + b.box.dimensions.x &&
+            a.getTransform().position.x + a.box.dimensions.x > b.getTransform().position.x);
+    return collisionMinX || collisionMaxX;
+}
+
+/** Check if there is a collision between 2 entities on the Y axis
+ *
+ * @param a first entity
+ * @param b second entity
+ * @return if the entities collide
+ */
+inline bool checkCollisionY(Entity &a, Entity &b) {
+
+    bool collisionMinY = (a.getTransform().position.y < b.getTransform().position.y + b.box.dimensions.y &&
+            a.getTransform().position.y > b.getTransform().position.y);
+    bool collisionMaxY = (
+            a.getTransform().position.y + a.box.dimensions.y < b.getTransform().position.y + b.box.dimensions.y &&
+            a.getTransform().position.y + a.box.dimensions.y > b.getTransform().position.y);
+    return collisionMinY || collisionMaxY;
+}
+
+/** Check if there is a collision between 2 entities on the Z axis
+ *
+ * @param a first entity
+ * @param b second entity
+ * @return if the entities collide
+ */
+inline bool checkCollisionZ(Entity &a, Entity &b) {
+
+    bool collisionMinZ = (a.getTransform().position.z < b.getTransform().position.z + b.box.dimensions.z &&
+            a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+    bool collisionMaxZ = (
+            a.getTransform().position.z + a.box.dimensions.z < b.getTransform().position.z + b.box.dimensions.z &&
+            a.getTransform().position.z + a.box.dimensions.z > b.getTransform().position.z);
+    return collisionMinZ || collisionMaxZ;
+}
