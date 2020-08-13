@@ -86,6 +86,8 @@ void Player::processInput(GLFWwindow *window, float dt) {
         this->jump();
     }
 
+
+    //code for deleting a block
     if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
 
             //normalized device coords
@@ -110,12 +112,11 @@ void Player::processInput(GLFWwindow *window, float dt) {
             glm::vec3 ray_wor = glm::vec3(inverseView.x,inverseView.y,inverseView.z);
 // don't forget to normalise the vector at some point
 
-            ray_wor = glm::normalize(ray_wor);
+            //ray_wor = glm::normalize(ray_wor);
 
-            //now we can compare with surfaces in the world space
-            std::cout << "ran mouseclick";
+        
 
-            std::cout << ray_wor.x << " " << ray_wor.y <<" "  << ray_wor.z;
+           std::cout << ray_wor.x << " " << ray_wor.y <<" "  << ray_wor.z << "\n";
 
     }
 }
