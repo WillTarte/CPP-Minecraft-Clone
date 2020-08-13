@@ -57,6 +57,9 @@ int main(int argc, char *argv[]) {
     engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({13.0f, 3, 10.0f}, {1, 1, 1}, {0, 0, 0})));
     engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({5.0f, 1, 5.0f}, {1, 1, 1}, {0, 0, 0})));
 
+
+
+    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({22.0f, 1, 15.0f}, {1, 1, 1}, {0, 0, 0})));
     engine.runLoop();
 }
 

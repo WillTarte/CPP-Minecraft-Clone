@@ -62,7 +62,7 @@ public:
     std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
-    void removeEntity(const glm::vec3 worldPos, const glm::vec3 playerPos);
+    void removeEntity(const glm::vec3 cameraVector,const glm::vec3 playerPos);
 
     bool checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2);
     GLFWwindow *getWindow() const;

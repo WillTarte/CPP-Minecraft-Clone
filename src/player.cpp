@@ -90,43 +90,21 @@ void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
     //code for deleting a block
     if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
 
-            //normalized device coords
-            //width and height are the window size
-            float x = (2.0f * 512) /1024 - 1.0f;
-            float y = 1.0f - (2.0f * 384) / 768;
-            float z = 1.0f;
-            glm::vec3 ray_nds = glm::vec3(x, y, z);
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+        float mouse_x = 512.0;
+        float mouse_y = 384.0;
+        glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1024 , 768);
+        glm::vec3 ray_start = glm::unProject(glm::vec3(mouse_x, mouse_y, 0.0f), this->getPlayerView(), projection, viewport);
+        glm::vec3 ray_end = glm::unProject(glm::vec3(mouse_x, mouse_y, 1.0f), this->getPlayerView(), projection, viewport);
 
 
-            glm::vec4 ray_clip = glm::vec4(ray_nds.x,ray_nds.y, -1.0, 1.0);
 
-
-            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,
-                                                    0.1f, 100.0f);
-
-            glm::mat4 view_matrix = this->getPlayerView();
-
-            glm::vec4 ray_eye = inverse(projection) * ray_clip;
-
-            glm::vec4 inverseView = (inverse(view_matrix) * ray_eye);
-            glm::vec3 ray_wor = glm::vec3(inverseView.x,inverseView.y,inverseView.z);
-
-
-            ray_wor = glm::normalize(ray_wor);
-
-//
-//        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
-//        float mouse_x = 512.0;
-//        float mouse_y = 384.0;
-//        glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1024 , 768);
-//        glm::vec3 ray_start = glm::unProject(glm::vec3(mouse_x, mouse_y, 0.0f), this->getPlayerView() Projection, viewport);
-//        glm::vec3 ray_end = glm::unProject(glm::vec3(mouse_x, mouse_y, 1.0f), this->getPlayerView(), Projection, viewport);
-
-
+        //may need to normalize!
         //ray_wor = glm::vec3(round(ray_wor.x-10), round(ray_wor.y - 25.5), round(ray_wor.z - 10));
 
 
-           engine->removeEntity(ray_wor, this->getTransform().getPosition());
+           engine->removeEntity(ray_end,ray_start);
     }
 }
 

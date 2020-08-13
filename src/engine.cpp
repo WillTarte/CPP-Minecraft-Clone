@@ -183,6 +183,7 @@ std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, Boun
 
 void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
 
+    //playerPos is really where the ray starts
 
     BoundingBox box = BoundingBox();
     for (auto &blocksById : entities) {
@@ -233,7 +234,7 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
                 std::cout << "intersection";
                 std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
             }
-            
+
             //just try with one face
 //            glm::vec3 top = glm::vec3(blockPos.x, blockPos.y +1.0, blockPos.z + 1.0);
 //            glm::vec3 left = glm::vec3(blockPos.x, blockPos.y, blockPos.z + 1.0);
