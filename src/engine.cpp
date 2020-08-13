@@ -185,7 +185,7 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
     //playerPos is really where the ray starts
 
-    BoundingBox box = BoundingBox();
+
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
 
@@ -233,30 +233,13 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
             if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
                 std::cout << "intersection";
                 std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+
+
+                //TODO ONE change from reseting the transfrom to deleting the object
+                ent.resetTransform();
+                //TODO two Limit the range of the click
             }
 
-            //just try with one face
-//            glm::vec3 top = glm::vec3(blockPos.x, blockPos.y +1.0, blockPos.z + 1.0);
-//            glm::vec3 left = glm::vec3(blockPos.x, blockPos.y, blockPos.z + 1.0);
-//
-//            bool intersectionCheck = checkIntersection(playerPos,cameraVector,blockPos,top,left);
-//
-//            glm::vec3 top1 = glm::vec3(blockPos.x, blockPos.y+1.0, blockPos.z);
-//            glm::vec3 top2 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z);
-//            glm::vec3 top3 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z+1.0);
-//
-//            bool topCheck = checkIntersection(playerPos,cameraVector,top1,top2,top3);
-//            if(intersectionCheck){
-//                std::cout << "sideINTERSECTION";
-//            }
-//
-//            if(topCheck){
-//                std::cout << "topINTERSECTION";
-//            }
-//           if(worldPos.y == entY) {
-//               std::cout <<true;
-//               entities.erase(ent.getBlockID());
-//           }
         }
     }
 
