@@ -19,7 +19,9 @@ void ModelDatabase::init() {
         // Insert modelName => Model
         Mesh mesh = makeMeshFromFile("./resources/models/" + file.path().filename().string());
 
-        //Model *model = new Model(mesh);
+        if (file.path().filename().string() == "steve.obj") {
+            mesh.meshName = "steve";
+        }
         std::shared_ptr<Model> model = std::make_shared<Model>(mesh);
         instance.models.insert({model->getModelName(), model});
 

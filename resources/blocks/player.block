@@ -1,0 +1,7 @@
+name: player
+
+ID: 0
+
+model: steve.obj
+
+all: Steve.png

@@ -45,4 +45,5 @@ public:
 /// Different model names namespace, since enums don't support strings
 namespace ModelType {
     const std::string CUBE = "cubeModel";
+    const std::string STEVE = "steveModel";
 }
