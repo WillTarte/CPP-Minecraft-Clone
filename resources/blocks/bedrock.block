@@ -1,0 +1,9 @@
+name: beckrock
+
+ID: 3
+
+model: cube.obj
+
+all: bedrock.png
+
+breakable: false

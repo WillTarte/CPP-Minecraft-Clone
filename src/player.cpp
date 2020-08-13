@@ -7,7 +7,7 @@
 
 //.23 makes it approximatly 3 tall
 Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
-                          Transform({20.0, 2.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
+                          Transform({20.0, 60.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
     this->camera = Camera{};
 }
 

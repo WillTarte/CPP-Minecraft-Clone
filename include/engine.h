@@ -25,6 +25,14 @@ struct Config {
     float fov = 45.0f;
 };
 
+#define WORLD_LENGTH_X_WIDTH 128
+#define WORLD_HEIGHT 16
+
+struct World {
+    int map[WORLD_LENGTH_X_WIDTH][WORLD_HEIGHT][WORLD_LENGTH_X_WIDTH];
+    int seed;
+};
+
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
@@ -33,6 +41,17 @@ private:
     int windowWidth;
     int windowHeight;
     std::unordered_map<BlockID, std::vector<Entity>> entities{};
+
+    // Generates the heightmap for the world using simplex method and renders it
+    void generateWorld();
+
+    // Generates a random seed for the world that's fed to the simplex noise generator
+    void generateSeed();
+
+    // Takes in a set of coordinates and renders a tree on top of that block
+    void drawTree(int x, int y, int z);
+
+    std::unique_ptr<World> world;
     std::unique_ptr<Player> player = std::make_unique<Player>();
 
 public:

@@ -7,9 +7,14 @@
 
 /// Block ID maps .block file to a specific type of block
 enum BlockID {
+    PLAYER = 0,
     DIRT = 1,
     DIRT_GRASS = 2,
-    PLAYER = 3
+    BEDROCK = 3,
+    STONE = 4,
+    OAK_LOG = 5,
+    OAK_LEAVES = 6,
+    WATER = 7,
 };
 static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS};
 
@@ -39,6 +44,7 @@ struct BlockFileData {
     std::string textureFile;
     std::string blockName;
     std::string modelFile;
+    bool breakable = true; // prevent you from being able to fall through the world with unbreakable bedrock
 };
 
 /** Reads a .block file
@@ -87,6 +93,10 @@ inline BlockFileData readBlockFile(const std::string &blockFilePath) {
             ret.textureFile = "../resources/textures/" + value;
             ret.textureType = TEXTURE2D;
             break;
+        }
+
+        if (identifier == "breakable") {
+            ret.breakable = value == "true";
         }
     }
 

@@ -1,0 +1,7 @@
+name: water
+
+ID: 7
+
+model: cube.obj
+
+all: water.jpg

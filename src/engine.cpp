@@ -1,7 +1,12 @@
 //
 // Created by Willi on 7/30/2020.
 //
+#include <random>
+#include <vector>
+#include <math.h>
+
 #include "../include/engine.h"
+#include "../libs/FastNoise.h"
 
 Engine::Engine(Config config) {
 
@@ -70,9 +75,12 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
+    this->world = std::make_unique<World>();
+    generateSeed();
+    generateWorld();
+
+    LOG(INFO) << "Generated world using seed " << world->seed << ".";
     LOG(INFO) << "Engine is primed and ready.";
-
-
 }
 
 void Engine::runLoop() {
@@ -87,6 +95,9 @@ void Engine::runLoop() {
     // ***********
 
     glfwSwapInterval(1);
+
+
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -129,6 +140,90 @@ void Engine::runLoop() {
 
 GLFWwindow *Engine::getWindow() const {
     return window;
+}
+
+void Engine::generateSeed() {
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(1.0, 1000000000.0);
+    world->seed = dist(mt);
+}
+
+void Engine::drawTree(int x, int y, int z) {
+    for (int h = 0; h < 4; h++) {
+        this->addEntity(
+                Entity(ModelType::CUBE, BlockID::OAK_LOG, Transform({x, y+h+1, z}, {1, 1, 1}, {0, 0, 0})));
+    }
+
+    for (int l = -2; l < 3; l++) {
+        for (int w = -2; w < 3; w++) {
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+4, z+w}, {1, 1, 1}, {0, 0, 0})));
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+5, z+w}, {1, 1, 1}, {0, 0, 0})));
+        }
+    }
+
+    for (int l = -1; l < 2; l++) {
+        for (int w = -1; w < 2; w++) {
+            this->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+6, z+w}, {1, 1, 1}, {0, 0, 0})));
+        }
+    }
+
+    this->addEntity(
+            Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y+7, z}, {1, 1, 1}, {0, 0, 0})));
+}
+
+void Engine::generateWorld() {
+    auto noiseGen = FastNoise(world->seed);
+    noiseGen.SetNoiseType(FastNoise::Simplex);
+
+    for (int x = 0; x < 128; x++) {
+        for (int z = 0; z < 128; z++) {
+            float tempHeight = noiseGen.GetNoise(x,0,z) + 1;
+            int height = round((tempHeight * 10)+1)+10;
+
+            /// Commenting this out for now because it increases the number of blocks rendered from ~16k to ~246k
+            /// Which means that the performance is dramatically worse. Once culling is done, this is good to include. 
+            // Fill the world with stone under the block
+//            for (int y = 0; y < height; y++) {
+//                // If right below grass, fill with dirt
+//                if (y > height - 4) {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//                // If not at bottom layer, fill with stone
+//                else if (y != 0) {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::STONE, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//                // Bottom layer is bedrock
+//                else {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//            }
+
+            if (height < 14) {
+                height = 13;
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::STONE, Transform({x, height-1, z}, {1, 1, 1}, {0, 0, 0})));
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::WATER, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
+            }
+            else {
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
+
+                int tree = (x * height * z) ^ world->seed;
+                if (tree % 61 == 0) {
+                    drawTree(x, height, z);
+                }
+            }
+        }
+        std::cout << std::endl;
+    }
 }
 
 // glfw: whenever the mouse moves, this callback is called
