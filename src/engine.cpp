@@ -181,6 +181,9 @@ void Engine::drawTree(int x, int y, int z) {
                     Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+6, z+w}, {1, 1, 1}, {0, 0, 0})));
         }
     }
+
+    this->addEntity(
+            Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y+7, z}, {1, 1, 1}, {0, 0, 0})));
 }
 
 void Engine::generateWorld() {
@@ -189,16 +192,30 @@ void Engine::generateWorld() {
 
     for (int x = 0; x < 128; x++) {
         for (int z = 0; z < 128; z++) {
-            float height = noiseGen.GetNoise(x,0,z);
-            height = height < 0 ? height * -1 : height;
-            height = round((height * 10)+1);
+            float tempHeight = noiseGen.GetNoise(x,0,z);
+            tempHeight = tempHeight < 0 ? tempHeight * -1 : tempHeight;
+            int height = round((tempHeight * 10)+1);
 
-            this->addEntity(
-                    Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, (int) height, z}, {1, 1, 1}, {0, 0, 0})));
+            // Fill the world with stone under the block
+//            for (int y = 0; y < height; y++) {
+//                this->addEntity(
+//                        Entity(ModelType::CUBE, BlockID::STONE, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//            }
 
-            int tree = (x * (int)height * z) ^ world->seed;
-            if (tree % 61 == 0) {
-                drawTree(x, height, z);
+            if (height < 2) {
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::STONE, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::WATER, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
+            }
+            else {
+                this->addEntity(
+                        Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
+
+                int tree = (x * height * z) ^ world->seed;
+                if (tree % 61 == 0) {
+                    drawTree(x, height, z);
+                }
             }
         }
         std::cout << std::endl;
