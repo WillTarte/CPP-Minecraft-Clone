@@ -183,37 +183,81 @@ std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, Boun
 
 void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
 
+
     BoundingBox box = BoundingBox();
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
 
+
+
+
+
             glm::vec3 blockPos = ent.getTransform().getPosition();
+
+            //TODO remove all the +0 lol
+            glm::vec3 V0 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V1 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V2 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V3 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V4 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V5 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V6 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+1);
+            glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
+
+
+            bool check1 = checkIntersection(playerPos,cameraVector,V0,V2,V1);
+
+            bool check2 = checkIntersection(playerPos,cameraVector,V0,V3,V2);
+
+            bool check3 = checkIntersection(playerPos,cameraVector,V2,V3,V4);
+
+            bool check4 = checkIntersection(playerPos,cameraVector,V2,V4,V5);
+
+            bool check5 = checkIntersection(playerPos,cameraVector,V1,V2,V5);
+
+            bool check6 = checkIntersection(playerPos,cameraVector,V1,V5,V6);
+
+            bool check7 = checkIntersection(playerPos,cameraVector,V0,V7,V4);
+
+            bool check8 = checkIntersection(playerPos,cameraVector,V0,V4,V3);
+
+            bool check9 = checkIntersection(playerPos,cameraVector,V5,V4,V7);
+
+            bool check10 = checkIntersection(playerPos,cameraVector,V5,V7,V6);
+
+            bool check11 = checkIntersection(playerPos,cameraVector,V0,V6,V7);
+
+            bool check12 = checkIntersection(playerPos,cameraVector,V0,V1,V6);
+
+            if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
+                std::cout << "intersection";
+                std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+            }
+            
             //just try with one face
-            glm::vec3 top = glm::vec3(blockPos.x, blockPos.y +1.0, blockPos.z + 1.0);
-            glm::vec3 left = glm::vec3(blockPos.x, blockPos.y, blockPos.z + 1.0);
-
-
-            bool intersectionCheck = checkIntersection(playerPos,cameraVector,blockPos,top,left);
-
-            glm::vec3 top1 = glm::vec3(blockPos.x, blockPos.y+1.0, blockPos.z);
-            glm::vec3 top2 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z);
-            glm::vec3 top3 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z+1.0);
-
-            bool topCheck = checkIntersection(playerPos,cameraVector,top1,top2,top3);
-            if(intersectionCheck){
-                std::cout << "INTERSECTION";
-            }
-
-            if(topCheck){
-                std::cout << "INTERSECTION";
-            }
+//            glm::vec3 top = glm::vec3(blockPos.x, blockPos.y +1.0, blockPos.z + 1.0);
+//            glm::vec3 left = glm::vec3(blockPos.x, blockPos.y, blockPos.z + 1.0);
+//
+//            bool intersectionCheck = checkIntersection(playerPos,cameraVector,blockPos,top,left);
+//
+//            glm::vec3 top1 = glm::vec3(blockPos.x, blockPos.y+1.0, blockPos.z);
+//            glm::vec3 top2 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z);
+//            glm::vec3 top3 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z+1.0);
+//
+//            bool topCheck = checkIntersection(playerPos,cameraVector,top1,top2,top3);
+//            if(intersectionCheck){
+//                std::cout << "sideINTERSECTION";
+//            }
+//
+//            if(topCheck){
+//                std::cout << "topINTERSECTION";
+//            }
 //           if(worldPos.y == entY) {
 //               std::cout <<true;
 //               entities.erase(ent.getBlockID());
 //           }
         }
     }
-
 
 
 
