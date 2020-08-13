@@ -85,6 +85,39 @@ void Player::processInput(GLFWwindow *window, float dt) {
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         this->jump();
     }
+
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+
+            //normalized device coords
+            //width and height are the window size
+            float x = (2.0f * 512) /1024 - 1.0f;
+            float y = 1.0f - (2.0f * 384) / 768;
+            float z = 1.0f;
+            glm::vec3 ray_nds = glm::vec3(x, y, z);
+
+
+            glm::vec4 ray_clip = glm::vec4(ray_nds.x,ray_nds.y, -1.0, 1.0);
+
+
+            glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,
+                                                    0.1f, 100.0f);
+
+            glm::mat4 view_matrix = this->getPlayerView();
+
+            glm::vec4 ray_eye = inverse(projection) * ray_clip;
+
+            glm::vec4 inverseView = (inverse(view_matrix) * ray_eye);
+            glm::vec3 ray_wor = glm::vec3(inverseView.x,inverseView.y,inverseView.z);
+// don't forget to normalise the vector at some point
+
+            ray_wor = glm::normalize(ray_wor);
+
+            //now we can compare with surfaces in the world space
+            std::cout << "ran mouseclick";
+
+            std::cout << ray_wor.x << " " << ray_wor.y <<" "  << ray_wor.z;
+
+    }
 }
 
 void Player::collide(Engine *engine, VelocityComponent comp) {

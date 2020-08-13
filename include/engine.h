@@ -63,8 +63,6 @@ public:
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
-    void mouse_click_callback(int b, int s, int mouse_x, int mouse_y);
-
 
     GLFWwindow *getWindow() const;
 
