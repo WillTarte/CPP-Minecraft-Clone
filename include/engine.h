@@ -62,7 +62,7 @@ public:
     std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
-
+    void removeEntity(const glm::vec3 worldPos);
 
     GLFWwindow *getWindow() const;
 

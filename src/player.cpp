@@ -59,7 +59,7 @@ void Player::update(Engine *engine, float dt) {
 }
 
 
-void Player::processInput(GLFWwindow *window, float dt) {
+void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
 
     float speed = 4;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -114,10 +114,11 @@ void Player::processInput(GLFWwindow *window, float dt) {
 
             //ray_wor = glm::normalize(ray_wor);
 
-        
+
 
            std::cout << ray_wor.x << " " << ray_wor.y <<" "  << ray_wor.z << "\n";
 
+           engine->removeEntity(ray_wor);
     }
 }
 

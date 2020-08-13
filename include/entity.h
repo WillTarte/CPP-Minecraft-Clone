@@ -39,6 +39,8 @@ public:
      */
     void draw(Shader &shader);
 
+
+
     /// Gets the blockID of this entity
     inline BlockID getBlockID() const { return this->blockId; }
 

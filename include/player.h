@@ -28,7 +28,7 @@ public:
     void update(Engine *engine, float dt);
 
     /// Processes the player's inputs
-    void processInput(GLFWwindow *window, float dt);
+    void processInput(GLFWwindow *window, float dt, Engine *engine);
 
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
