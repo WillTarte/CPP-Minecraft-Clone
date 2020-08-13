@@ -30,30 +30,6 @@ int main(int argc, char *argv[]) {
         engine->mouseCallbackFunc(window, x, y);
     });
 
-    LOG(INFO) << "ADDING SOME ENTITIES";
-
-//    for (int x = 0; x < 40; x++) {
-//        for (int z = 0; z < 40; z++) {
-//            int rd = rand() % 2;
-//            if (rd) {
-//                engine.addEntity(
-//                        Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, 0, z}, {1, 1, 1}, {0, 0, 0})));
-//            } else {
-//                engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, 0, z}, {1, 1, 1}, {0, 0, 0})));
-//            }
-//        }
-//    }
-
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 1, 12.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 2, 12.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 3, 12.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({12.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({11.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({13.0f, 3, 11.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({11.0f, 3, 10.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({13.0f, 3, 10.0f}, {1, 1, 1}, {0, 0, 0})));
-    engine.addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({5.0f, 1, 5.0f}, {1, 1, 1}, {0, 0, 0})));
-
     engine.runLoop();
 }
 
