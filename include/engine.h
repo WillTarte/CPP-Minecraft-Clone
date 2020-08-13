@@ -25,7 +25,7 @@ struct Config {
     float fov = 45.0f;
 };
 
-#define WORLD_LENGTH_X_WIDTH 8
+#define WORLD_LENGTH_X_WIDTH 128
 #define WORLD_HEIGHT 16
 
 struct World {

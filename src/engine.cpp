@@ -184,24 +184,26 @@ void Engine::generateWorld() {
             float tempHeight = noiseGen.GetNoise(x,0,z) + 1;
             int height = round((tempHeight * 10)+1)+10;
 
+            /// Commenting this out for now because it increases the number of blocks rendered from ~16k to ~246k
+            /// Which means that the performance is dramatically worse. Once culling is done, this is good to include. 
             // Fill the world with stone under the block
-            for (int y = 0; y < height; y++) {
-                // If right below grass, fill with dirt
-                if (y > height - 4) {
-                    this->addEntity(
-                            Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-                }
-                // If not at bottom layer, fill with stone
-                else if (y != 0) {
-                    this->addEntity(
-                            Entity(ModelType::CUBE, BlockID::STONE, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-                }
-                // Bottom layer is bedrock
-                else {
-                    this->addEntity(
-                            Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-                }
-            }
+//            for (int y = 0; y < height; y++) {
+//                // If right below grass, fill with dirt
+//                if (y > height - 4) {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//                // If not at bottom layer, fill with stone
+//                else if (y != 0) {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::STONE, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//                // Bottom layer is bedrock
+//                else {
+//                    this->addEntity(
+//                            Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
+//                }
+//            }
 
             if (height < 14) {
                 height = 13;
