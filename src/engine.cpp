@@ -173,6 +173,7 @@ std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, Boun
             bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
                           ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
 
+
             if (xColl && yColl && zColl)
                 return {&ent};
         }
@@ -180,25 +181,72 @@ std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, Boun
     return {};
 }
 
-void Engine::removeEntity(const glm::vec3 worldPos) {
+void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
 
     BoundingBox box = BoundingBox();
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
 
-            bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
-                          ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
-            bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
-                          ent.getTransform().getPosition().y + ent.box.dimensions.y >= worldPos.y);
-            bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
-                          ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
+            glm::vec3 blockPos = ent.getTransform().getPosition();
+            //just try with one face
+            glm::vec3 top = glm::vec3(blockPos.x, blockPos.y +1.0, blockPos.z + 1.0);
+            glm::vec3 left = glm::vec3(blockPos.x, blockPos.y, blockPos.z + 1.0);
 
-            if (xColl && yColl && zColl)
-                entities.erase(ent.getBlockID());
+
+            bool intersectionCheck = checkIntersection(playerPos,cameraVector,blockPos,top,left);
+
+            glm::vec3 top1 = glm::vec3(blockPos.x, blockPos.y+1.0, blockPos.z);
+            glm::vec3 top2 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z);
+            glm::vec3 top3 = glm::vec3(blockPos.x+1.0, blockPos.y+1.0, blockPos.z+1.0);
+
+            bool topCheck = checkIntersection(playerPos,cameraVector,top1,top2,top3);
+            if(intersectionCheck){
+                std::cout << "INTERSECTION";
+            }
+
+            if(topCheck){
+                std::cout << "INTERSECTION";
+            }
+//           if(worldPos.y == entY) {
+//               std::cout <<true;
+//               entities.erase(ent.getBlockID());
+//           }
         }
     }
 
 
 
 
+
+
+}
+
+
+bool Engine::checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2) {
+    const float EPSILON = 0.0000001;
+    glm::vec3 edge1, edge2, h, s, q;
+    float a, f, u, v;
+    edge1 = vertex1 - vertex0;
+    edge2 = vertex2 - vertex0;
+    h = glm::cross(rayVector, edge2);
+    a = glm::dot(edge1, h);
+    if (a > -EPSILON && a < EPSILON)
+        return false;
+    f = 1 / a;
+    s = rayOrigin - vertex0;
+    u = f * glm::dot(s, h);
+    if (u < 0.0 || u > 1.0)
+        return false;
+    q = glm::cross(s, edge1);
+    v = f * glm::dot(rayVector, q);
+    if (v < 0.0 || u + v > 1.0)
+        return false;
+    float t = f * glm::dot(edge2, q);
+    if (t > EPSILON) {
+        glm::vec3 plus = glm::normalize(rayVector) * (t * glm::length(rayVector));
+        glm::vec3 point = rayOrigin + plus;
+        std::cout << point.x << " " <<  point.y << " " << point.z << "\n";
+        return true;
+    } else
+        return false;
 }

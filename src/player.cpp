@@ -110,15 +110,23 @@ void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
 
             glm::vec4 inverseView = (inverse(view_matrix) * ray_eye);
             glm::vec3 ray_wor = glm::vec3(inverseView.x,inverseView.y,inverseView.z);
-// don't forget to normalise the vector at some point
-
-            //ray_wor = glm::normalize(ray_wor);
 
 
+            ray_wor = glm::normalize(ray_wor);
 
-           std::cout << ray_wor.x << " " << ray_wor.y <<" "  << ray_wor.z << "\n";
+//
+//        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+//        float mouse_x = 512.0;
+//        float mouse_y = 384.0;
+//        glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1024 , 768);
+//        glm::vec3 ray_start = glm::unProject(glm::vec3(mouse_x, mouse_y, 0.0f), this->getPlayerView() Projection, viewport);
+//        glm::vec3 ray_end = glm::unProject(glm::vec3(mouse_x, mouse_y, 1.0f), this->getPlayerView(), Projection, viewport);
 
-           engine->removeEntity(ray_wor);
+
+        //ray_wor = glm::vec3(round(ray_wor.x-10), round(ray_wor.y - 25.5), round(ray_wor.z - 10));
+
+
+           engine->removeEntity(ray_wor, this->getTransform().getPosition());
     }
 }
 
