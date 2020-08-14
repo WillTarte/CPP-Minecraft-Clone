@@ -1,12 +1,13 @@
 //
 // Created by Willi on 7/30/2020.
 //
-#include <random>
-#include <vector>
-#include <math.h>
 
-#include "../include/engine.h"
+#include <vector>
+#include <glm/ext.hpp>
+#include "../libs/easylogging++.h"
 #include "../libs/FastNoise.h"
+#include "../include/engine.h"
+
 
 Engine::Engine(Config config) {
 
@@ -16,12 +17,6 @@ Engine::Engine(Config config) {
     this->config = config;
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
-
-    LOG(INFO) << "Inserting Entities into the World ...";
-    this->entities = std::unordered_map<BlockID, std::vector<Entity>>();
-    for (auto ent : allBlockIDs) {
-        entities.insert({ent, std::vector<Entity>()});
-    }
 
     LOG(INFO) << "Initializing GLFW ...";
 
@@ -55,7 +50,7 @@ Engine::Engine(Config config) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetErrorCallback(errorCallback);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -75,11 +70,15 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
-    this->world = std::make_unique<World>();
-    generateSeed();
+    LOG(INFO) << "Generating World ... ";
+    this->worldInfo = WorldInfo{};
+    this->chunkManager = std::make_unique<ChunkManager>(this->worldInfo);
+
+    LOG(INFO) << "Inserting Entities into the World ...";
     generateWorld();
 
-    LOG(INFO) << "Generated world using seed " << world->seed << ".";
+    LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
+
     LOG(INFO) << "Engine is primed and ready.";
 }
 
@@ -107,8 +106,9 @@ void Engine::runLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        player->processInput(this->window, deltaTime);
+        player->processInput(this->window);
         player->update(this, deltaTime);
+        // --------------------
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,19 +117,19 @@ void Engine::runLoop() {
                                                 0.1f, 100.0f);
 
         // rendering stuff here
+        // --------------------
         basicShader.setMat4("view", player->getPlayerView());
         basicShader.setMat4("projection", projection);
 
-        for (auto &blocksByID : this->entities) {
-            // do some setting up per block type
-            //iterate trough entites of that block type
-            for (auto &blocks : blocksByID.second) {
-                blocks.draw(basicShader);
-            }
+        auto chunksToDraw = chunkManager->getSurroundingChunksByXZ(
+                {player->getTransform().getPosition().x, player->getTransform().getPosition().z});
+        LOG(INFO) << "Rendering " << chunksToDraw.size() << " Chunks.";
+        for (auto chunk : chunksToDraw) {
+            (*chunk).renderChunk(basicShader);
         }
 
         player->draw(basicShader);
-
+        // --------------------
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -142,52 +142,54 @@ GLFWwindow *Engine::getWindow() const {
     return window;
 }
 
-void Engine::generateSeed() {
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(1.0, 1000000000.0);
-    world->seed = dist(mt);
-}
+//TODO: Is there some way to add randomness to trees?
+void Engine::addTree(int x, int y, int z) {
 
-void Engine::drawTree(int x, int y, int z) {
+    auto chunk = this->chunkManager->getChunkbyXZ({x, z});
+
     for (int h = 0; h < 4; h++) {
-        this->addEntity(
-                Entity(ModelType::CUBE, BlockID::OAK_LOG, Transform({x, y+h+1, z}, {1, 1, 1}, {0, 0, 0})));
+        (*chunk)->addEntity(
+                Entity(ModelType::CUBE, BlockID::OAK_LOG, Transform({x, y + h + 1, z}, {1, 1, 1}, {0, 0, 0})));
     }
 
     for (int l = -2; l < 3; l++) {
         for (int w = -2; w < 3; w++) {
-            this->addEntity(
-                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+4, z+w}, {1, 1, 1}, {0, 0, 0})));
-            this->addEntity(
-                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+5, z+w}, {1, 1, 1}, {0, 0, 0})));
+            (*chunk)->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES,
+                           Transform({x + l, y + 4, z + w}, {1, 1, 1}, {0, 0, 0})));
+            (*chunk)->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES,
+                           Transform({x + l, y + 5, z + w}, {1, 1, 1}, {0, 0, 0})));
         }
     }
 
     for (int l = -1; l < 2; l++) {
         for (int w = -1; w < 2; w++) {
-            this->addEntity(
-                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x+l, y+6, z+w}, {1, 1, 1}, {0, 0, 0})));
+            (*chunk)->addEntity(
+                    Entity(ModelType::CUBE, BlockID::OAK_LEAVES,
+                           Transform({x + l, y + 6, z + w}, {1, 1, 1}, {0, 0, 0})));
         }
     }
 
-    this->addEntity(
-            Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y+7, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y + 7, z}, {1, 1, 1}, {0, 0, 0})));
 }
 
 void Engine::generateWorld() {
-    auto noiseGen = FastNoise(world->seed);
+    auto noiseGen = FastNoise(worldInfo.getSeed());
     noiseGen.SetNoiseType(FastNoise::Simplex);
 
-    for (int x = 0; x < 128; x++) {
-        for (int z = 0; z < 128; z++) {
-            float tempHeight = noiseGen.GetNoise(x,0,z) + 1;
-            int height = round((tempHeight * 10)+1)+10;
+    for (unsigned int x = 0; x < this->worldInfo.getWidth(); x++) {
+        for (unsigned int z = 0; z < this->worldInfo.getLength(); z++) {
+            float tempHeight = noiseGen.GetNoise(x, 0, z) + 1;
+            int height = round((tempHeight * 10) + 1) + 10;
+
+            auto chunk = this->chunkManager->getChunkbyXZ({x, z});
 
             /// Commenting this out for now because it increases the number of blocks rendered from ~16k to ~246k
             /// Which means that the performance is dramatically worse. Once culling is done, this is good to include. 
             // Fill the world with stone under the block
-//            for (int y = 0; y < height; y++) {
+//            for (int y = 0; y < this->world.height; y++) {
 //                // If right below grass, fill with dirt
 //                if (y > height - 4) {
 //                    this->addEntity(
@@ -207,22 +209,21 @@ void Engine::generateWorld() {
 
             if (height < 14) {
                 height = 13;
-                this->addEntity(
-                        Entity(ModelType::CUBE, BlockID::STONE, Transform({x, height-1, z}, {1, 1, 1}, {0, 0, 0})));
-                this->addEntity(
+                (*chunk)->addEntity(
+                        Entity(ModelType::CUBE, BlockID::STONE, Transform({x, height - 1, z}, {1, 1, 1}, {0, 0, 0})));
+                (*chunk)->addEntity(
                         Entity(ModelType::CUBE, BlockID::WATER, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
             }
             else {
-                this->addEntity(
+                (*chunk)->addEntity(
                         Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
 
-                int tree = (x * height * z) ^ world->seed;
+                int tree = (x * height * z) ^worldInfo.getSeed();
                 if (tree % 61 == 0) {
-                    drawTree(x, height, z);
+                    addTree(x, height, z);
                 }
             }
         }
-        std::cout << std::endl;
     }
 }
 
@@ -230,39 +231,4 @@ void Engine::generateWorld() {
 // -------------------------------------------------------
 void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
     player->look(windowParam, xpos, ypos);
-}
-
-std::optional<Entity *> Engine::getEntityByWorldPos(const glm::vec3 worldPos) {
-    for (auto &blocksById : entities) {
-        for (auto &ent : blocksById.second) {
-            glm::vec3 entityPos = ent.getTransform().getPosition();
-
-            bool withinX = (int) worldPos.x == (int) entityPos.x;
-            bool withinY = (int) worldPos.y == (int) entityPos.y;
-            bool withinZ = (int) worldPos.z == (int) entityPos.z;
-
-            if (withinX && withinZ && withinY) {
-                return {&ent};
-            }
-        }
-    }
-    return {};
-}
-
-std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
-    for (auto &blocksById : entities) {
-        for (auto &ent : blocksById.second) {
-
-            bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
-                          ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
-            bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
-                          ent.getTransform().getPosition().y + ent.box.dimensions.y >= worldPos.y);
-            bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
-                          ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
-
-            if (xColl && yColl && zColl)
-                return {&ent};
-        }
-    }
-    return {};
 }

@@ -6,8 +6,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <optional>
-#include "camera.h"
 #include "entity.h"
+#include "camera.h"
+#include "chunks.h"
 
 class Engine;
 
@@ -28,7 +29,7 @@ public:
     void update(Engine *engine, float dt);
 
     /// Processes the player's inputs
-    void processInput(GLFWwindow *window, float dt);
+    void processInput(GLFWwindow *window);
 
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
@@ -47,11 +48,11 @@ private:
      * @param engine the engine
      * @param comp the velocity component/axis to verify collisions
      */
-    void collide(Engine *engine, VelocityComponent comp);
+    void collide(std::shared_ptr<Chunk> currentChunk, VelocityComponent comp);
 
     /** Checks if the player is on the ground (gravity)
      *
-     * @param engine
+     * @param currentChunk the current chunk
      */
-    void checkOnGround(Engine *engine);
+    void checkOnGround(std::shared_ptr<Chunk> currentChunk);
 };

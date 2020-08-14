@@ -7,15 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
-#include "../libs/easylogging++.h"
-#include "mesh.h"
-#include "objloader.h"
-#include "texture.h"
 #include "shader.h"
-#include "model.h"
-#include "texture_database.h"
-#include "entity.h"
-#include "model_database.h"
+#include "chunks.h"
 #include "player.h"
 
 /// Config for the application
@@ -25,60 +18,31 @@ struct Config {
     float fov = 45.0f;
 };
 
-#define WORLD_LENGTH_X_WIDTH 128
-#define WORLD_HEIGHT 16
-
-struct World {
-    int map[WORLD_LENGTH_X_WIDTH][WORLD_HEIGHT][WORLD_LENGTH_X_WIDTH];
-    int seed;
-};
-
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
     Config config;
-    GLFWwindow* window;
+    GLFWwindow *window;
     int windowWidth;
     int windowHeight;
-    std::unordered_map<BlockID, std::vector<Entity>> entities{};
 
-    // Generates the heightmap for the world using simplex method and renders it
+    /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();
 
-    // Generates a random seed for the world that's fed to the simplex noise generator
-    void generateSeed();
+    /// Takes in a set of coordinates and renders a tree on top of that block
+    void addTree(int x, int y, int z);
 
-    // Takes in a set of coordinates and renders a tree on top of that block
-    void drawTree(int x, int y, int z);
-
-    std::unique_ptr<World> world;
+    WorldInfo worldInfo;
     std::unique_ptr<Player> player = std::make_unique<Player>();
 
 public:
+
+    std::unique_ptr<ChunkManager> chunkManager;
 
     explicit Engine(Config config);
 
     /// Runs the main game loop.
     void runLoop();
-
-    /// Adds an entity to the world. NB: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std::move.
-    /// <br/><br/>In other words, this method gives ownership of the entity to the Engine.
-    inline void addEntity(Entity &&entity) { entities[entity.getBlockID()].push_back(entity); }
-
-    /** Returns an entity in absolute world position
-     *
-     * @param worldPos the world pos (truncates to integers)
-     * @return an optional pointer to an entity
-     */
-    std::optional<Entity *> getEntityByWorldPos(const glm::vec3 worldPos);
-
-    /** Returns an entity based on a bounding box overlap
-     *
-     * @param worldPos the world position
-     * @param box the bounding box
-     * @return an optional pointer to an entity
-     */
-    std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 

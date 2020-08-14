@@ -7,7 +7,7 @@
 
 //.23 makes it approximatly 3 tall
 Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
-                          Transform({20.0, 60.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
+                          Transform({20.0, 30.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
     this->camera = Camera{};
 }
 
@@ -41,25 +41,34 @@ void Player::look(GLFWwindow *window, double xpos, double ypos) {
 /// Should do any collision/physics here
 void Player::update(Engine *engine, float dt) {
 
+    auto currentChunk = engine->chunkManager->getChunkbyXZ(
+            {getTransform().getPosition().x, getTransform().getPosition().z});
+
     velocity += acceleration;
     velocity *= dt;
     acceleration = {0, velocity.y, 0};
 
     if (!onGround) {
-        acceleration.y -= 20 * dt;
+        //acceleration.y -= 20 * dt;
     }
 
-    collide(engine, VelocityComponent::Y);
-    collide(engine, VelocityComponent::X);
-    collide(engine, VelocityComponent::Z);
-    checkOnGround(engine);
+    if (currentChunk.has_value()) {
+        collide((*currentChunk), VelocityComponent::Y);
+        collide((*currentChunk), VelocityComponent::X);
+        collide((*currentChunk), VelocityComponent::Z);
+        checkOnGround((*currentChunk));
+    } else {
+        // Out of bounds!
+        LOG(DEBUG) << "Player is out of bounds at " << this->getTransform().getPosition().x << " "
+                   << this->getTransform().getPosition().y << " " << this->getTransform().getPosition().z;
+    }
 
     this->transform.translate(velocity);
     this->camera.Position = this->getTransform().getPosition() + glm::vec3(0.5f, 1.5f, 0.5f);
 }
 
 
-void Player::processInput(GLFWwindow *window, float dt) {
+void Player::processInput(GLFWwindow *window) {
 
     float speed = 4;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -87,13 +96,14 @@ void Player::processInput(GLFWwindow *window, float dt) {
     }
 }
 
-void Player::collide(Engine *engine, VelocityComponent comp) {
+void Player::collide(std::shared_ptr<Chunk> currentChunk, VelocityComponent comp) {
 
     std::optional<Entity *> optEnt;
 
     if (comp == VelocityComponent::Y) {
-        optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(0, velocity.y, 0),
-                                                 this->box);
+        optEnt = (*currentChunk).getEntityByBoxCollision(
+                this->getTransform().getPosition() + glm::vec3(0, velocity.y, 0),
+                this->box);
         if (velocity.y > 0) {
             if (optEnt.has_value() && checkCollisionY(*this, *(*optEnt))) {
                 std::cout << "\nBONK\n";
@@ -110,8 +120,9 @@ void Player::collide(Engine *engine, VelocityComponent comp) {
     }
 
     if (comp == VelocityComponent::X) {
-        optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(velocity.x, 0, 0),
-                                                 this->box);
+        optEnt = (*currentChunk).getEntityByBoxCollision(
+                this->getTransform().getPosition() + glm::vec3(velocity.x, 0, 0),
+                this->box);
         if (velocity.x > 0) {
             if (optEnt.has_value() && checkCollisionX(*this, *(*optEnt))) {
                 velocity.x = 0;
@@ -124,8 +135,9 @@ void Player::collide(Engine *engine, VelocityComponent comp) {
     }
 
     if (comp == VelocityComponent::Z) {
-        optEnt = engine->getEntityByBoxCollision(this->getTransform().getPosition() + glm::vec3(0, 0, velocity.z),
-                                                 this->box);
+        optEnt = (*currentChunk).getEntityByBoxCollision(
+                this->getTransform().getPosition() + glm::vec3(0, 0, velocity.z),
+                this->box);
         if (velocity.z > 0) {
             if (optEnt.has_value() && checkCollisionZ(*this, *(*optEnt))) {
                 velocity.z = 0;
@@ -139,8 +151,8 @@ void Player::collide(Engine *engine, VelocityComponent comp) {
     }
 }
 
-void Player::checkOnGround(Engine *engine) {
-    std::optional<Entity *> optEntity = engine->getEntityByBoxCollision(
+void Player::checkOnGround(std::shared_ptr<Chunk> currentChunk) {
+    std::optional<Entity *> optEntity = (*currentChunk).getEntityByBoxCollision(
             this->getTransform().getPosition() + glm::vec3(0.0f, -0.2f, 0.0f), this->box);
 
     onGround = optEntity.has_value();
