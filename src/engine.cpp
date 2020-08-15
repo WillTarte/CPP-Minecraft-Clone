@@ -183,14 +183,14 @@ std::optional<Entity *> Engine::getEntityByBoxCollision(glm::vec3 worldPos, Boun
 
 void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
 
-    //playerPos is really where the ray starts
+    //CAMERA VECTOR IS REALLY THE END POINT OF THE RAY
 
+    //PLAYER POS IS THE start
 
+    glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+    
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
-
-
-
 
 
             glm::vec3 blockPos = ent.getTransform().getPosition();
@@ -231,25 +231,114 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
             bool check12 = checkIntersection(playerPos,cameraVector,V0,V1,V6);
 
             if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
-                std::cout << "intersection";
-                std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+              //  std::cout << "intersection";
+               // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
 
 
                 //TODO ONE change from reseting the transfrom to deleting the object
-                ent.resetTransform();
-                //TODO two Limit the range of the click
+
+                glm::vec3 currentEntPos = ent.getTransform().getPosition();
+
+                float distance = sqrt((pow( currentPlayerPos.x - currentEntPos.x, 2) +  pow(currentPlayerPos.y - currentEntPos.y, 2) +  pow(currentPlayerPos.z - currentEntPos.z, 2)));
+
+
+                std::cout << "distance" << distance << "\n";
+
+                if(distance <= 5) {
+                    ent.resetTransform();
+                }
+
             }
 
         }
     }
 
+}
 
 
 
+
+void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
+
+    //CAMERA VECTOR IS REALLY THE END POINT OF THE RAY
+
+    //PLAYER POS IS THE start
+
+    glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+
+    
+
+    for (auto &blocksById : entities) {
+        for (auto &ent : blocksById.second) {
+
+
+            glm::vec3 blockPos = ent.getTransform().getPosition();
+
+            //TODO remove all the +0 lol
+            glm::vec3 V0 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V1 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V2 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V3 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V4 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V5 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V6 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+1);
+            glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
+
+
+            bool check1 = checkIntersection(playerPos,cameraVector,V0,V2,V1);
+
+            bool check2 = checkIntersection(playerPos,cameraVector,V0,V3,V2);
+
+            bool check3 = checkIntersection(playerPos,cameraVector,V2,V3,V4);
+
+            bool check4 = checkIntersection(playerPos,cameraVector,V2,V4,V5);
+
+            bool check5 = checkIntersection(playerPos,cameraVector,V1,V2,V5);
+
+            bool check6 = checkIntersection(playerPos,cameraVector,V1,V5,V6);
+
+            bool check7 = checkIntersection(playerPos,cameraVector,V0,V7,V4);
+
+            bool check8 = checkIntersection(playerPos,cameraVector,V0,V4,V3);
+
+            bool check9 = checkIntersection(playerPos,cameraVector,V5,V4,V7);
+
+            bool check10 = checkIntersection(playerPos,cameraVector,V5,V7,V6);
+
+            bool check11 = checkIntersection(playerPos,cameraVector,V0,V6,V7);
+
+            bool check12 = checkIntersection(playerPos,cameraVector,V0,V1,V6);
+
+            if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
+                //  std::cout << "intersection";
+                // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+
+
+                //TODO ONE change from reseting the transfrom to deleting the object
+
+                glm::vec3 currentEntPos = ent.getTransform().getPosition();
+
+                float distance = sqrt((pow( currentPlayerPos.x - currentEntPos.x, 2) +  pow(currentPlayerPos.y - currentEntPos.y, 2) +  pow(currentPlayerPos.z - currentEntPos.z, 2)));
+
+
+                std::cout << "distance" << distance << "\n";
+
+                glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x,currentEntPos.y + 1.0, currentEntPos.z);
+                if(distance <= 5) {
+                    this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
+                }
+
+            }
+
+        }
+    }
 
 }
 
 
+
+
+//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
 bool Engine::checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2) {
     const float EPSILON = 0.0000001;
     glm::vec3 edge1, edge2, h, s, q;
@@ -273,7 +362,7 @@ bool Engine::checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayV
     if (t > EPSILON) {
         glm::vec3 plus = glm::normalize(rayVector) * (t * glm::length(rayVector));
         glm::vec3 point = rayOrigin + plus;
-        std::cout << point.x << " " <<  point.y << " " << point.z << "\n";
+        //std::cout << point.x << " " <<  point.y << " " << point.z << "\n";
         return true;
     } else
         return false;
