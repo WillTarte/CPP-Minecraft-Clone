@@ -42,6 +42,6 @@ public:
     /// Gets the blockID of this entity
     inline BlockID getBlockID() const { return this->blockId; }
 
-    /// Gets this entity's transform
-    inline Transform getTransform() { return this->transform; }
+    /// Gets this entity's transform by reference
+    inline Transform &getTransform() { return this->transform; }
 };

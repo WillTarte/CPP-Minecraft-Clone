@@ -30,10 +30,10 @@ private:
     void generateWorld();
 
     /// Takes in a set of coordinates and renders a tree on top of that block
-    void addTree(int x, int y, int z);
+    void addTree(unsigned int x, unsigned int y, unsigned int z) const;
 
     WorldInfo worldInfo;
-    std::unique_ptr<Player> player = std::make_unique<Player>();
+    std::unique_ptr<Player> player;
 
 public:
 

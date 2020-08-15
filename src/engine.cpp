@@ -50,7 +50,7 @@ Engine::Engine(Config config) {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetErrorCallback(errorCallback);
 
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -77,14 +77,18 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Inserting Entities into the World ...";
     generateWorld();
 
+    LOG(INFO) << "Number of entities: " << this->chunkManager->getNumberOfEntities();
+    LOG(INFO) << "Number of Chunks: " << this->chunkManager->getNumberOfChunks();
+
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
+    this->player = std::make_unique<Player>(glm::vec3(20.0f, 32.0f, 20.0f));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
 
 void Engine::runLoop() {
-    double currentFrame = 0.0f;
-    double deltaTime = 0.0f;    // time between current frame and last frame
+    double currentFrame;
+    double deltaTime;    // time between current frame and last frame
     double lastFrame = 0.0f;
 
     //TODO this should not be here
@@ -94,8 +98,6 @@ void Engine::runLoop() {
     // ***********
 
     glfwSwapInterval(1);
-
-
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -107,7 +109,7 @@ void Engine::runLoop() {
         lastFrame = currentFrame;
 
         player->processInput(this->window);
-        player->update(this, deltaTime);
+        player->update(this, static_cast<float>(deltaTime));
         // --------------------
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -123,9 +125,9 @@ void Engine::runLoop() {
 
         auto chunksToDraw = chunkManager->getSurroundingChunksByXZ(
                 {player->getTransform().getPosition().x, player->getTransform().getPosition().z});
-        LOG(INFO) << "Rendering " << chunksToDraw.size() << " Chunks.";
-        for (auto chunk : chunksToDraw) {
-            (*chunk).renderChunk(basicShader);
+        LOG(DEBUG) << "Rendering " << chunksToDraw.size() << " Chunks.";
+        for (const auto &chunk : chunksToDraw) {
+            chunk->renderChunk(basicShader);
         }
 
         player->draw(basicShader);
@@ -143,9 +145,9 @@ GLFWwindow *Engine::getWindow() const {
 }
 
 //TODO: Is there some way to add randomness to trees?
-void Engine::addTree(int x, int y, int z) {
+void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
 
-    auto chunk = this->chunkManager->getChunkbyXZ({x, z});
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
 
     for (int h = 0; h < 4; h++) {
         (*chunk)->addEntity(
@@ -184,7 +186,7 @@ void Engine::generateWorld() {
             float tempHeight = noiseGen.GetNoise(x, 0, z) + 1;
             int height = round((tempHeight * 10) + 1) + 10;
 
-            auto chunk = this->chunkManager->getChunkbyXZ({x, z});
+            auto chunk = this->chunkManager->getChunkByXZ({x, z});
 
             /// Commenting this out for now because it increases the number of blocks rendered from ~16k to ~246k
             /// Which means that the performance is dramatically worse. Once culling is done, this is good to include. 
@@ -225,6 +227,28 @@ void Engine::generateWorld() {
             }
         }
     }
+
+    //spawn platform
+    auto chunk = this->chunkManager->getChunkByXZ({20, 20});
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+
 }
 
 // glfw: whenever the mouse moves, this callback is called

@@ -5,11 +5,11 @@
 #include <climits>
 #include "../include/chunks.h"
 
-Chunk::Chunk(glm::vec2 origin) {
+Chunk::Chunk(unsigned int xInd, unsigned int zInd) {
     for (auto ent : allBlockIDs) {
         entities.insert({ent, std::vector<Entity>()});
     }
-    this->origin = origin;
+    this->origin = std::make_pair(xInd, zInd);
 }
 
 std::optional<Entity *> Chunk::getEntityByWorldPos(glm::vec3 worldPos) {
@@ -34,6 +34,9 @@ std::optional<Entity *> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, Bound
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
 
+            //if (isBlockOutOfBounds({worldPos.x, worldPos.z}))
+            // return {};
+
             bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
                           ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
             bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
@@ -48,11 +51,10 @@ std::optional<Entity *> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, Bound
     return {};
 }
 
-bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) {
+bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
 
-    return xzCoords.x<this->origin.x || xzCoords.x>(this->origin.x + CHUNK_WIDTH) ||
-           xzCoords.y<this->origin.y || xzCoords.y>(this->origin.y + CHUNK_LENGTH);
-
+    return xzCoords.x<(float) (origin.first * CHUNK_WIDTH) || xzCoords.x>(float)(origin.first * (CHUNK_WIDTH + 1)) ||
+           xzCoords.y<(float) (origin.second * CHUNK_LENGTH) || xzCoords.y>(float)(origin.second * (CHUNK_LENGTH + 1));
 }
 
 void Chunk::renderChunk(Shader &shader) {
@@ -65,38 +67,49 @@ void Chunk::renderChunk(Shader &shader) {
     }
 }
 
-std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkbyXZ(glm::vec2 xzCoords) {
+size_t Chunk::getNumberOfEntities() const {
+    size_t total = 0;
+    for (const auto &ents : entities)
+        total += ents.second.size();
+    return total;
+}
 
-    for (auto &chunkByPos : chunks) {
-        if ((int) (chunkByPos.first.x / CHUNK_WIDTH) == (int) chunkByPos.second->getChunkOrigin().x &&
-            (int) (chunkByPos.first.z / CHUNK_LENGTH) == (int) chunkByPos.second->getChunkOrigin().y) {
-            return chunkByPos.second;
-        }
+std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2 xzCoords) {
+
+    std::pair<int, int> findKey;
+    findKey.first = (int) xzCoords.x / CHUNK_WIDTH;
+    findKey.second = (int) xzCoords.y / CHUNK_LENGTH;
+
+    if (chunks.find(findKey) == chunks.end()) {
+        LOG(DEBUG) << "Did not find Chunk at coords " << xzCoords.x << " " << xzCoords.y;
+        return {};
+    } else {
+        return chunks[findKey];
     }
+}
 
-    LOG(INFO) << "Did not find Chunk at coords " << xzCoords.x << " " << xzCoords.y;
-    return {};
+std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZIndex(unsigned int xInd, unsigned int zInd) {
+    std::pair<unsigned int, unsigned int> findKey = std::make_pair(xInd, zInd);
+
+    if (chunks.find(findKey) == chunks.end()) {
+        LOG(DEBUG) << "Did not find Chunk at coords " << xInd * CHUNK_WIDTH << " " << zInd * CHUNK_LENGTH;
+        return {};
+    } else {
+        return chunks[findKey];
+    }
 }
 
 std::vector<std::shared_ptr<Chunk>> ChunkManager::getSurroundingChunksByXZ(glm::vec2 xzCoords) {
 
     std::vector<std::shared_ptr<Chunk>> out;
-    std::optional<std::shared_ptr<Chunk>> mainChunk = getChunkbyXZ(xzCoords);
-    if (mainChunk.has_value())
-        out.push_back((*mainChunk));
-    else
-        LOG(INFO) << "Unable to find main chunk at " << xzCoords.x << " " << xzCoords.y;
 
     for (int x = -1; x <= 1; x++) {
         for (int z = -1; z <= 1; z++) {
-            std::optional<std::shared_ptr<Chunk>> neighborChunk = getChunkbyXZ(
-                    xzCoords + glm::vec2(x * CHUNK_WIDTH, z * CHUNK_LENGTH));
+            std::optional<std::shared_ptr<Chunk>> neighborChunk = getChunkByXZIndex(
+                    ((int) xzCoords.x / CHUNK_WIDTH) + x,
+                    ((int) xzCoords.y / CHUNK_LENGTH) + z);
             if (neighborChunk.has_value())
                 out.push_back((*neighborChunk));
-            else
-                LOG(INFO) << "Unable to find neighbor chunk at "
-                          << xzCoords.x + glm::vec2(x * CHUNK_WIDTH, z * CHUNK_LENGTH).x << " "
-                          << xzCoords.y + glm::vec2(x * CHUNK_WIDTH, z * CHUNK_LENGTH).y;
         }
     }
 
@@ -105,18 +118,27 @@ std::vector<std::shared_ptr<Chunk>> ChunkManager::getSurroundingChunksByXZ(glm::
 
 ChunkManager::ChunkManager(const WorldInfo &worldInfo) {
 
-    for (unsigned int chunkX = 0; chunkX < worldInfo.getWidth(); chunkX += CHUNK_WIDTH) {
-        for (unsigned int chunkZ = 0; chunkZ < worldInfo.getLength(); chunkZ += CHUNK_LENGTH) {
-            this->chunks.insert({glm::vec2(chunkX, chunkZ), std::make_unique<Chunk>(glm::vec2(chunkX, chunkZ))});
+    size_t num = 0;
+    for (unsigned int chunkX = 0; chunkX < worldInfo.getWidth() / CHUNK_WIDTH; chunkX++) {
+        for (unsigned int chunkZ = 0; chunkZ < worldInfo.getLength() / CHUNK_LENGTH; chunkZ++) {
+            this->chunks.insert({std::make_pair(chunkX, chunkZ), std::make_shared<Chunk>(chunkX, chunkZ)});
         }
     }
 
 }
 
-unsigned int WorldInfo::generateSeed() {
+size_t ChunkManager::getNumberOfEntities() const {
+    size_t total = 0;
+    for (const auto &chunk : chunks) {
+        total += chunk.second->getNumberOfEntities();
+    }
+    return total;
+}
+
+int WorldInfo::generateSeed() {
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::uniform_int_distribution<unsigned int> dist(0, UINT_MAX);
+    std::uniform_int_distribution<int> dist(0, INT_MAX);
     return dist(mt);
 }
 

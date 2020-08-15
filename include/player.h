@@ -22,6 +22,8 @@ class Player : public Entity {
 public:
     Player();
 
+    Player(glm::vec3 spawnPoint);
+
     /// Returns the player's current view matrix
     glm::mat4 getPlayerView() { return glm::lookAt(camera.Position, camera.Position + camera.Front, camera.Up); }
 
@@ -48,11 +50,11 @@ private:
      * @param engine the engine
      * @param comp the velocity component/axis to verify collisions
      */
-    void collide(std::shared_ptr<Chunk> currentChunk, VelocityComponent comp);
+    void collide(const std::shared_ptr<Chunk> &currentChunk, VelocityComponent comp);
 
     /** Checks if the player is on the ground (gravity)
      *
      * @param currentChunk the current chunk
      */
-    void checkOnGround(std::shared_ptr<Chunk> currentChunk);
+    void checkOnGround(const std::shared_ptr<Chunk> &currentChunk);
 };
