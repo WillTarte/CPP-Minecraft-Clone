@@ -187,7 +187,13 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
     //PLAYER POS IS THE start
 
+    Entity *closestEnt;
+    float previousDistance;
+
     glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+
+    bool firstLoop = false;
+    bool blockWithinFive = false;
     
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
@@ -234,6 +240,10 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
               //  std::cout << "intersection";
                // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
 
+               if(firstLoop == false){
+                   closestEnt = &ent;
+                   previousDistance = 1000;
+               }
 
                 //TODO ONE change from reseting the transfrom to deleting the object
 
@@ -244,8 +254,18 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
                 std::cout << "distance" << distance << "\n";
 
-                if(distance <= 5) {
-                    ent.resetTransform();
+
+                //check if block is within 5 blocks
+                if(distance <= 3) {
+                    if(!blockWithinFive){
+                        blockWithinFive = true;
+                    }
+
+                    if(distance< previousDistance){
+                        closestEnt = &ent;
+                        previousDistance = distance;
+                    }
+
                 }
 
             }
@@ -253,6 +273,11 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
         }
     }
 
+    //now we have the closet block in the
+
+    if(blockWithinFive){
+        closestEnt->resetTransform();
+    }
 }
 
 
@@ -260,13 +285,13 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
 void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
 
-    //CAMERA VECTOR IS REALLY THE END POINT OF THE RAY
-
-    //PLAYER POS IS THE start
+    Entity *closestEnt;
+    float previousDistance;
 
     glm::vec3 currentPlayerPos = player->getTransform().getPosition();
 
-    
+    bool firstLoop = false;
+    bool blockWithinFive = false;
 
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
@@ -313,6 +338,10 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
                 //  std::cout << "intersection";
                 // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
 
+                if(firstLoop == false){
+                    closestEnt = &ent;
+                    previousDistance = 1000;
+                }
 
                 //TODO ONE change from reseting the transfrom to deleting the object
 
@@ -323,9 +352,18 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
 
                 std::cout << "distance" << distance << "\n";
 
-                glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x,currentEntPos.y + 1.0, currentEntPos.z);
-                if(distance <= 5) {
-                    this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
+
+                //check if block is within 5 blocks
+                if(distance <= 3) {
+                    if(!blockWithinFive){
+                        blockWithinFive = true;
+                    }
+
+                    if(distance< previousDistance){
+                        closestEnt = &ent;
+                        previousDistance = distance;
+                    }
+
                 }
 
             }
@@ -333,8 +371,15 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
         }
     }
 
-}
 
+    //currently only places blocks on top
+    if(blockWithinFive){
+        glm::vec3 currentEntPos = closestEnt->getTransform().getPosition();
+        glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x,currentEntPos.y + 1.0, currentEntPos.z);
+        this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
+    }
+
+}
 
 
 
