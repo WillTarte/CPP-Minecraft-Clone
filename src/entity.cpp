@@ -3,11 +3,14 @@
 //
 #include "../include/entity.h"
 
+EntityID Entity::entityIDCounter = 1;
+
 Entity::Entity(std::string modelName, BlockID blockId) {
     this->modelName = std::move(modelName);
     this->blockId = blockId;
     this->transform = Transform();
     this->box = BoundingBox({1.0, 1.0, 1.0});
+    this->entityID = Entity::entityIDCounter++;
 }
 
 Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
@@ -15,6 +18,7 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
     this->blockId = blockId1;
     this->transform = transform1;
     this->box = BoundingBox({1.0, 1.0, 1.0});
+    this->entityID = Entity::entityIDCounter++;
 }
 
 void Entity::draw(Shader &shader) {

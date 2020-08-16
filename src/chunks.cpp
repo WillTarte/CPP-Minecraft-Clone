@@ -74,6 +74,18 @@ size_t Chunk::getNumberOfEntities() const {
     return total;
 }
 
+bool Chunk::removeEntity(Entity &entity) {
+    auto &entVec = this->entities[entity.getBlockID()];
+    std::vector<Entity>::iterator it;
+    for (it = entVec.begin(); it != entVec.end(); it++) {
+        if (it->getEntityID() == entity.getEntityID()) {
+            entVec.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
 std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2 xzCoords) {
 
     std::pair<int, int> findKey;
@@ -144,4 +156,19 @@ int WorldInfo::generateSeed() {
 
 WorldInfo::WorldInfo() {
     this->seed = generateSeed();
+}
+
+bool ChunkManager::removeEntityFromChunk(Entity &entity) {
+
+    std::optional<std::shared_ptr<Chunk>> optChunk = getChunkByXZ(
+            {entity.getTransform().getPosition().x, entity.getTransform().getPosition().z});
+
+    if (optChunk.has_value()) {
+        return (*optChunk)->removeEntity(entity);
+    } else {
+        LOG(DEBUG) << "Could not find chunk for entity at " << entity.getTransform().getPosition().x << " "
+                   << entity.getTransform().getPosition().y << " " << entity.getTransform().getPosition().z;
+        return false;
+    }
+
 }

@@ -17,6 +17,7 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
+
 /// Config for the application
 struct Config {
     int windowWidth = 1024;
