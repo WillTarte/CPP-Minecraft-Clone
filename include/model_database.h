@@ -11,11 +11,7 @@
 #include "objloader.h"
 #include "model.h"
 
-#ifdef __unix__
-namespace fs = std::filesystem;
-#endif
-
-#if _MSC_VER >= 1914
+#if defined(__unix__) || _MSC_VER >= 1914
 namespace fs = std::filesystem;
 #else
 namespace fs = std::experimental::filesystem::v1;
