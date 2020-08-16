@@ -73,7 +73,8 @@ void Player::update(Engine *engine, float dt) {
 }
 
 
-void Player::processInput(GLFWwindow *window) {
+void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
+
 
     float speed = 10;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -98,6 +99,51 @@ void Player::processInput(GLFWwindow *window) {
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         this->jump();
+    }
+
+
+    //code for deleting a block
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+
+
+        //found by trial and error 512 doesnt seem to be in the middle this is closer
+        float mouse_x = 600.0;
+        float mouse_y = 384.0;
+        glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1024 , 768);
+        glm::vec3 ray_start = glm::unProject(glm::vec3(mouse_x, mouse_y, 0.0f), this->getPlayerView(), projection, viewport);
+        glm::vec3 ray_end = glm::unProject(glm::vec3(mouse_x, mouse_y, 1.0f), this->getPlayerView(), projection, viewport);
+
+
+
+        //may need to normalize!
+        //ray_wor = glm::vec3(round(ray_wor.x-10), round(ray_wor.y - 25.5), round(ray_wor.z - 10));
+
+
+           engine->removeEntity(ray_end,ray_start);
+    }
+
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
+
+
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+
+
+        float mouse_x = 512.0f;
+        float mouse_y = 384.0f;
+        glm::vec4 viewport = glm::vec4(0.0f, 0.0f, 1024.0f , 768.0f);
+        glm::vec3 ray_start = glm::unProject(glm::vec3(mouse_x, mouse_y, 0.0f), this->getPlayerView(), projection, viewport);
+        glm::vec3 ray_end = glm::unProject(glm::vec3(mouse_x, mouse_y, 1.0f), this->getPlayerView(), projection, viewport);
+
+
+
+        //may need to normalize!
+        //ray_wor = glm::vec3(round(ray_wor.x-10), round(ray_wor.y - 25.5), round(ray_wor.z - 10));
+
+
+        engine->placeBlock(ray_end,ray_start);
     }
 }
 

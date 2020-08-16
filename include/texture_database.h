@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 #if defined __unix__ || _MSC_VER >= 1914
 namespace fs = std::filesystem;
 #else
-namespace fs = std::experimental::filesystem::v1;
+namespace fs = std::filesystem;
 #endif
 
 /// The Texture Database loads available textures according to the defined blocks and stores them for easy access.

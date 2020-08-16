@@ -51,7 +51,10 @@ public:
     void runLoop();
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
+    void removeEntity(const glm::vec3 cameraVector,const glm::vec3 playerPos);
+    void placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos);
 
+    bool checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2);
     GLFWwindow *getWindow() const;
 
     Engine(const Engine &) = delete;
