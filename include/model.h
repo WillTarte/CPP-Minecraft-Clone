@@ -12,7 +12,7 @@
 /// A model is an object that is renderable by OpenGL
 class Model {
 private:
-    GLuint vaoID, vboID, iboId;
+    GLuint vaoID{}, vboID{}, iboId{};
     GLuint numVertices;
     std::string modelName;
 

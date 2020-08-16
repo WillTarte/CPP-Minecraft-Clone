@@ -55,7 +55,7 @@ private:
 public:
     Texture2D() = default;
 
-    Texture2D(const std::string filePath);
+    Texture2D(const std::string &filePath);
 
     void loadFromFile(const std::string &filePaths) override;
 

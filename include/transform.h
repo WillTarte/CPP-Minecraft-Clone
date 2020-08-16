@@ -68,7 +68,7 @@ public:
      * @param angle the rotation angle given in radians
      */
     void rotate(glm::vec3 rotationAxis, float angle) {
-        this->rotation = glm::angleAxis(angle, glm::normalize(rotationAxis)) * this->rotation;
+        this->rotation *= glm::angleAxis(angle, glm::normalize(rotationAxis));
     }
 
     void reset() {
