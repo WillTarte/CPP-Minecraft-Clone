@@ -87,9 +87,6 @@ Engine::Engine(Config config) {
 }
 
 void Engine::runLoop() {
-    double currentFrame;
-    double deltaTime;    // time between current frame and last frame
-    double lastFrame = 0.0f;
 
     //TODO this should not be here
     Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
@@ -99,17 +96,27 @@ void Engine::runLoop() {
 
     glfwSwapInterval(1);
 
+    double t = 0.0f;
+    double dt = 1.0f / 30.0f;
+    double currentTime = glfwGetTime();
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
         // per-frame time logic
         // --------------------
-        currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        double newTime = glfwGetTime();
+        double frameTime = newTime - currentTime;
+        currentTime = newTime;
+
+        while (frameTime > 0.0f) {
+            double deltaTime = frameTime < dt ? frameTime : dt;
+            frameTime -= deltaTime;
+            t += deltaTime;
+        }
 
         player->processInput(this->window);
-        player->update(this, static_cast<float>(deltaTime));
+        player->update(this, static_cast<float>(dt));
         // --------------------
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

@@ -11,13 +11,13 @@
 #include "block.h"
 #include "entity.h"
 
-static constexpr unsigned int CHUNK_WIDTH = 16;
-static constexpr unsigned int CHUNK_HEIGHT = 16;
-static constexpr unsigned int CHUNK_LENGTH = 16;
+constexpr unsigned int CHUNK_WIDTH = 32;
+constexpr unsigned int CHUNK_HEIGHT = 16;
+constexpr unsigned int CHUNK_LENGTH = 32;
 
-static constexpr unsigned int WORLD_WIDTH = 128;
-static constexpr unsigned int WORLD_HEIGHT = 16;
-static constexpr unsigned int WORLD_LENGTH = 128;
+constexpr unsigned int WORLD_WIDTH = 512;
+constexpr unsigned int WORLD_HEIGHT = 16;
+constexpr unsigned int WORLD_LENGTH = 512;
 
 /// Contains basic world info (size and seed)
 class WorldInfo {
