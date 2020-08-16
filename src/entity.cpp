@@ -17,6 +17,9 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
     this->box = BoundingBox({1.0, 1.0, 1.0});
 }
 
+
+Entity::Entity() {}
+
 void Entity::draw(Shader &shader) {
 
     shader.setMat4("model", this->transform.getModelMatrix());
@@ -35,3 +38,6 @@ void Entity::draw(Shader &shader) {
     // Get Model through ModelDatabase and draw
     ModelDatabase::getModelByName(this->modelName)->draw();
 }
+
+
+

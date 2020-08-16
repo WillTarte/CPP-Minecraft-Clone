@@ -40,7 +40,7 @@ private:
 
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
-
+    Entity skybox;
 public:
 
     std::unique_ptr<ChunkManager> chunkManager;

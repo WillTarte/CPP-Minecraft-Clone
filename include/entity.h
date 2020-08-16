@@ -34,6 +34,7 @@ public:
 
     Entity(std::string modelName, BlockID blockId1, Transform transform1);
 
+    Entity();
     /** Draws the entity into the world
      * @param shader the shader used to customize the render pipeline
      */
@@ -44,4 +45,6 @@ public:
 
     /// Gets this entity's transform by reference
     inline Transform &getTransform() { return this->transform; }
+
+    void updatePosition(glm::vec3 pos) {this->transform.position = pos;}
 };

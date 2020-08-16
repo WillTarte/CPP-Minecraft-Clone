@@ -77,11 +77,15 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Inserting Entities into the World ...";
     generateWorld();
 
+
     LOG(INFO) << "Number of entities: " << this->chunkManager->getNumberOfEntities();
     LOG(INFO) << "Number of Chunks: " << this->chunkManager->getNumberOfChunks();
 
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
+
+    LOG(INFO) << "Creating Skybox";
+    skybox = Entity(ModelType::SKYBOX, BlockID::SKYBOX, Transform({(player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)}, {CHUNK_WIDTH*4, CHUNK_HEIGHT*2, CHUNK_LENGTH*4}, {0, 0, 0}));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -131,6 +135,8 @@ void Engine::runLoop() {
         }
 
         player->draw(basicShader);
+        skybox.draw(basicShader);
+        skybox.updatePosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)));
         // --------------------
 
         glfwSwapBuffers(window);
