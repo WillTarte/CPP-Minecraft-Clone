@@ -2,7 +2,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <cstdlib>
 #include "libs/easylogging++.h"
 #include "include/engine.h"
 

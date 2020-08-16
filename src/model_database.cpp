@@ -13,7 +13,7 @@ void ModelDatabase::init() {
 
     LOG(INFO) << "Initializing Model Database ...";
 
-    for (const auto &file : fs::directory_iterator(fs::current_path().parent_path().string() + "/resources/models/")) {
+    for (const auto &file : fs::directory_iterator(fs::current_path().string() + "/resources/models/")) {
         LOG(INFO) << "Processing " + file.path().filename().string() + " for model data.";
 
         // Insert modelName => Model

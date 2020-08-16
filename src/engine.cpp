@@ -92,8 +92,8 @@ void Engine::runLoop() {
     double lastFrame = 0.0f;
 
     //TODO this should not be here
-    Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
-                                "../resources/shaders/ModelFragmentShader.glsl");
+    Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
+                                (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
     basicShader.use();
     // ***********
 

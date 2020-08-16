@@ -35,3 +35,7 @@ cmake-build-*
 
 # JetBrains project files
 .idea
+
+# Visual Studio build and project files
+.vs
+out
