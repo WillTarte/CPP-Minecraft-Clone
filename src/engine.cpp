@@ -246,8 +246,8 @@ void Engine::generateWorld() {
             }
 
 
-            if (xColl && yColl && zColl)
-                return {&ent};
+           // if (xColl && yColl && zColl)
+         //       return {&ent};
 
         }
     }
@@ -299,8 +299,13 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
     bool firstLoop = false;
     bool blockWithinFive = false;
-    
-    for (auto &blocksById : entities) {
+
+
+    //get current chunk
+    std::optional<std::shared_ptr<Chunk>> chunk = this->chunkManager->getChunkByXZ({currentPlayerPos.x, currentPlayerPos.z});
+
+
+    for (auto &blocksById : chunk.value()->getEntities()) {
         for (auto &ent : blocksById.second) {
 
 
@@ -398,7 +403,11 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
     bool firstLoop = false;
     bool blockWithinFive = false;
 
-    for (auto &blocksById : entities) {
+    //get current chunk
+    std::optional<std::shared_ptr<Chunk>> chunk = this->chunkManager->getChunkByXZ({currentPlayerPos.x, currentPlayerPos.z});
+
+
+    for (auto &blocksById : chunk.value()->getEntities()) {
         for (auto &ent : blocksById.second) {
 
 
@@ -481,7 +490,8 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
     if(blockWithinFive){
         glm::vec3 currentEntPos = closestEnt->getTransform().getPosition();
         glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x,currentEntPos.y + 1.0, currentEntPos.z);
-        this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
+        (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+       // this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
     }
 
 }

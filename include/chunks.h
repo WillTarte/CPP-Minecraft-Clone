@@ -39,6 +39,8 @@ public:
 
     unsigned int getLength() const { return length; }
 
+
+
     int getSeed() const { return seed; }
 };
 
@@ -69,6 +71,11 @@ public:
         }
 
         entities[entity.getBlockID()].push_back(entity);
+    }
+
+    std::map<BlockID, std::vector<Entity>> & getEntities(){
+        std::map<BlockID, std::vector<Entity>> &ptr = entities;
+        return ptr;
     }
 
     /** Renders the entities in this Chunk
