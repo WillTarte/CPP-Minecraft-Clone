@@ -77,7 +77,7 @@ void Texture2D::loadFromFaceFiles(const std::vector<std::string> &filePaths) {
 
 }
 
-Texture2D::Texture2D(std::string filePath) {
+Texture2D::Texture2D(const std::string &filePath) {
     loadFromFile(filePath);
 }
 

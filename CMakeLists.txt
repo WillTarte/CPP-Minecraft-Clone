@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/block.h include/texture.h include/texture_database.h include/entity.h include/model_database.h include/transform.h include/player.h)
-set(SOURCE_FILES src/engine.cpp src/model.cpp src/texture.cpp src/texture_database.cpp src/entity.cpp src/model_database.cpp src/player.cpp)
+set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/block.h include/texture.h include/texture_database.h include/entity.h include/model_database.h include/transform.h include/player.h include/chunks.h)
+set(SOURCE_FILES src/engine.cpp src/model.cpp src/texture.cpp src/texture_database.cpp src/entity.cpp src/model_database.cpp src/player.cpp src/chunks.cpp)
 set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp libs/easylogging++.h libs/easylogging++.cpp libs/FastNoise.cpp libs/FastNoise.h)
 
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM.cmake")

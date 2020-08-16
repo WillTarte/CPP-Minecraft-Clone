@@ -3,6 +3,8 @@
 //
 #pragma once
 
+#include <fstream>
+#include "../libs/easylogging++.h"
 #include "texture.h"
 
 /// Block ID maps .block file to a specific type of block
@@ -16,7 +18,7 @@ enum BlockID {
     OAK_LEAVES = 6,
     WATER = 7,
 };
-static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS};
+static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS, BEDROCK, STONE, OAK_LOG, OAK_LEAVES, WATER};
 
 inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
     switch (blockId) {
@@ -28,6 +30,21 @@ inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
             break;
         case PLAYER:
             os << "STEVE";
+            break;
+        case BEDROCK:
+            os << "BEDROCK";
+            break;
+        case STONE:
+            os << "STONE";
+            break;
+        case OAK_LOG:
+            os << "OAK_LOG";
+            break;
+        case OAK_LEAVES:
+            os << "OAK LEAVES";
+            break;
+        case WATER:
+            os << "WATER";
             break;
     }
     return os;
@@ -100,7 +117,7 @@ inline BlockFileData readBlockFile(const std::string &blockFilePath) {
         }
     }
 
-    if (ret.ID <= 0) {
+    if (ret.ID < 0) {
         LOG(WARNING) << "Invalid Block ID!";
     }
 
