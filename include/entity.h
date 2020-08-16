@@ -44,4 +44,6 @@ public:
 
     /// Gets this entity's transform
     inline Transform getTransform() { return this->transform; }
+    inline void setTransform(Transform transform) { this->transform = transform; }
+
 };

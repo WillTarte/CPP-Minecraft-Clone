@@ -18,12 +18,6 @@
 #include "model_database.h"
 #include "player.h"
 
-#if defined __unix__ || _MSC_VER >= 1914
-namespace fs = std::filesystem;
-#else
-namespace fs = std::experimental::filesystem::v1;
-#endif
-
 /// Config for the application
 struct Config {
     int windowWidth = 1024;
@@ -57,6 +51,8 @@ private:
     // Takes in a set of coordinates and renders a tree on top of that block
     void drawTree(int x, int y, int z);
 
+   // draws the skybox
+    void drawSkybox();
     std::unique_ptr<World> world;
     std::unique_ptr<Player> player = std::make_unique<Player>();
 

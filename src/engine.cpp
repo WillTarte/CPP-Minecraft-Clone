@@ -89,8 +89,8 @@ void Engine::runLoop() {
     double lastFrame = 0.0f;
 
     //TODO this should not be here
-    Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
-                                (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
+    Shader basicShader = Shader("../resources/shaders/ModelVertexShader.glsl",
+                                "../resources/shaders/ModelFragmentShader.glsl");
     basicShader.use();
     // ***********
 
@@ -124,6 +124,11 @@ void Engine::runLoop() {
             // do some setting up per block type
             //iterate trough entites of that block type
             for (auto &blocks : blocksByID.second) {
+                if (blocks.getBlockID() == SKYBOX){
+                     Transform previous_transform = blocks.getTransform();
+                     previous_transform.position = (glm::vec3(player->getTransform().getPosition().x - 50,0,player->getTransform().getPosition().z - 50));
+                     blocks.setTransform(previous_transform);
+                }
                 blocks.draw(basicShader);
             }
         }
@@ -175,6 +180,12 @@ void Engine::drawTree(int x, int y, int z) {
             Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y+7, z}, {1, 1, 1}, {0, 0, 0})));
 }
 
+void Engine::drawSkybox() {
+
+        this->addEntity(
+                Entity(ModelType::CUBE, BlockID::SKYBOX, Transform({player->getTransform().getPosition().x - 50, -5, player->getTransform().getPosition().z - 50}, {100, 90, 100}, {0, 0, 0})));
+}
+
 void Engine::generateWorld() {
     auto noiseGen = FastNoise(world->seed);
     noiseGen.SetNoiseType(FastNoise::Simplex);
@@ -223,6 +234,9 @@ void Engine::generateWorld() {
             }
         }
         std::cout << std::endl;
+
+        //adding the skybox
+        drawSkybox();
     }
 }
 

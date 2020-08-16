@@ -13,7 +13,7 @@ void TextureDatabase::init() {
 
     LOG(INFO) << "Initializing Texture Database ...";
 
-    for (const auto &file : fs::directory_iterator(fs::current_path().string() + "/resources/blocks/")) {
+    for (const auto &file : fs::directory_iterator(fs::current_path().parent_path().string() + "/resources/blocks/")) {
         LOG(INFO) << "Processing " + file.path().filename().string() << " for textures.";
 
         // Inserts BlockId => Texture

@@ -15,6 +15,7 @@ enum BlockID {
     OAK_LOG = 5,
     OAK_LEAVES = 6,
     WATER = 7,
+    SKYBOX = 8,
 };
 static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS};
 
@@ -79,18 +80,18 @@ inline BlockFileData readBlockFile(const std::string &blockFilePath) {
         }
 
         if (identifier == "model") {
-            ret.modelFile = "./resources/models/" + value;
+            ret.modelFile = "../resources/models/" + value;
             continue;
         }
 
         if (identifier == "top" || identifier == "bottom" || identifier == "left" || identifier == "right" ||
             identifier == "front" || identifier == "back") {
-            ret.cubeFaceFiles.emplace_back("./resources/textures/" + value);
+            ret.cubeFaceFiles.emplace_back("../resources/textures/" + value);
             ret.textureType = CUBEMAP;
             continue;
         }
         if (identifier == "all") {
-            ret.textureFile = "./resources/textures/" + value;
+            ret.textureFile = "../resources/textures/" + value;
             ret.textureType = TEXTURE2D;
             break;
         }
