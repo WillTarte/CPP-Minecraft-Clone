@@ -81,7 +81,7 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Number of Chunks: " << this->chunkManager->getNumberOfChunks();
 
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
-    this->player = std::make_unique<Player>(glm::vec3(20.0f, 32.0f, 20.0f));
+    this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -229,25 +229,34 @@ void Engine::generateWorld() {
     }
 
     //spawn platform
-    auto chunk = this->chunkManager->getChunkByXZ({20, 20});
+    auto chunk = this->chunkManager->getChunkByXZ({WORLD_WIDTH / 2, WORLD_LENGTH / 2});
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 21}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 20}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({19, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({20, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
     (*chunk)->addEntity(
-            Entity(ModelType::CUBE, BlockID::STONE, Transform({21, 30, 19}, {1, 1, 1}, {0, 0, 0})));
+            Entity(ModelType::CUBE, BlockID::STONE,
+                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
 
 }
 
