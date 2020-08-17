@@ -8,13 +8,16 @@
 INITIALIZE_EASYLOGGINGPP
 
 void initLogging();
+Config cliConfig();
 
 /// Main
 int main(int argc, char *argv[]) {
 
     initLogging();
 
-    auto engine = Engine({});
+    auto config = cliConfig();
+
+    auto engine = Engine(config);
 
     LOG(INFO) << "Initializing resource databases.";
 
@@ -42,4 +45,46 @@ void initLogging() {
 
     //Reconfigure all loggers
     el::Loggers::reconfigureAllLoggers(conf);
+}
+
+Config cliConfig() {
+    Config conf{};
+    std::cout << "Window size? (default " << DEFAULT_WINDOW_WIDTH << "x" << DEFAULT_WINDOW_HEIGHT << "): " << std::endl;
+    std::string winSize;
+    std::cin >> winSize;
+    if (!winSize.empty()) {
+        int seperator = winSize.find('x');
+        conf.windowWidth = stoi(winSize.substr(0,seperator));
+        conf.windowHeight = stoi(winSize.substr(seperator));
+    }
+
+    std::cout << "World size? (s/M/l): " << std::endl;
+    std::string worldSize;
+    std::cin >> worldSize;
+    if (!worldSize.empty()) {
+        switch(worldSize[0]) {
+            case 's': conf.worldSize = SMALL_WORLD;
+            case 'm': conf.worldSize = MEDIUM_WORLD;
+            case 'l': conf.worldSize = LARGE_WORLD;
+            default: {
+                conf.worldSize = MEDIUM_WORLD;
+            }
+        }
+    }
+
+    std::cout << "World seed (random): " << std::endl;
+    std::string seed;
+    std::cin >> seed;
+    if (!seed.empty()) {
+        conf.seed = stoi(seed);
+    }
+
+    std::cout << "Field of view (45): " << std::endl;
+    std::string fov;
+    std::cin >> fov;
+    if (!fov.empty()) {
+        conf.fov = stoi(fov);
+    }
+
+    return conf;
 }

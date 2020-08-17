@@ -17,11 +17,16 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
+#define DEFAULT_WINDOW_WIDTH 1024
+#define DEFAULT_WINDOW_HEIGHT 768
+#define RANDOM_WORLD_SEED -1
 
 /// Config for the application
 struct Config {
-    int windowWidth = 1024;
-    int windowHeight = 768;
+    int windowWidth = DEFAULT_WINDOW_WIDTH;
+    int windowHeight = DEFAULT_WINDOW_HEIGHT;
+    int seed = RANDOM_WORLD_SEED;
+    int worldSize = WORLD_WIDTH;
     float fov = 45.0f;
 };
 

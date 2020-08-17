@@ -11,6 +11,11 @@
 #include "block.h"
 #include "entity.h"
 
+#define SMALL_WORLD 256
+#define MEDIUM_WORLD 1024
+#define LARGE_WORLD 4096
+
+
 constexpr unsigned int CHUNK_WIDTH = 32;
 constexpr unsigned int CHUNK_HEIGHT = 16;
 constexpr unsigned int CHUNK_LENGTH = 32;
