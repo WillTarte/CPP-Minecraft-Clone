@@ -77,9 +77,9 @@ void Player::update(Engine *engine, float dt) {
 }
 
 
-void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
+void Player::processInput(Engine *engine) {
 
-
+    GLFWwindow *window = engine->getWindow();
     float speed = 10;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
@@ -147,7 +147,7 @@ void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
         //found by trial and error 512 doesnt seem to be in the middle this is closer
 
 
-        engine->removeEntity(dir);
+        this->removeEntity(dir, engine);
     }
 
     if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
@@ -169,7 +169,7 @@ void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
         //found by trial and error 512 doesnt seem to be in the middle this is closer
 
 
-        engine->placeBlock(dir);
+       this->placeBlock(dir, engine);
 
     }
 }
@@ -209,3 +209,56 @@ void Player::checkOnGround(const std::shared_ptr<Chunk> &currentChunk) {
 
     onGround = optEntity.has_value();
 }
+
+void Player::removeEntity(glm::vec3 dir, Engine *engine) {
+
+    glm::vec3 currentPlayerPos = this->camera.Position;
+    std::optional<std::shared_ptr<Chunk>> chunk;
+    std::optional<Entity *> closestEnt;
+    glm::vec3 endPoint;
+
+    for(float i = 0; i <= 5;  i += 0.1){
+        endPoint = currentPlayerPos + (i) * dir;
+        chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
+        closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
+
+        if(closestEnt.has_value()){
+
+            //chunk.value()->removeEntity(reinterpret_cast<Entity &>(closestEnt.value()));
+            //engine->chunkManager->removeEntityFromChunk(closestEnt);
+
+            closestEnt.value()->getTransform().translate(glm::vec3(0.0,-30,0.0));
+            return;
+        }
+    }
+
+}
+
+
+void  Player::placeBlock(glm::vec3 dir, Engine *engine) {
+
+    glm::vec3 currentPlayerPos = this->camera.Position;
+    glm::vec3 endPoint;
+    std::optional<std::shared_ptr<Chunk>> chunk;
+    std::optional<Entity *> closestEnt;
+
+    for(float i = 0; i <= 5;  i += 0.1){
+        endPoint = currentPlayerPos + (i) * dir;
+        chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
+        closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
+
+        if(closestEnt.has_value()){
+
+            //backing up one step
+            glm::vec3 newBlockPlacement = closestEnt.value()->getTransform().getPosition();
+
+            std::cout << round(dir.x) << round(dir.y) << round(dir.z) << "\n";
+            dir = glm::vec3(round(dir.x),round(dir.y), round(dir.z));
+            newBlockPlacement = newBlockPlacement - dir;
+            (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+            return;
+        }
+    }
+}
+
+

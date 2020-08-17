@@ -32,8 +32,12 @@ public:
 
     /// Processes the player's inputs
 
-    void processInput(GLFWwindow *window, float dt, Engine *engine);
+    void processInput(Engine *engine);
 
+
+    void removeEntity(glm::vec3 dir, Engine *engine);
+    void placeBlock(glm::vec3 dir, Engine *engine);
+    bool checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2);
 
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
