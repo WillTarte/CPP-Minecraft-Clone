@@ -223,11 +223,9 @@ void Player::removeEntity(glm::vec3 dir, Engine *engine) {
         closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
 
         if(closestEnt.has_value()){
-
-            //chunk.value()->removeEntity(reinterpret_cast<Entity &>(closestEnt.value()));
-            //engine->chunkManager->removeEntityFromChunk(closestEnt);
-
-            closestEnt.value()->getTransform().translate(glm::vec3(0.0,-30,0.0));
+            std::cout << "FIRST";
+            engine->chunkManager->removeEntityFromChunk(*closestEnt.value());
+            //closestEnt.value()->getTransform().translate(glm::vec3(0.0,-30,0.0));
             return;
         }
     }
