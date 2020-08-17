@@ -404,6 +404,8 @@ void Engine::placeBlock(glm::vec3 dir) {
     Entity *closestEnt;
     float previousDistance;
 
+
+
     glm::vec3 currentPlayerPos = player->getTransform().getPosition();
 
     currentPlayerPos.y = currentPlayerPos.y +1;
@@ -472,7 +474,7 @@ void Engine::placeBlock(glm::vec3 dir) {
                 float distance = sqrt((pow( currentPlayerPos.x - currentEntPos.x, 2) +  pow(currentPlayerPos.y - currentEntPos.y, 2) +  pow(currentPlayerPos.z - currentEntPos.z, 2)));
 
 
-                std::cout << "distance" << distance << "\n";
+
 
 
                 //check if block is within 5 blocks
@@ -497,7 +499,15 @@ void Engine::placeBlock(glm::vec3 dir) {
     //currently only places blocks on top
     if(blockWithinFive){
         glm::vec3 currentEntPos = closestEnt->getTransform().getPosition();
-        glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x,currentEntPos.y + 1.0, currentEntPos.z);
+
+        //here we have to figure out what direction the block is from the
+        float additionX = 0.0;
+        float additionY = 0.0;
+        float additionZ = 0.0;
+
+
+
+        glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x - round(dir.x) ,currentEntPos.y -round(dir.y) , currentEntPos.z -round(dir.z));
         (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
        // this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
     }
