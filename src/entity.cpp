@@ -39,3 +39,6 @@ void Entity::draw(Shader &shader) {
     // Get Model through ModelDatabase and draw
     ModelDatabase::getModelByName(this->modelName)->draw();
 }
+
+
+

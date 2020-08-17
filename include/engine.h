@@ -41,7 +41,7 @@ private:
 
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
-
+    Entity skybox = Entity(ModelType::SKYBOX, BlockID::SKYBOX);
 public:
 
     std::unique_ptr<ChunkManager> chunkManager;
