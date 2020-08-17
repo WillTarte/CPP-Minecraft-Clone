@@ -223,7 +223,6 @@ void Player::removeEntity(glm::vec3 dir, Engine *engine) {
         closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
 
         if(closestEnt.has_value()){
-            std::cout << "FIRST";
             engine->chunkManager->removeEntityFromChunk(*closestEnt.value());
             //closestEnt.value()->getTransform().translate(glm::vec3(0.0,-30,0.0));
             return;
@@ -249,8 +248,6 @@ void  Player::placeBlock(glm::vec3 dir, Engine *engine) {
 
             //backing up one step
             glm::vec3 newBlockPlacement = closestEnt.value()->getTransform().getPosition();
-
-            std::cout << round(dir.x) << round(dir.y) << round(dir.z) << "\n";
             dir = glm::vec3(round(dir.x),round(dir.y), round(dir.z));
             newBlockPlacement = newBlockPlacement - dir;
             (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));

@@ -76,8 +76,6 @@ size_t Chunk::getNumberOfEntities() const {
 
 bool Chunk::removeEntity(Entity &entity) {
 
-
-
     entity.getTransform().translate(glm::vec3(0.0,-30.0,0.0));
     ///TODO find why this causes an error for some reason
 //    auto &entVec = this->entities[entity.getBlockID()];
@@ -85,7 +83,6 @@ bool Chunk::removeEntity(Entity &entity) {
 //    for (it = entVec.begin(); it != entVec.end(); it++) {
 //        if (it->getEntityID() == entity.getEntityID()) {
 //            entVec.erase(it);
-//            std::cout << "hey";
 //            return true;
 //        }
 //    }
@@ -167,7 +164,7 @@ WorldInfo::WorldInfo() {
 bool ChunkManager::removeEntityFromChunk(Entity &entity) {
 
 
-    std::cout << "MANAGER";
+
     std::optional<std::shared_ptr<Chunk>> optChunk = getChunkByXZ(
             {entity.getTransform().getPosition().x, entity.getTransform().getPosition().z});
 
