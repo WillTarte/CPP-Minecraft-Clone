@@ -43,7 +43,6 @@ private:
     bool onGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
-
     /// Jumps
     void jump();
 

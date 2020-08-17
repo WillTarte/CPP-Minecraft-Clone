@@ -11,12 +11,13 @@
 
 Engine::Engine(Config config) {
 
-    LOG(INFO) << "Initializing Engine ...";
+    LOG(INFO) << "Initializing Engine hello ..."<< config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     //do some processing based on config
     LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     this->config = config;
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
+
 
     LOG(INFO) << "Initializing GLFW ...";
 
@@ -27,7 +28,11 @@ Engine::Engine(Config config) {
                                       nullptr);
     glfwSetWindowUserPointer(window, this);
 
+
+
     if (window == nullptr) {
+
+
         std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
         return;
@@ -286,7 +291,7 @@ void Engine::generateWorld() {
 
 
 
-void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
+void Engine::removeEntity(glm::vec3 dir) {
 
     //CAMERA VECTOR IS REALLY THE END POINT OF THE RAY
 
@@ -297,6 +302,7 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
     glm::vec3 currentPlayerPos = player->getTransform().getPosition();
 
+    currentPlayerPos.y = currentPlayerPos.y +1;
     bool firstLoop = false;
     bool blockWithinFive = false;
 
@@ -322,29 +328,29 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
             glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
 
 
-            bool check1 = checkIntersection(playerPos,cameraVector,V0,V2,V1);
+            bool check1 = checkIntersection(currentPlayerPos,dir,V0,V2,V1);
 
-            bool check2 = checkIntersection(playerPos,cameraVector,V0,V3,V2);
+            bool check2 = checkIntersection(currentPlayerPos,dir,V0,V3,V2);
 
-            bool check3 = checkIntersection(playerPos,cameraVector,V2,V3,V4);
+            bool check3 = checkIntersection(currentPlayerPos,dir,V2,V3,V4);
 
-            bool check4 = checkIntersection(playerPos,cameraVector,V2,V4,V5);
+            bool check4 = checkIntersection(currentPlayerPos,dir,V2,V4,V5);
 
-            bool check5 = checkIntersection(playerPos,cameraVector,V1,V2,V5);
+            bool check5 = checkIntersection(currentPlayerPos,dir,V1,V2,V5);
 
-            bool check6 = checkIntersection(playerPos,cameraVector,V1,V5,V6);
+            bool check6 = checkIntersection(currentPlayerPos,dir,V1,V5,V6);
 
-            bool check7 = checkIntersection(playerPos,cameraVector,V0,V7,V4);
+            bool check7 = checkIntersection(currentPlayerPos,dir,V0,V7,V4);
 
-            bool check8 = checkIntersection(playerPos,cameraVector,V0,V4,V3);
+            bool check8 = checkIntersection(currentPlayerPos,dir,V0,V4,V3);
 
-            bool check9 = checkIntersection(playerPos,cameraVector,V5,V4,V7);
+            bool check9 = checkIntersection(currentPlayerPos,dir,V5,V4,V7);
 
-            bool check10 = checkIntersection(playerPos,cameraVector,V5,V7,V6);
+            bool check10 = checkIntersection(currentPlayerPos,dir,V5,V7,V6);
 
-            bool check11 = checkIntersection(playerPos,cameraVector,V0,V6,V7);
+            bool check11 = checkIntersection(currentPlayerPos,dir,V0,V6,V7);
 
-            bool check12 = checkIntersection(playerPos,cameraVector,V0,V1,V6);
+            bool check12 = checkIntersection(currentPlayerPos,dir,V0,V1,V6);
 
             if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
               //  std::cout << "intersection";
@@ -366,7 +372,7 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
 
                 //check if block is within 5 blocks
-                if(distance <= 3) {
+                if(distance <= 5) {
                     if(!blockWithinFive){
                         blockWithinFive = true;
                     }
@@ -393,12 +399,14 @@ void Engine::removeEntity(const glm::vec3 cameraVector, const glm::vec3 playerPo
 
 
 
-void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos) {
+void Engine::placeBlock(glm::vec3 dir) {
 
     Entity *closestEnt;
     float previousDistance;
 
     glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+
+    currentPlayerPos.y = currentPlayerPos.y +1;
 
     bool firstLoop = false;
     bool blockWithinFive = false;
@@ -424,29 +432,29 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
             glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
 
 
-            bool check1 = checkIntersection(playerPos,cameraVector,V0,V2,V1);
+            bool check1 = checkIntersection(currentPlayerPos,dir,V0,V2,V1);
 
-            bool check2 = checkIntersection(playerPos,cameraVector,V0,V3,V2);
+            bool check2 = checkIntersection(currentPlayerPos,dir,V0,V3,V2);
 
-            bool check3 = checkIntersection(playerPos,cameraVector,V2,V3,V4);
+            bool check3 = checkIntersection(currentPlayerPos,dir,V2,V3,V4);
 
-            bool check4 = checkIntersection(playerPos,cameraVector,V2,V4,V5);
+            bool check4 = checkIntersection(currentPlayerPos,dir,V2,V4,V5);
 
-            bool check5 = checkIntersection(playerPos,cameraVector,V1,V2,V5);
+            bool check5 = checkIntersection(currentPlayerPos,dir,V1,V2,V5);
 
-            bool check6 = checkIntersection(playerPos,cameraVector,V1,V5,V6);
+            bool check6 = checkIntersection(currentPlayerPos,dir,V1,V5,V6);
 
-            bool check7 = checkIntersection(playerPos,cameraVector,V0,V7,V4);
+            bool check7 = checkIntersection(currentPlayerPos,dir,V0,V7,V4);
 
-            bool check8 = checkIntersection(playerPos,cameraVector,V0,V4,V3);
+            bool check8 = checkIntersection(currentPlayerPos,dir,V0,V4,V3);
 
-            bool check9 = checkIntersection(playerPos,cameraVector,V5,V4,V7);
+            bool check9 = checkIntersection(currentPlayerPos,dir,V5,V4,V7);
 
-            bool check10 = checkIntersection(playerPos,cameraVector,V5,V7,V6);
+            bool check10 = checkIntersection(currentPlayerPos,dir,V5,V7,V6);
 
-            bool check11 = checkIntersection(playerPos,cameraVector,V0,V6,V7);
+            bool check11 = checkIntersection(currentPlayerPos,dir,V0,V6,V7);
 
-            bool check12 = checkIntersection(playerPos,cameraVector,V0,V1,V6);
+            bool check12 = checkIntersection(currentPlayerPos,dir,V0,V1,V6);
 
             if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
                 //  std::cout << "intersection";
@@ -468,7 +476,7 @@ void Engine::placeBlock(const glm::vec3 cameraVector, const glm::vec3 playerPos)
 
 
                 //check if block is within 5 blocks
-                if(distance <= 3) {
+                if(distance <= 5) {
                     if(!blockWithinFive){
                         blockWithinFive = true;
                     }
