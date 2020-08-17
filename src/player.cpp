@@ -77,7 +77,8 @@ void Player::update(Engine *engine, float dt) {
 }
 
 
-void Player::processInput(GLFWwindow *window) {
+void Player::processInput(GLFWwindow *window, float dt,Engine *engine ) {
+
 
     float speed = 10;
 
@@ -122,6 +123,54 @@ void Player::processInput(GLFWwindow *window) {
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
             this->jump();
         }
+    }
+
+
+    //code for deleting a block
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
+
+
+
+        float mouse_x = 512.0f / (1024* 0.5f) - 1.0f;
+        float mouse_y = 384.0f / (768 * 0.5f) - 1.0f;
+
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+        glm::mat4 view = glm::lookAt(glm::vec3(0.0f), this->camera.Front, this->camera.Up);
+
+        glm::mat4 invVP = glm::inverse(proj * view);
+        glm::vec4 screenPos = glm::vec4(mouse_x, -mouse_y, 1.0f, 1.0f);
+        glm::vec4 worldPos = invVP * screenPos;
+
+
+        glm::vec3 dir = glm::normalize(glm::vec3(worldPos));
+        //glfwGetCursorPos(window, &mouse_x,&mouse_y);
+        //found by trial and error 512 doesnt seem to be in the middle this is closer
+
+
+        engine->removeEntity(dir);
+    }
+
+    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
+
+
+        float mouse_x = 512.0f / (1024* 0.5f) - 1.0f;
+        float mouse_y = 384.0f / (768 * 0.5f) - 1.0f;
+
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
+        glm::mat4 view = glm::lookAt(glm::vec3(0.0f), this->camera.Front, this->camera.Up);
+
+        glm::mat4 invVP = glm::inverse(proj * view);
+        glm::vec4 screenPos = glm::vec4(mouse_x, -mouse_y, 1.0f, 1.0f);
+        glm::vec4 worldPos = invVP * screenPos;
+
+
+        glm::vec3 dir = glm::normalize(glm::vec3(worldPos));
+        //glfwGetCursorPos(window, &mouse_x,&mouse_y);
+        //found by trial and error 512 doesnt seem to be in the middle this is closer
+
+
+        engine->placeBlock(dir);
+
     }
 }
 

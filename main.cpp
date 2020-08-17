@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
         engine->mouseCallbackFunc(window, x, y);
     });
 
+
     engine.runLoop();
 }
 

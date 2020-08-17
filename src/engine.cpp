@@ -11,12 +11,13 @@
 
 Engine::Engine(Config config) {
 
-    LOG(INFO) << "Initializing Engine ...";
+    LOG(INFO) << "Initializing Engine hello ..."<< config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     //do some processing based on config
     LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     this->config = config;
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
+
 
     LOG(INFO) << "Initializing GLFW ...";
 
@@ -27,7 +28,11 @@ Engine::Engine(Config config) {
                                       nullptr);
     glfwSetWindowUserPointer(window, this);
 
+
+
     if (window == nullptr) {
+
+
         std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
         return;
@@ -83,7 +88,9 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
+
     LOG(INFO) << "Engine is primed and ready.";
+
 }
 
 void Engine::runLoop() {
@@ -115,9 +122,17 @@ void Engine::runLoop() {
             t += deltaTime;
         }
 
+
         player->processInput(this->window);
         player->update(this, static_cast<float>(dt));
         // --------------------
+        //not sure if I need it this way
+//=======
+//
+//        player->update(this, static_cast<float>(deltaTime));
+//        player->processInput(this->window, deltaTime, this);
+//
+//>>>>>>> removeBlocksUpdate
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,6 +166,21 @@ GLFWwindow *Engine::getWindow() const {
     return window;
 }
 
+
+//whenever the mouse is clicked this is called
+//built with help from
+//https://antongerdelan.net/opengl/raycasting.html
+
+
+
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
+    player->look(windowParam, xpos, ypos);
+}
+
+
+
 //TODO: Is there some way to add randomness to trees?
 void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
 
@@ -183,6 +213,7 @@ void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y + 7, z}, {1, 1, 1}, {0, 0, 0})));
 }
+
 
 void Engine::generateWorld() {
     auto noiseGen = FastNoise(worldInfo.getSeed());
@@ -232,6 +263,11 @@ void Engine::generateWorld() {
                     addTree(x, height, z);
                 }
             }
+
+
+           // if (xColl && yColl && zColl)
+         //       return {&ent};
+
         }
     }
 
@@ -267,8 +303,259 @@ void Engine::generateWorld() {
 
 }
 
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
-void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
-    player->look(windowParam, xpos, ypos);
+
+
+void Engine::removeEntity(glm::vec3 dir) {
+
+    //CAMERA VECTOR IS REALLY THE END POINT OF THE RAY
+
+    //PLAYER POS IS THE start
+
+    Entity *closestEnt;
+    float previousDistance;
+
+    glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+
+    currentPlayerPos.y = currentPlayerPos.y +1;
+    bool firstLoop = false;
+    bool blockWithinFive = false;
+
+
+    //get current chunk
+    std::optional<std::shared_ptr<Chunk>> chunk = this->chunkManager->getChunkByXZ({currentPlayerPos.x, currentPlayerPos.z});
+
+
+    for (auto &blocksById : chunk.value()->getEntities()) {
+        for (auto &ent : blocksById.second) {
+
+
+            glm::vec3 blockPos = ent.getTransform().getPosition();
+
+            //TODO remove all the +0 lol
+            glm::vec3 V0 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V1 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V2 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V3 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V4 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V5 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V6 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+1);
+            glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
+
+
+            bool check1 = checkIntersection(currentPlayerPos,dir,V0,V2,V1);
+
+            bool check2 = checkIntersection(currentPlayerPos,dir,V0,V3,V2);
+
+            bool check3 = checkIntersection(currentPlayerPos,dir,V2,V3,V4);
+
+            bool check4 = checkIntersection(currentPlayerPos,dir,V2,V4,V5);
+
+            bool check5 = checkIntersection(currentPlayerPos,dir,V1,V2,V5);
+
+            bool check6 = checkIntersection(currentPlayerPos,dir,V1,V5,V6);
+
+            bool check7 = checkIntersection(currentPlayerPos,dir,V0,V7,V4);
+
+            bool check8 = checkIntersection(currentPlayerPos,dir,V0,V4,V3);
+
+            bool check9 = checkIntersection(currentPlayerPos,dir,V5,V4,V7);
+
+            bool check10 = checkIntersection(currentPlayerPos,dir,V5,V7,V6);
+
+            bool check11 = checkIntersection(currentPlayerPos,dir,V0,V6,V7);
+
+            bool check12 = checkIntersection(currentPlayerPos,dir,V0,V1,V6);
+
+            if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
+              //  std::cout << "intersection";
+               // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+
+               if(firstLoop == false){
+                   closestEnt = &ent;
+                   previousDistance = 1000;
+               }
+
+                //TODO ONE change from reseting the transfrom to deleting the object
+
+                glm::vec3 currentEntPos = ent.getTransform().getPosition();
+
+                float distance = sqrt((pow( currentPlayerPos.x - currentEntPos.x, 2) +  pow(currentPlayerPos.y - currentEntPos.y, 2) +  pow(currentPlayerPos.z - currentEntPos.z, 2)));
+
+
+                std::cout << "distance" << distance << "\n";
+
+
+                //check if block is within 5 blocks
+                if(distance <= 5) {
+                    if(!blockWithinFive){
+                        blockWithinFive = true;
+                    }
+
+                    if(distance< previousDistance){
+                        closestEnt = &ent;
+                        previousDistance = distance;
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    //now we have the closet block in the
+
+    if(blockWithinFive){
+        closestEnt->resetTransform();
+    }
+}
+
+
+
+
+void Engine::placeBlock(glm::vec3 dir) {
+
+    Entity *closestEnt;
+    float previousDistance;
+
+
+
+    glm::vec3 currentPlayerPos = player->getTransform().getPosition();
+
+    currentPlayerPos.y = currentPlayerPos.y +1;
+
+    bool firstLoop = false;
+    bool blockWithinFive = false;
+
+    //get current chunk
+    std::optional<std::shared_ptr<Chunk>> chunk = this->chunkManager->getChunkByXZ({currentPlayerPos.x, currentPlayerPos.z});
+
+
+    for (auto &blocksById : chunk.value()->getEntities()) {
+        for (auto &ent : blocksById.second) {
+
+
+            glm::vec3 blockPos = ent.getTransform().getPosition();
+
+            //TODO remove all the +0 lol
+            glm::vec3 V0 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V1 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+0);
+            glm::vec3 V2 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V3 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+0);
+            glm::vec3 V4 =  glm::vec3(blockPos.x+0, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V5 =  glm::vec3(blockPos.x+1, blockPos.y+1, blockPos.z+1);
+            glm::vec3 V6 =  glm::vec3(blockPos.x+1, blockPos.y+0, blockPos.z+1);
+            glm::vec3 V7 =  glm::vec3(blockPos.x+0, blockPos.y+0, blockPos.z+1);
+
+
+            bool check1 = checkIntersection(currentPlayerPos,dir,V0,V2,V1);
+
+            bool check2 = checkIntersection(currentPlayerPos,dir,V0,V3,V2);
+
+            bool check3 = checkIntersection(currentPlayerPos,dir,V2,V3,V4);
+
+            bool check4 = checkIntersection(currentPlayerPos,dir,V2,V4,V5);
+
+            bool check5 = checkIntersection(currentPlayerPos,dir,V1,V2,V5);
+
+            bool check6 = checkIntersection(currentPlayerPos,dir,V1,V5,V6);
+
+            bool check7 = checkIntersection(currentPlayerPos,dir,V0,V7,V4);
+
+            bool check8 = checkIntersection(currentPlayerPos,dir,V0,V4,V3);
+
+            bool check9 = checkIntersection(currentPlayerPos,dir,V5,V4,V7);
+
+            bool check10 = checkIntersection(currentPlayerPos,dir,V5,V7,V6);
+
+            bool check11 = checkIntersection(currentPlayerPos,dir,V0,V6,V7);
+
+            bool check12 = checkIntersection(currentPlayerPos,dir,V0,V1,V6);
+
+            if(check1 || check2 || check3 || check4 || check5 || check6 || check7 || check8 || check9 || check10 ||check11 || check12){
+                //  std::cout << "intersection";
+                // std::cout << blockPos.x << " " <<  blockPos.y << " " << blockPos.z << "\n";
+
+                if(firstLoop == false){
+                    closestEnt = &ent;
+                    previousDistance = 1000;
+                }
+
+                //TODO ONE change from reseting the transfrom to deleting the object
+
+                glm::vec3 currentEntPos = ent.getTransform().getPosition();
+
+                float distance = sqrt((pow( currentPlayerPos.x - currentEntPos.x, 2) +  pow(currentPlayerPos.y - currentEntPos.y, 2) +  pow(currentPlayerPos.z - currentEntPos.z, 2)));
+
+
+
+
+
+                //check if block is within 5 blocks
+                if(distance <= 5) {
+                    if(!blockWithinFive){
+                        blockWithinFive = true;
+                    }
+
+                    if(distance< previousDistance){
+                        closestEnt = &ent;
+                        previousDistance = distance;
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+
+    //currently only places blocks on top
+    if(blockWithinFive){
+        glm::vec3 currentEntPos = closestEnt->getTransform().getPosition();
+
+        //here we have to figure out what direction the block is from the
+        float additionX = 0.0;
+        float additionY = 0.0;
+        float additionZ = 0.0;
+
+
+
+        glm::vec3 newBlockPlacement = glm::vec3(currentEntPos.x - round(dir.x) ,currentEntPos.y -round(dir.y) , currentEntPos.z -round(dir.z));
+        (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+       // this->addEntity(Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0})));
+    }
+
+}
+
+
+
+//https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+bool Engine::checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2) {
+    const float EPSILON = 0.0000001;
+    glm::vec3 edge1, edge2, h, s, q;
+    float a, f, u, v;
+    edge1 = vertex1 - vertex0;
+    edge2 = vertex2 - vertex0;
+    h = glm::cross(rayVector, edge2);
+    a = glm::dot(edge1, h);
+    if (a > -EPSILON && a < EPSILON)
+        return false;
+    f = 1 / a;
+    s = rayOrigin - vertex0;
+    u = f * glm::dot(s, h);
+    if (u < 0.0 || u > 1.0)
+        return false;
+    q = glm::cross(s, edge1);
+    v = f * glm::dot(rayVector, q);
+    if (v < 0.0 || u + v > 1.0)
+        return false;
+    float t = f * glm::dot(edge2, q);
+    if (t > EPSILON) {
+        glm::vec3 plus = glm::normalize(rayVector) * (t * glm::length(rayVector));
+        glm::vec3 point = rayOrigin + plus;
+        //std::cout << point.x << " " <<  point.y << " " << point.z << "\n";
+        return true;
+    } else
+        return false;
 }

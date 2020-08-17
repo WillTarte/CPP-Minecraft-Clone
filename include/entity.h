@@ -61,11 +61,15 @@ public:
      */
     void draw(Shader &shader);
 
+
+    inline void resetTransform(){this->transform = Transform();}
     /// Gets the blockID of this entity
     inline BlockID getBlockID() const { return this->blockId; }
 
     /// Gets this entity's transform by reference
     inline Transform &getTransform() { return this->transform; }
 
+
     inline EntityID getEntityID() { return entityID; }
+
 };

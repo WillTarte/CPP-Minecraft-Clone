@@ -31,7 +31,9 @@ public:
     void update(Engine *engine, float dt);
 
     /// Processes the player's inputs
-    void processInput(GLFWwindow *window);
+
+    void processInput(GLFWwindow *window, float dt, Engine *engine);
+
 
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
@@ -41,7 +43,6 @@ private:
     bool onGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
-
     /// Jumps
     void jump();
 
