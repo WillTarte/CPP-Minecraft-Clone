@@ -123,16 +123,10 @@ void Engine::runLoop() {
         }
 
 
-        player->processInput(this->window);
+
+        player->processInput(this->window, frameTime, this);
         player->update(this, static_cast<float>(dt));
-        // --------------------
-        //not sure if I need it this way
-//=======
-//
-//        player->update(this, static_cast<float>(deltaTime));
-//        player->processInput(this->window, deltaTime, this);
-//
-//>>>>>>> removeBlocksUpdate
+
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
