@@ -22,7 +22,12 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
 }
 
 
-Entity::Entity() {}
+Entity::Entity() {
+    this->modelName = "skyboxModel";
+    this->blockId = SKYBOX;
+    this->box = BoundingBox({1.0, 1.0, 1.0});
+}
+
 
 void Entity::draw(Shader &shader) {
 

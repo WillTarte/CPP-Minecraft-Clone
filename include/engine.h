@@ -41,7 +41,7 @@ private:
 
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
-    Entity skybox;
+    Entity skybox = Entity();
 public:
 
     std::unique_ptr<ChunkManager> chunkManager;

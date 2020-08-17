@@ -39,6 +39,9 @@ public:
 
     Entity(std::string modelName, BlockID blockId1, Transform transform1);
 
+    Entity();
+    Entity(BlockID blockId1, Transform transform1);
+
     ///move assignment
     Entity &operator=(Entity &&other) {
         std::swap(*this, other);
@@ -66,6 +69,8 @@ public:
 
     /// Gets this entity's transform by reference
     inline Transform &getTransform() { return this->transform; }
+
+    inline void updateTransform(glm::vec3 position, glm::vec3 scale) {this->transform.position = position;this->transform.scaleBy(scale); }
 
     inline EntityID getEntityID() { return entityID; }
 };
