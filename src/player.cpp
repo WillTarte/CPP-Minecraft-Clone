@@ -76,34 +76,36 @@ void Player::update(Engine *engine, float dt) {
     this->camera.Position = this->getTransform().getPosition() + glm::vec3(0.5f, 1.5f, 0.5f);
 }
 
+static bool pressedLMB = false;
+static bool pressedRMB = false;
 
 void Player::processInput(Engine *engine) {
 
     GLFWwindow *window = engine->getWindow();
     float speed = 10;
-    
+
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-       this->currentBlock = BlockID::DIRT;
+        this->selectedBlockID = BlockID::DIRT;
     }
 
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
-        this->currentBlock = BlockID::DIRT_GRASS;
+        this->selectedBlockID = BlockID::DIRT_GRASS;
     }
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
-        this->currentBlock = BlockID::BEDROCK;
+        this->selectedBlockID = BlockID::BEDROCK;
     }
 
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
-        this->currentBlock = BlockID::STONE;
+        this->selectedBlockID = BlockID::STONE;
     }
     if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
-        this->currentBlock = BlockID::OAK_LOG;
+        this->selectedBlockID = BlockID::OAK_LOG;
     }
     if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
-        this->currentBlock = BlockID::OAK_LEAVES;
+        this->selectedBlockID = BlockID::OAK_LEAVES;
     }
     if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
-        this->currentBlock = BlockID::WATER;
+        this->selectedBlockID = BlockID::WATER;
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
@@ -149,53 +151,20 @@ void Player::processInput(Engine *engine) {
         }
     }
 
-
-    //code for deleting a block
-    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS){
-
-
-
-        float mouse_x = 512.0f / (1024* 0.5f) - 1.0f;
-        float mouse_y = 384.0f / (768 * 0.5f) - 1.0f;
-
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
-        glm::mat4 view = glm::lookAt(glm::vec3(0.0f), this->camera.Front, this->camera.Up);
-
-        glm::mat4 invVP = glm::inverse(proj * view);
-        glm::vec4 screenPos = glm::vec4(mouse_x, -mouse_y, 1.0f, 1.0f);
-        glm::vec4 worldPos = invVP * screenPos;
-
-
-        glm::vec3 dir = glm::normalize(glm::vec3(worldPos));
-        //glfwGetCursorPos(window, &mouse_x,&mouse_y);
-        //found by trial and error 512 doesnt seem to be in the middle this is closer
-
-
-        this->removeEntity(dir, engine);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !pressedLMB) {
+        pressedLMB = true;
+        this->removeEntity(engine);
     }
 
-    if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS){
-
-
-        float mouse_x = 512.0f / (1024* 0.5f) - 1.0f;
-        float mouse_y = 384.0f / (768 * 0.5f) - 1.0f;
-
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768,0.1f, 100.0f);
-        glm::mat4 view = glm::lookAt(glm::vec3(0.0f), this->camera.Front, this->camera.Up);
-
-        glm::mat4 invVP = glm::inverse(proj * view);
-        glm::vec4 screenPos = glm::vec4(mouse_x, -mouse_y, 1.0f, 1.0f);
-        glm::vec4 worldPos = invVP * screenPos;
-
-
-        glm::vec3 dir = glm::normalize(glm::vec3(worldPos));
-        //glfwGetCursorPos(window, &mouse_x,&mouse_y);
-        //found by trial and error 512 doesnt seem to be in the middle this is closer
-
-
-       this->placeBlock(dir, engine);
-
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && !pressedRMB) {
+        pressedRMB = true;
+        this->placeBlock(engine);
     }
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+        pressedLMB = false;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+        pressedRMB = false;
 }
 
 void Player::collide(const std::shared_ptr<Chunk> &currentChunk) {
@@ -234,47 +203,46 @@ void Player::checkOnGround(const std::shared_ptr<Chunk> &currentChunk) {
     onGround = optEntity.has_value();
 }
 
-void Player::removeEntity(glm::vec3 dir, Engine *engine) {
+void Player::removeEntity(Engine *engine) const {
 
-    glm::vec3 currentPlayerPos = this->camera.Position;
     std::optional<std::shared_ptr<Chunk>> chunk;
     std::optional<Entity *> closestEnt;
     glm::vec3 endPoint;
 
-    for(float i = 0; i <= 5;  i += 0.1){
-        endPoint = currentPlayerPos + (i) * dir;
+    for (unsigned int i = 0; i < 50; i++) {
+        endPoint = this->camera.Position + ((static_cast<float>(i) / 10.0f) * camera.Front);
         chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
         closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
 
-        if(closestEnt.has_value()){
+        if (closestEnt.has_value()) {
             engine->chunkManager->removeEntityFromChunk(*closestEnt.value());
-            //closestEnt.value()->getTransform().translate(glm::vec3(0.0,-30,0.0));
             return;
         }
     }
 
 }
 
+void Player::placeBlock(Engine *engine) {
 
-void  Player::placeBlock(glm::vec3 dir, Engine *engine) {
-
-    glm::vec3 currentPlayerPos = this->camera.Position;
-    glm::vec3 endPoint;
     std::optional<std::shared_ptr<Chunk>> chunk;
     std::optional<Entity *> closestEnt;
+    auto endPoint = glm::vec3(0.0f);
+    glm::vec3 previousEndPoint;
 
-    for(float i = 0; i <= 5;  i += 0.1){
-        endPoint = currentPlayerPos + (i) * dir;
+    for (unsigned int i = 0; i < 50; i++) {
+        previousEndPoint = endPoint;
+        endPoint = this->camera.Position + ((static_cast<float>(i) / 10.0f) * camera.Front);
         chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
-        closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
+        closestEnt = chunk.value()->getEntityByBoxCollision(endPoint, BoundingBox({1.0f, 1.0f, 1.0f}));
 
-        if(closestEnt.has_value()){
-
+        if (closestEnt.has_value()) {
             //backing up one step
-            glm::vec3 newBlockPlacement = closestEnt.value()->getTransform().getPosition();
-            dir = glm::vec3(round(dir.x),round(dir.y), round(dir.z));
-            newBlockPlacement = newBlockPlacement - dir;
-            (*chunk)->addEntity((Entity(ModelType::CUBE, currentBlock, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+            //TODO: seems like this is incorrect when determining where to place the new block.
+            glm::vec3 newBlockPlacement = (*closestEnt)->getTransform().getPosition() - (0.1f * camera.Front);
+            newBlockPlacement = glm::vec3(glm::floor(newBlockPlacement.x), glm::floor(newBlockPlacement.y),
+                                          glm::floor(newBlockPlacement.z));
+            (*chunk)->addEntity(
+                    (Entity(ModelType::CUBE, selectedBlockID, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
             return;
         }
     }

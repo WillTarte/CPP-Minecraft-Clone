@@ -31,13 +31,7 @@ public:
     void update(Engine *engine, float dt);
 
     /// Processes the player's inputs
-
     void processInput(Engine *engine);
-
-
-    void removeEntity(glm::vec3 dir, Engine *engine);
-    void placeBlock(glm::vec3 dir, Engine *engine);
-    bool checkIntersection(const glm::vec3& rayOrigin, const glm::vec3& rayVector, glm::vec3 vertex0, glm::vec3 vertex1, glm::vec3 vertex2);
 
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
@@ -47,7 +41,8 @@ private:
     bool onGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
-    BlockID currentBlock = BlockID::DIRT;
+    BlockID selectedBlockID = BlockID::DIRT;
+
     /// Jumps
     void jump();
 
@@ -63,4 +58,10 @@ private:
      * @param currentChunk the current chunk
      */
     void checkOnGround(const std::shared_ptr<Chunk> &currentChunk);
+
+    /// Tries to remove an entity from the world based on player input
+    void removeEntity(Engine *engine) const;
+
+    /// Tries to place a block based on user input
+    void placeBlock(Engine *engine);
 };

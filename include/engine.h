@@ -28,10 +28,7 @@ struct Config {
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
-    Config config;
     GLFWwindow *window;
-    int windowWidth;
-    int windowHeight;
 
     /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();
@@ -58,4 +55,8 @@ public:
     Engine(const Engine &) = delete;
 
     Engine &operator=(const Engine &) = delete;
+
+    int windowWidth;
+    int windowHeight;
+    Config config;
 };
