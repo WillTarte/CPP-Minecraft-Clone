@@ -81,6 +81,30 @@ void Player::processInput(Engine *engine) {
 
     GLFWwindow *window = engine->getWindow();
     float speed = 10;
+    
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+       this->currentBlock = BlockID::DIRT;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        this->currentBlock = BlockID::DIRT_GRASS;
+    }
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        this->currentBlock = BlockID::BEDROCK;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
+        this->currentBlock = BlockID::STONE;
+    }
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) {
+        this->currentBlock = BlockID::OAK_LOG;
+    }
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+        this->currentBlock = BlockID::OAK_LEAVES;
+    }
+    if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
+        this->currentBlock = BlockID::WATER;
+    }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         glm::vec3 dirVec = glm::normalize(camera.Front + camera.Right);
@@ -250,7 +274,7 @@ void  Player::placeBlock(glm::vec3 dir, Engine *engine) {
             glm::vec3 newBlockPlacement = closestEnt.value()->getTransform().getPosition();
             dir = glm::vec3(round(dir.x),round(dir.y), round(dir.z));
             newBlockPlacement = newBlockPlacement - dir;
-            (*chunk)->addEntity((Entity(ModelType::CUBE, BlockID::DIRT, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+            (*chunk)->addEntity((Entity(ModelType::CUBE, currentBlock, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
             return;
         }
     }
