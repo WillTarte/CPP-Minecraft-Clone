@@ -11,13 +11,13 @@
 #include "block.h"
 #include "entity.h"
 
-static constexpr unsigned int CHUNK_WIDTH = 16;
-static constexpr unsigned int CHUNK_HEIGHT = 16;
-static constexpr unsigned int CHUNK_LENGTH = 16;
+constexpr unsigned int CHUNK_WIDTH = 32;
+constexpr unsigned int CHUNK_HEIGHT = 16;
+constexpr unsigned int CHUNK_LENGTH = 32;
 
-static constexpr unsigned int WORLD_WIDTH = 128;
-static constexpr unsigned int WORLD_HEIGHT = 16;
-static constexpr unsigned int WORLD_LENGTH = 128;
+constexpr unsigned int WORLD_WIDTH = 512;
+constexpr unsigned int WORLD_HEIGHT = 16;
+constexpr unsigned int WORLD_LENGTH = 512;
 
 /// Contains basic world info (size and seed)
 class WorldInfo {
@@ -68,7 +68,7 @@ public:
                        << entity.getTransform().getPosition().x << " " << entity.getTransform().getPosition().z;
         }
 
-        entities[entity.getBlockID()].push_back(entity);
+        entities[entity.getBlockID()].push_back(std::move(entity));
     }
 
     /** Renders the entities in this Chunk
@@ -92,6 +92,14 @@ public:
      */
     std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
 
+    /** Removes an entity from this chunk (and therefore from the world). Invalidates any references to this entity.
+     *
+     * @param entity the entity to try remove.
+     * @return true if succeeded, false otherwise.
+     */
+    bool removeEntity(Entity &entity);
+
+    /// Returns the chunk's origin in world coordinates for the X and Z components
     glm::vec2 getChunkOrigin() const { return {origin.first * CHUNK_WIDTH, origin.second * CHUNK_LENGTH}; }
 
     inline size_t getNumberOfEntities() const;
@@ -125,6 +133,14 @@ public:
      * @return a shared_ptr to a Chunk if found, or an empty optional
      */
     std::optional<std::shared_ptr<Chunk>> getChunkByXZIndex(unsigned int xInd, unsigned int zInd);
+
+
+    /** Removes the given entity from the world (if found). Invalidates any references to that entity.
+     *
+     * @param entity the entity to try remove from the world.
+     * @return true if succeeded, false otherwise.
+     */
+    bool removeEntityFromChunk(Entity &entity);
 
     size_t getNumberOfEntities() const;
 

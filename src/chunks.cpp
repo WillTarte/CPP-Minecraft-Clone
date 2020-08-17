@@ -37,12 +37,12 @@ std::optional<Entity *> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, Bound
             //if (isBlockOutOfBounds({worldPos.x, worldPos.z}))
             // return {};
 
-            bool xColl = (ent.getTransform().getPosition().x <= worldPos.x + box.dimensions.x &&
-                          ent.getTransform().getPosition().x + ent.box.dimensions.x >= worldPos.x);
-            bool yColl = (ent.getTransform().getPosition().y <= worldPos.y + box.dimensions.y &&
-                          ent.getTransform().getPosition().y + ent.box.dimensions.y >= worldPos.y);
-            bool zColl = (ent.getTransform().getPosition().z <= worldPos.z + box.dimensions.z &&
-                          ent.getTransform().getPosition().z + ent.box.dimensions.z >= worldPos.z);
+            bool xColl = (ent.getTransform().getPosition().x < worldPos.x + box.dimensions.x &&
+                          ent.getTransform().getPosition().x + ent.box.dimensions.x > worldPos.x);
+            bool yColl = (ent.getTransform().getPosition().y < worldPos.y + box.dimensions.y &&
+                          ent.getTransform().getPosition().y + ent.box.dimensions.y > worldPos.y);
+            bool zColl = (ent.getTransform().getPosition().z < worldPos.z + box.dimensions.z &&
+                          ent.getTransform().getPosition().z + ent.box.dimensions.z > worldPos.z);
 
             if (xColl && yColl && zColl)
                 return {&ent};
@@ -72,6 +72,18 @@ size_t Chunk::getNumberOfEntities() const {
     for (const auto &ents : entities)
         total += ents.second.size();
     return total;
+}
+
+bool Chunk::removeEntity(Entity &entity) {
+    auto &entVec = this->entities[entity.getBlockID()];
+    std::vector<Entity>::iterator it;
+    for (it = entVec.begin(); it != entVec.end(); it++) {
+        if (it->getEntityID() == entity.getEntityID()) {
+            entVec.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 
 std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2 xzCoords) {
@@ -144,4 +156,19 @@ int WorldInfo::generateSeed() {
 
 WorldInfo::WorldInfo() {
     this->seed = generateSeed();
+}
+
+bool ChunkManager::removeEntityFromChunk(Entity &entity) {
+
+    std::optional<std::shared_ptr<Chunk>> optChunk = getChunkByXZ(
+            {entity.getTransform().getPosition().x, entity.getTransform().getPosition().z});
+
+    if (optChunk.has_value()) {
+        return (*optChunk)->removeEntity(entity);
+    } else {
+        LOG(DEBUG) << "Could not find chunk for entity at " << entity.getTransform().getPosition().x << " "
+                   << entity.getTransform().getPosition().y << " " << entity.getTransform().getPosition().z;
+        return false;
+    }
+
 }

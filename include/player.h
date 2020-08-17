@@ -50,7 +50,7 @@ private:
      * @param engine the engine
      * @param comp the velocity component/axis to verify collisions
      */
-    void collide(const std::shared_ptr<Chunk> &currentChunk, VelocityComponent comp);
+    void collide(const std::shared_ptr<Chunk> &currentChunk);
 
     /** Checks if the player is on the ground (gravity)
      *
