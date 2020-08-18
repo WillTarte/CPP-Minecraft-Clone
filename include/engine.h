@@ -17,7 +17,6 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
-
 /// Config for the application
 struct Config {
     int windowWidth = 1024;
@@ -29,6 +28,12 @@ struct Config {
 class Engine {
 private:
     GLFWwindow *window;
+    unsigned int windowWidth;
+    unsigned int windowHeight;
+    Config config;
+    WorldInfo worldInfo;
+    std::unique_ptr<Player> player;
+    std::unique_ptr<ChunkManager> chunkManager;
 
     /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();
@@ -36,13 +41,7 @@ private:
     /// Takes in a set of coordinates and renders a tree on top of that block
     void addTree(unsigned int x, unsigned int y, unsigned int z) const;
 
-    WorldInfo worldInfo;
-    std::unique_ptr<Player> player;
-
 public:
-
-    std::unique_ptr<ChunkManager> chunkManager;
-
     explicit Engine(Config config);
 
     /// Runs the main game loop.
@@ -50,13 +49,21 @@ public:
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
-    GLFWwindow *getWindow() const;
+    inline GLFWwindow *getWindow() const { return window; };
+
+    inline unsigned int getWindowWidth() const { return windowWidth; }
+
+    inline unsigned int getWindowHeight() const { return windowHeight; }
+
+    inline Config getConfig() { return config; }
+
+    inline WorldInfo getWorldInfo() { return worldInfo; };
+
+    inline std::unique_ptr<ChunkManager> &getChunkManager() { return chunkManager; }
 
     Engine(const Engine &) = delete;
 
     Engine &operator=(const Engine &) = delete;
 
-    int windowWidth;
-    int windowHeight;
-    Config config;
+
 };

@@ -18,7 +18,6 @@ Engine::Engine(Config config) {
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
 
-
     LOG(INFO) << "Initializing GLFW ...";
 
     // Initialize GLFW
@@ -84,14 +83,12 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
-
     LOG(INFO) << "Engine is primed and ready.";
-
 }
 
 void Engine::runLoop() {
 
-    //TODO this should not be here
+    //TODO should this be here?
     Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
                                 (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
     basicShader.use();
@@ -148,20 +145,11 @@ void Engine::runLoop() {
     glfwTerminate();
 }
 
-GLFWwindow *Engine::getWindow() const {
-    return window;
-}
-
-
-
-
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void Engine::mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos) {
     player->look(windowParam, xpos, ypos);
 }
-
-
 
 //TODO: Is there some way to add randomness to trees?
 void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
@@ -204,7 +192,7 @@ void Engine::generateWorld() {
     for (unsigned int x = 0; x < this->worldInfo.getWidth(); x++) {
         for (unsigned int z = 0; z < this->worldInfo.getLength(); z++) {
             float tempHeight = noiseGen.GetNoise(x, 0, z) + 1;
-            int height = round((tempHeight * 10) + 1) + 10;
+            int height = static_cast<int>(round((tempHeight * 10.0f) + 1.0f) + 10.0f);
 
             auto chunk = this->chunkManager->getChunkByXZ({x, z});
 

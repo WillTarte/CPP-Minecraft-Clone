@@ -34,7 +34,6 @@ private:
     std::unordered_map<BlockID, std::shared_ptr<TextureInterface>> textures;
 
 public:
-
     /// Initializes the texture database. Should only be called once during program execution.
     static void init();
 
