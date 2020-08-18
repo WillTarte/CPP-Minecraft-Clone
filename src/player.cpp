@@ -237,8 +237,53 @@ void Player::placeBlock(Engine *engine) {
 
         if (closestEnt.has_value()) {
             //backing up one step
-            //TODO: seems like this is incorrect when determining where to place the new block.
-            glm::vec3 newBlockPlacement = (*closestEnt)->getTransform().getPosition() - (0.1f * camera.Front);
+
+
+            //gets right displacement for new block relative to pos
+            glm::vec3 direction = (*closestEnt)->getTransform().getPosition() - camera.Position;
+            glm::vec3 displacement = glm::vec3(0);
+
+            //first find maximum direction
+            float x = abs(direction.x);
+            float y = abs(direction.y);
+            float z = abs(direction.z);
+
+            //finding the maximum distance
+            int choice =0;
+            if(x > y && x >z){
+                choice =0;}
+            else if(y > z){
+                choice = 1;
+            } else{
+                choice = 2;
+            }
+
+            if(choice == 0) {
+                if (direction.x > 0) {
+                    displacement.x = 1.0;
+                } else {
+                    displacement.x = -1.0;
+                }
+            }
+
+            if(choice == 1){
+                if(direction.y > 0){
+                    displacement.y = 1.0;
+                    } else{
+                        displacement.y = -1.0;
+                    }
+            }
+
+            if(choice == 2){
+                if(direction.z > 0){
+                    displacement.z = 1.0;
+                } else{
+                    displacement.z = -1.0;
+                }
+            }
+
+
+            glm::vec3 newBlockPlacement = (*closestEnt)->getTransform().getPosition() - displacement;
             newBlockPlacement = glm::vec3(glm::floor(newBlockPlacement.x), glm::floor(newBlockPlacement.y),
                                           glm::floor(newBlockPlacement.z));
             (*chunk)->addEntity(
