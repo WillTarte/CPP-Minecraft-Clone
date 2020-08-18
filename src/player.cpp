@@ -209,8 +209,8 @@ void Player::removeEntity(Engine *engine) const {
     std::optional<Entity *> closestEnt;
     glm::vec3 endPoint;
 
-    for (unsigned int i = 0; i < 50; i++) {
-        endPoint = this->camera.Position + ((static_cast<float>(i) / 10.0f) * camera.Front);
+    for (unsigned int i = 0; i < 500; i++) {
+        endPoint = this->camera.Position + ((static_cast<float>(i) / 100.0f) * camera.Front);
         chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
         closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
 
@@ -226,71 +226,21 @@ void Player::placeBlock(Engine *engine) {
 
     std::optional<std::shared_ptr<Chunk>> chunk;
     std::optional<Entity *> closestEnt;
-    auto endPoint = glm::vec3(0.0f);
-    glm::vec3 previousEndPoint;
+    glm::vec3 endPoint;
 
-    for (unsigned int i = 0; i < 50; i++) {
-        previousEndPoint = endPoint;
-        endPoint = this->camera.Position + ((static_cast<float>(i) / 10.0f) * camera.Front);
+    for (unsigned int i = 0; i < 500; i++) {
+        endPoint = this->camera.Position + ((static_cast<float>(i) / 100.0f) * camera.Front);
         chunk = engine->chunkManager->getChunkByXZ({endPoint.x, endPoint.z});
-        closestEnt = chunk.value()->getEntityByBoxCollision(endPoint, BoundingBox({1.0f, 1.0f, 1.0f}));
+        closestEnt = chunk.value()->getEntityByWorldPos(endPoint);
 
         if (closestEnt.has_value()) {
-            //backing up one step
-
-
-            //gets right displacement for new block relative to pos
-            glm::vec3 direction = (*closestEnt)->getTransform().getPosition() - camera.Position;
-            glm::vec3 displacement = glm::vec3(0);
-
-            //first find maximum direction
-            float x = abs(direction.x);
-            float y = abs(direction.y);
-            float z = abs(direction.z);
-
-            //finding the maximum distance
-            int choice =0;
-            if(x > y && x >z){
-                choice =0;}
-            else if(y > z){
-                choice = 1;
-            } else{
-                choice = 2;
-            }
-
-            if(choice == 0) {
-                if (direction.x > 0) {
-                    displacement.x = 1.0;
-                } else {
-                    displacement.x = -1.0;
-                }
-            }
-
-            if(choice == 1){
-                if(direction.y > 0){
-                    displacement.y = 1.0;
-                    } else{
-                        displacement.y = -1.0;
-                    }
-            }
-
-            if(choice == 2){
-                if(direction.z > 0){
-                    displacement.z = 1.0;
-                } else{
-                    displacement.z = -1.0;
-                }
-            }
-
-
-            glm::vec3 newBlockPlacement = (*closestEnt)->getTransform().getPosition() - displacement;
+            glm::vec3 newBlockPlacement = glm::vec3(
+                    this->camera.Position + ((static_cast<float>(i - 1) / 100.0f) * camera.Front));
             newBlockPlacement = glm::vec3(glm::floor(newBlockPlacement.x), glm::floor(newBlockPlacement.y),
                                           glm::floor(newBlockPlacement.z));
-            (*chunk)->addEntity(
-                    (Entity(ModelType::CUBE, selectedBlockID, Transform({newBlockPlacement}, {1, 1, 1}, {0, 0, 0}))));
+            (*chunk)->addEntity(Entity(ModelType::CUBE, selectedBlockID,
+                                       Transform(newBlockPlacement, glm::vec3(1, 1, 1), glm::vec3(0, 0, 0))));
             return;
         }
     }
 }
-
-

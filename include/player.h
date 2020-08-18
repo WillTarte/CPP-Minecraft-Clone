@@ -6,17 +6,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <optional>
+#include <array>
 #include "entity.h"
 #include "camera.h"
 #include "chunks.h"
 
 class Engine;
-
-enum VelocityComponent {
-    X,
-    Y,
-    Z
-};
 
 class Player : public Entity {
 public:
@@ -62,6 +57,6 @@ private:
     /// Tries to remove an entity from the world based on player input
     void removeEntity(Engine *engine) const;
 
-    /// Tries to place a block based on user input
+    /// Tries to place a block based on player input
     void placeBlock(Engine *engine);
 };
