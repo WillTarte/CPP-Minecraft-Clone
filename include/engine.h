@@ -34,6 +34,7 @@ private:
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
     std::unique_ptr<ChunkManager> chunkManager;
+    Entity skybox = Entity(ModelType::SKYBOX, BlockID::SKYBOX);
 
     /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();
@@ -64,6 +65,4 @@ public:
     Engine(const Engine &) = delete;
 
     Engine &operator=(const Engine &) = delete;
-
-
 };

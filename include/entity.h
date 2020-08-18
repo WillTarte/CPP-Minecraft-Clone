@@ -30,7 +30,6 @@ private:
 
 protected:
     Transform transform;
-
     static EntityID entityIDCounter;
 
 public:
@@ -65,5 +64,7 @@ public:
 
     /// Gets this entity's transform by reference
     inline Transform &getTransform() { return this->transform; }
+
+    /// Gets this entities unique ID
     inline EntityID getEntityID() { return entityID; }
 };

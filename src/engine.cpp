@@ -11,7 +11,7 @@
 
 Engine::Engine(Config config) {
 
-    LOG(INFO) << "Initializing Engine hello ..."<< config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
+    LOG(INFO) << "Initializing Engine ...";
     //do some processing based on config
     LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
     this->config = config;
@@ -83,6 +83,15 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
+    LOG(INFO) << "Creating Skybox";
+    //skybox.updateTransform(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)),glm::vec3(CHUNK_WIDTH*4, CHUNK_HEIGHT*2, CHUNK_LENGTH*4));
+    skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
+                                                (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+    skybox.getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 2, CHUNK_LENGTH * 4));
+
+
+
+    //
     LOG(INFO) << "Engine is primed and ready.";
 }
 
@@ -117,6 +126,7 @@ void Engine::runLoop() {
 
         player->processInput(this);
         player->update(this, static_cast<float>(dt));
+        // --------------------
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,6 +147,11 @@ void Engine::runLoop() {
         }
 
         player->draw(basicShader);
+        skybox.draw(basicShader);
+        //skybox.updateTransform(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)),glm::vec3(1.0));
+        skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
+                                                    (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+        // --------------------
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -183,7 +198,6 @@ void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y + 7, z}, {1, 1, 1}, {0, 0, 0})));
 }
-
 
 void Engine::generateWorld() {
     auto noiseGen = FastNoise(worldInfo.getSeed());
@@ -267,5 +281,3 @@ void Engine::generateWorld() {
                    Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
 
 }
-
-

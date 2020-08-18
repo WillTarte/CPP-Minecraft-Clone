@@ -1,0 +1,17 @@
+name: sky
+
+ID: 8
+
+model: cube.obj
+
+right: skybox_right.jpg
+
+left: skybox_left.jpg
+
+top: skybox_top.jpg
+
+bottom: skybox_bottom.jpg
+
+back: skybox_back.jpg
+
+front: skybox_front.jpg

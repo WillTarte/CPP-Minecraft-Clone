@@ -61,9 +61,24 @@ void Player::update(Engine *engine, float dt) {
         collide((*currentChunk));
         checkOnGround((*currentChunk));
     } else {
+        auto pos = this->getTransform().getPosition();
+        // Automatically replace the player so that they're inside the world bounds.
+        if (pos.x > WORLD_WIDTH) {
+            this->setPosition(glm::vec3(pos.x-2, pos.y, pos.z));
+        }
+        else if (pos.x < 0) {
+            this->setPosition(glm::vec3(pos.x+2, pos.y, pos.z));
+        }
+        else if (pos.z > WORLD_LENGTH) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z-2));
+        }
+        else if (pos.z < 0) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z+2));
+        }
+
         // Out of bounds!
-        LOG(INFO) << "Player is out of bounds at " << this->getTransform().getPosition().x << " "
-                  << this->getTransform().getPosition().y << " " << this->getTransform().getPosition().z;
+        LOG(INFO) << "Player is out of bounds at x: " << this->getTransform().getPosition().x << " y:"
+                  << this->getTransform().getPosition().y << " z:" << this->getTransform().getPosition().z;
     }
 
     this->transform.translate(velocity);

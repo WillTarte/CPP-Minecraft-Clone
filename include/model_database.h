@@ -45,4 +45,5 @@ public:
 namespace ModelType {
     const std::string CUBE = "cubeModel";
     const std::string STEVE = "steveModel";
+    const std::string SKYBOX = "skyboxModel";
 }
