@@ -38,13 +38,6 @@ public:
         this->position += displacement;
     }
 
-    /** Sets the position
-     * @param pos
-     */
-    void setPosition(glm::vec3 pos) {
-        this->position = pos;
-    }
-
     /** Applies scaling component-wise
      * @param scaling the component-wise scaling factors
      */
