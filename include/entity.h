@@ -39,7 +39,11 @@ public:
 
     ///move assignment
     Entity &operator=(Entity &&other) {
-        std::swap(*this, other);
+        this->entityID = std::move(other.entityID);
+        this->modelName = std::move(other.modelName);
+        this->blockId = std::move(other.blockId);
+        this->transform = std::move(other.transform);
+        this->box = std::move(other.box);
         return *this;
     }
 

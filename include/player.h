@@ -36,8 +36,12 @@ public:
     /// Manipulates the camera's view based on the player's mouse input
     void look(GLFWwindow *window, double xpos, double ypos);
 
-private:
+    inline void setPosition(glm::vec3 position) {
+        this->transform.setPosition(position);
+    }
+
     Camera camera;
+private:
     bool onGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};

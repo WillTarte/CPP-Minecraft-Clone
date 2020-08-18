@@ -85,7 +85,6 @@ Engine::Engine(Config config) {
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
     LOG(INFO) << "Creating Skybox";
-    //skybox.updateTransform(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)),glm::vec3(CHUNK_WIDTH*4, CHUNK_HEIGHT*2, CHUNK_LENGTH*4));
     skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
                                                 (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
     skybox.getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 2, CHUNK_LENGTH * 4));
@@ -102,6 +101,8 @@ void Engine::runLoop() {
     Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
                                 (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
     basicShader.use();
+
+    ViewFrustum frustum = ViewFrustum();
     // ***********
 
     glfwSwapInterval(1);
@@ -109,6 +110,9 @@ void Engine::runLoop() {
     double t = 0.0f;
     double dt = 1.0f / 30.0f;
     double currentTime = glfwGetTime();
+
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -118,6 +122,13 @@ void Engine::runLoop() {
         double newTime = glfwGetTime();
         double frameTime = newTime - currentTime;
         currentTime = newTime;
+
+        /*nbFrames++;
+        if (newTime - lastTime >= 1.0f) {
+            std::cout << "\n" << 1000.0 / double(nbFrames) << "\n";
+            nbFrames = 0;
+            lastTime += 1.0;
+        }*/
 
         while (frameTime > 0.0f) {
             double deltaTime = frameTime < dt ? frameTime : dt;
@@ -133,7 +144,7 @@ void Engine::runLoop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 projection = glm::perspective(glm::radians(config.fov), (float) windowWidth / (float) windowHeight,
-                                                0.1f, 100.0f);
+                                                0.1f, 96.0f);
 
         // rendering stuff here
         // --------------------
@@ -144,12 +155,11 @@ void Engine::runLoop() {
                 {player->getTransform().getPosition().x, player->getTransform().getPosition().z});
         LOG(DEBUG) << "Rendering " << chunksToDraw.size() << " Chunks.";
         for (const auto &chunk : chunksToDraw) {
-            chunk->renderChunk(basicShader);
+            chunk->renderChunk(basicShader, frustum);
         }
 
         player->draw(basicShader);
         skybox.draw(basicShader);
-        //skybox.updateTransform(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH*2), 10, (player->getTransform().getPosition().z - CHUNK_LENGTH*2)),glm::vec3(1.0));
         skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
                                                     (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
         // --------------------
@@ -205,30 +215,9 @@ void Engine::generateWorld() {
     for (unsigned int x = 0; x < this->worldInfo.getWidth(); x++) {
         for (unsigned int z = 0; z < this->worldInfo.getLength(); z++) {
             float tempHeight = noiseGen.GetNoise(x, 0, z) + 1;
-            int height = round((tempHeight * 10) + 1) + 10;
+            int height = static_cast<int>(round((tempHeight * 10) + 1)) + 10;
 
             auto chunk = this->chunkManager->getChunkByXZ({x, z});
-
-            /// Commenting this out for now because it increases the number of blocks rendered from ~16k to ~246k
-            /// Which means that the performance is dramatically worse. Once culling is done, this is good to include. 
-            // Fill the world with stone under the block
-//            for (int y = 0; y < this->world.height; y++) {
-//                // If right below grass, fill with dirt
-//                if (y > height - 4) {
-//                    this->addEntity(
-//                            Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-//                }
-//                // If not at bottom layer, fill with stone
-//                else if (y != 0) {
-//                    this->addEntity(
-//                            Entity(ModelType::CUBE, BlockID::STONE, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-//                }
-//                // Bottom layer is bedrock
-//                else {
-//                    this->addEntity(
-//                            Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, y, z}, {1, 1, 1}, {0, 0, 0})));
-//                }
-//            }
 
             if (height < 14) {
                 height = 13;
@@ -236,14 +225,36 @@ void Engine::generateWorld() {
                         Entity(ModelType::CUBE, BlockID::STONE, Transform({x, height - 1, z}, {1, 1, 1}, {0, 0, 0})));
                 (*chunk)->addEntity(
                         Entity(ModelType::CUBE, BlockID::WATER, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
-            }
-            else {
+
+                for (int i = height - 2; i >= 0; i--) {
+                    if (i > 0) {
+                        (*chunk)->addEntity(
+                                Entity(ModelType::CUBE, BlockID::STONE, Transform({x, i, z}, {1, 1, 1}, {0, 0, 0})));
+                    } else {
+                        (*chunk)->addEntity(
+                                Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, i, z}, {1, 1, 1}, {0, 0, 0})));
+                    }
+                }
+            } else {
                 (*chunk)->addEntity(
                         Entity(ModelType::CUBE, BlockID::DIRT_GRASS, Transform({x, height, z}, {1, 1, 1}, {0, 0, 0})));
 
                 int tree = (x * height * z) ^worldInfo.getSeed();
                 if (tree % 61 == 0) {
                     addTree(x, height, z);
+                }
+
+                for (int i = height - 1; i >= 0; i--) {
+                    if (i >= 8) {
+                        (*chunk)->addEntity(
+                                Entity(ModelType::CUBE, BlockID::DIRT, Transform({x, i, z}, {1, 1, 1}, {0, 0, 0})));
+                    } else if (i > 0) {
+                        (*chunk)->addEntity(
+                                Entity(ModelType::CUBE, BlockID::STONE, Transform({x, i, z}, {1, 1, 1}, {0, 0, 0})));
+                    } else {
+                        (*chunk)->addEntity(
+                                Entity(ModelType::CUBE, BlockID::BEDROCK, Transform({x, i, z}, {1, 1, 1}, {0, 0, 0})));
+                    }
                 }
             }
         }

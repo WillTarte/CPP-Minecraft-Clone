@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
+#include "frustum.h"
 #include "shader.h"
 #include "chunks.h"
 #include "player.h"

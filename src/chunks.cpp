@@ -31,6 +31,7 @@ std::optional<Entity *> Chunk::getEntityByWorldPos(glm::vec3 worldPos) {
 }
 
 std::optional<Entity *> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
+
     for (auto &blocksById : entities) {
         for (auto &ent : blocksById.second) {
 
@@ -57,12 +58,14 @@ bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
            xzCoords.y<(float) (origin.second * CHUNK_LENGTH) || xzCoords.y>(float)(origin.second * (CHUNK_LENGTH + 1));
 }
 
-void Chunk::renderChunk(Shader &shader) {
+void Chunk::renderChunk(Shader &shader, const ViewFrustum &frustum) {
 
     for (auto &entsByBlock : entities) {
         // TODO: would it be possible to do instancing here?
         for (auto &ent : entsByBlock.second) {
-            ent.draw(shader);
+            if (frustum.isBoxInFrustum(ent.getTransform().position, ent.box)) {
+                ent.draw(shader);
+            }
         }
     }
 }
@@ -101,6 +104,7 @@ std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2
 }
 
 std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZIndex(unsigned int xInd, unsigned int zInd) {
+
     std::pair<unsigned int, unsigned int> findKey = std::make_pair(xInd, zInd);
 
     if (chunks.find(findKey) == chunks.end()) {

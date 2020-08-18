@@ -29,6 +29,6 @@ void TextureDatabase::init() {
     }
 }
 
-std::shared_ptr<TextureInterface> TextureDatabase::getTextureByBlockId(BlockID id) {
+std::shared_ptr<TextureInterface> &TextureDatabase::getTextureByBlockId(BlockID id) {
     return instance.textures[id];
 }
