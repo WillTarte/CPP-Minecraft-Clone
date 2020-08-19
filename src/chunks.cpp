@@ -6,48 +6,37 @@
 #include "../include/chunks.h"
 
 Chunk::Chunk(unsigned int xInd, unsigned int zInd) {
-    for (auto ent : allBlockIDs) {
-        entities.insert({ent, std::vector<Entity>()});
-    }
     this->origin = std::make_pair(xInd, zInd);
 }
 
-std::optional<Entity *> Chunk::getEntityByWorldPos(glm::vec3 worldPos) {
+std::optional<std::shared_ptr<Entity>> Chunk::getEntityByWorldPos(glm::vec3 worldPos) {
 
-    for (auto &blocksById : entities) {
-        for (auto &ent : blocksById.second) {
-            glm::vec3 entityPos = ent.getTransform().getPosition();
+    for (auto &ent : entities) {
+        glm::vec3 entityPos = ent.second->getTransform().getPosition();
 
-            bool withinX = (int) worldPos.x == (int) entityPos.x;
-            bool withinY = (int) worldPos.y == (int) entityPos.y;
-            bool withinZ = (int) worldPos.z == (int) entityPos.z;
+        bool withinX = (int) worldPos.x == (int) entityPos.x;
+        bool withinY = (int) worldPos.y == (int) entityPos.y;
+        bool withinZ = (int) worldPos.z == (int) entityPos.z;
 
-            if (withinX && withinZ && withinY) {
-                return {&ent};
-            }
+        if (withinX && withinZ && withinY) {
+            return {ent.second};
         }
     }
     return {};
 }
 
-std::optional<Entity *> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
+std::optional<std::shared_ptr<Entity>> Chunk::getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box) {
+    for (auto &ent : entities) {
 
-    for (auto &blocksById : entities) {
-        for (auto &ent : blocksById.second) {
+        bool xColl = (ent.second->getTransform().getPosition().x < worldPos.x + box.dimensions.x &&
+                      ent.second->getTransform().getPosition().x + ent.second->box.dimensions.x > worldPos.x);
+        bool yColl = (ent.second->getTransform().getPosition().y < worldPos.y + box.dimensions.y &&
+                      ent.second->getTransform().getPosition().y + ent.second->box.dimensions.y > worldPos.y);
+        bool zColl = (ent.second->getTransform().getPosition().z < worldPos.z + box.dimensions.z &&
+                      ent.second->getTransform().getPosition().z + ent.second->box.dimensions.z > worldPos.z);
 
-            //if (isBlockOutOfBounds({worldPos.x, worldPos.z}))
-            // return {};
-
-            bool xColl = (ent.getTransform().getPosition().x < worldPos.x + box.dimensions.x &&
-                          ent.getTransform().getPosition().x + ent.box.dimensions.x > worldPos.x);
-            bool yColl = (ent.getTransform().getPosition().y < worldPos.y + box.dimensions.y &&
-                          ent.getTransform().getPosition().y + ent.box.dimensions.y > worldPos.y);
-            bool zColl = (ent.getTransform().getPosition().z < worldPos.z + box.dimensions.z &&
-                          ent.getTransform().getPosition().z + ent.box.dimensions.z > worldPos.z);
-
-            if (xColl && yColl && zColl)
-                return {&ent};
-        }
+        if (xColl && yColl && zColl)
+            return {ent.second};
     }
     return {};
 }
@@ -59,30 +48,21 @@ bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
 }
 
 void Chunk::renderChunk(Shader &shader, const ViewFrustum &frustum) {
-
-    for (auto &entsByBlock : entities) {
-        // TODO: would it be possible to do instancing here?
-        for (auto &ent : entsByBlock.second) {
-            if (frustum.isBoxInFrustum(ent.getTransform().position, ent.box)) {
-                ent.draw(shader);
-            }
+    for (auto &ent : entities) {
+        if (frustum.isBoxInFrustum(ent.second->getTransform().getPosition(), ent->second.box)) {
+            ent.second->draw(shader);
         }
     }
 }
 
 size_t Chunk::getNumberOfEntities() const {
-    size_t total = 0;
-    for (const auto &ents : entities)
-        total += ents.second.size();
-    return total;
+    return entities.size();
 }
 
-bool Chunk::removeEntity(Entity &entity) {
-    auto &entVec = this->entities[entity.getBlockID()];
-    std::vector<Entity>::iterator it;
-    for (it = entVec.begin(); it != entVec.end(); it++) {
-        if (it->getEntityID() == entity.getEntityID()) {
-            entVec.erase(it);
+bool Chunk::removeEntityByID(EntityID id) {
+    for (auto &ent : entities) {
+        if (ent.second->getEntityID() == id) {
+            entities.erase(id);
             return true;
         }
     }
@@ -168,11 +148,10 @@ bool ChunkManager::removeEntityFromChunk(Entity &entity) {
             {entity.getTransform().getPosition().x, entity.getTransform().getPosition().z});
 
     if (optChunk.has_value()) {
-        return (*optChunk)->removeEntity(entity);
+        return (*optChunk)->removeEntityByID(entity.getEntityID());
     } else {
         LOG(DEBUG) << "Could not find chunk for entity at " << entity.getTransform().getPosition().x << " "
                    << entity.getTransform().getPosition().y << " " << entity.getTransform().getPosition().z;
         return false;
     }
-
 }

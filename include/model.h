@@ -20,7 +20,6 @@ private:
     void bindBuffers() const;
 
 public:
-
     Model(Mesh &mesh);
 
     /** Draws this model with the given shader.
