@@ -45,7 +45,6 @@ public:
     inline GLuint getTexId() { return texID; }
 
     inline void setTexId(GLuint id) { this->texID = id; }
-
 };
 
 /// A simple 2D texture
@@ -65,7 +64,6 @@ public:
 
     TextureType getTextureType() const override { return texTypeInstance; }
 };
-//TextureType Texture2D::texTypeInstance = TEXTURE2D;
 
 /// A cubemap: composed of 6 textures, 1 for each face.
 class CubeMap : public TextureInterface {
@@ -84,4 +82,3 @@ public:
 
     TextureType getTextureType() const override { return texTypeInstance; }
 };
-//TextureType CubeMap::texTypeInstance = CUBEMAP;

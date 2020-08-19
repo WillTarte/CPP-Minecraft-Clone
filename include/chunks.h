@@ -45,7 +45,7 @@ public:
 /// A Chunk starts at some XZ index (from 0 to WORLD_LENGTH / CHUNK_LENGTH ...) and contains entities
 class Chunk {
 private:
-    std::map<BlockID, std::vector<Entity>> entities{};
+    std::map<EntityID, std::shared_ptr<Entity>> entities{};
     std::pair<unsigned int, unsigned int> origin; // X / CHUNK_WIDTH, Z / CHUNK_LENGTH
 
     /** Checks if the given XZ coordinates are outside this Chunk
@@ -61,14 +61,17 @@ public:
     /// Adds an entity to the world. NB: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std::move.
     /// <br/><br/>In other words, this method gives ownership of the entity to the Chunk.
     inline void addEntity(Entity &&entity) {
-
         if (isBlockOutOfBounds({entity.getTransform().getPosition().x, entity.getTransform().getPosition().z})) {
             LOG(DEBUG) << "Adding an entity to Chunk at " << origin.first * CHUNK_WIDTH << " "
                        << origin.second * CHUNK_LENGTH << " that is out of bounds at "
                        << entity.getTransform().getPosition().x << " " << entity.getTransform().getPosition().z;
         }
+        entities[entity.getEntityID()] = std::make_shared<Entity>(std::move(entity));
+    }
 
-        entities[entity.getBlockID()].push_back(std::move(entity));
+    /// Returns a reference to this chunk's entities
+    std::map<EntityID, std::shared_ptr<Entity>> &getEntities() {
+        return entities;
     }
 
     /** Renders the entities in this Chunk
@@ -82,7 +85,7 @@ public:
      * @param worldPos the world pos (truncates to integers)
      * @return an optional pointer to an entity
      */
-    std::optional<Entity *> getEntityByWorldPos(const glm::vec3 worldPos);
+    std::optional<std::shared_ptr<Entity>> getEntityByWorldPos(const glm::vec3 worldPos);
 
     /** Returns an entity based on a bounding box overlap
      *
@@ -90,14 +93,14 @@ public:
      * @param box the bounding box
      * @return an optional pointer to an entity
      */
-    std::optional<Entity *> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
+    std::optional<std::shared_ptr<Entity>> getEntityByBoxCollision(glm::vec3 worldPos, BoundingBox box);
 
     /** Removes an entity from this chunk (and therefore from the world). Invalidates any references to this entity.
      *
-     * @param entity the entity to try remove.
-     * @return true if succeeded, false otherwise.
+     * @param id the entity to remove's ID
+     * @return true if sucessfull, false otherwise
      */
-    bool removeEntity(Entity &entity);
+    bool removeEntityByID(EntityID id);
 
     /// Returns the chunk's origin in world coordinates for the X and Z components
     glm::vec2 getChunkOrigin() const { return {origin.first * CHUNK_WIDTH, origin.second * CHUNK_LENGTH}; }
@@ -133,7 +136,6 @@ public:
      * @return a shared_ptr to a Chunk if found, or an empty optional
      */
     std::optional<std::shared_ptr<Chunk>> getChunkByXZIndex(unsigned int xInd, unsigned int zInd);
-
 
     /** Removes the given entity from the world (if found). Invalidates any references to that entity.
      *

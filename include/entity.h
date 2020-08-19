@@ -27,9 +27,11 @@ private:
     std::string modelName;
     BlockID blockId;
     EntityID entityID;
+
 protected:
     Transform transform;
     static EntityID entityIDCounter;
+
 public:
     BoundingBox box{};
 
@@ -52,8 +54,6 @@ public:
         this->box = other.box;
     }
 
-    //Entity(const Entity& ent) { std::cout << "Entity copy\n"; }
-
     /** Draws the entity into the world
      * @param shader the shader used to customize the render pipeline
      */
@@ -65,7 +65,6 @@ public:
     /// Gets this entity's transform by reference
     inline Transform &getTransform() { return this->transform; }
 
-    //inline void updateTransform(glm::vec3 position, glm::vec3 scale) {this->transform.position = position;this->transform.scaleBy(scale); }
-
+    /// Gets this entities unique ID
     inline EntityID getEntityID() { return entityID; }
 };
