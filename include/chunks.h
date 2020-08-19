@@ -10,10 +10,11 @@
 #include <unordered_map>
 #include "block.h"
 #include "entity.h"
+#include "frustum.h"
 
-constexpr unsigned int CHUNK_WIDTH = 32;
+constexpr unsigned int CHUNK_WIDTH = 16;
 constexpr unsigned int CHUNK_HEIGHT = 16;
-constexpr unsigned int CHUNK_LENGTH = 32;
+constexpr unsigned int CHUNK_LENGTH = 16;
 
 constexpr unsigned int WORLD_WIDTH = 512;
 constexpr unsigned int WORLD_HEIGHT = 16;
@@ -78,7 +79,7 @@ public:
      *
      * @param shader the shader to use to draw the entities
      */
-    void renderChunk(Shader &shader);
+    void renderChunk(Shader &shader, const ViewFrustum &frustum);
 
     /** Returns an entity in absolute world position
      *

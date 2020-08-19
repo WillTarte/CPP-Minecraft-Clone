@@ -29,7 +29,7 @@ void ModelDatabase::init() {
     }
 }
 
-std::shared_ptr<Model> ModelDatabase::getModelByName(const std::string &modelName) {
+std::shared_ptr<Model> &ModelDatabase::getModelByName(const std::string &modelName) {
     return instance.models[modelName];
 }
 
