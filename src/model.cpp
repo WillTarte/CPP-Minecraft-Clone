@@ -40,5 +40,5 @@ void Model::bindBuffers() const {
 void Model::draw() const {
     bindBuffers();
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
-    glBindVertexArray(0);
+    //glBindVertexArray(0);
 }

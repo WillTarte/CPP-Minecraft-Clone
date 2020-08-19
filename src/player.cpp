@@ -260,3 +260,21 @@ void Player::placeBlock(Engine *engine) {
         }
     }
 }
+
+void Player::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    // Get texture and bind
+    this->tex->bindTexture();
+    if (this->tex->getTextureType() == CUBEMAP) {
+        shader.setBool("isCubeMap", true);
+        shader.setInt("textureCubeMap", 1);
+    } else {
+        shader.setBool("isCubeMap", false);
+        shader.setInt("texture2D", 0);
+    }
+
+    // Get Model and draw
+    this->model->draw();
+}
