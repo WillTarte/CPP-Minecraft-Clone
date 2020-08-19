@@ -49,18 +49,18 @@ void initLogging() {
 
 Config cliConfig() {
     Config conf{};
-    std::cout << "Window size? (default " << DEFAULT_WINDOW_WIDTH << "x" << DEFAULT_WINDOW_HEIGHT << "): " << std::endl;
+    std::cout << "Window size? (default " << DEFAULT_WINDOW_WIDTH << "x" << DEFAULT_WINDOW_HEIGHT << "): ";
     std::string winSize;
-    std::cin >> winSize;
+    std::getline(std::cin, winSize, '\n');
     if (!winSize.empty()) {
         int seperator = winSize.find('x');
         conf.windowWidth = stoi(winSize.substr(0,seperator));
         conf.windowHeight = stoi(winSize.substr(seperator));
     }
 
-    std::cout << "World size? (s/M/l): " << std::endl;
+    std::cout << "World size? (s/M/l): ";
     std::string worldSize;
-    std::cin >> worldSize;
+    std::getline(std::cin, worldSize);
     if (!worldSize.empty()) {
         switch(worldSize[0]) {
             case 's': conf.worldSize = SMALL_WORLD;
@@ -72,16 +72,16 @@ Config cliConfig() {
         }
     }
 
-    std::cout << "World seed (random): " << std::endl;
+    std::cout << "World seed (random): ";
     std::string seed;
-    std::cin >> seed;
+    std::getline(std::cin, seed);
     if (!seed.empty()) {
         conf.seed = stoi(seed);
     }
 
-    std::cout << "Field of view (45): " << std::endl;
+    std::cout << "Field of view (45): ";
     std::string fov;
-    std::cin >> fov;
+    std::getline(std::cin, fov);
     if (!fov.empty()) {
         conf.fov = stoi(fov);
     }
