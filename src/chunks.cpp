@@ -47,9 +47,11 @@ bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
            xzCoords.y<(float) (origin.second * CHUNK_LENGTH) || xzCoords.y>(float)(origin.second * (CHUNK_LENGTH + 1));
 }
 
-void Chunk::renderChunk(Shader &shader) {
+void Chunk::renderChunk(Shader &shader, const ViewFrustum &frustum) {
     for (auto &ent : entities) {
-        ent.second->draw(shader);
+        if (frustum.isBoxInFrustum(ent.second->getTransform().getPosition(), ent.second->box)) {
+            ent.second->draw(shader);
+        }
     }
 }
 
@@ -82,6 +84,7 @@ std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2
 }
 
 std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZIndex(unsigned int xInd, unsigned int zInd) {
+
     std::pair<unsigned int, unsigned int> findKey = std::make_pair(xInd, zInd);
 
     if (chunks.find(findKey) == chunks.end()) {
