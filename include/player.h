@@ -25,6 +25,8 @@ public:
     /// Updates the player (movement physics and collision physics)
     void update(Engine *engine, float dt);
 
+    void draw(Shader &shader) override;
+
     /// Processes the player's inputs
     void processInput(Engine *engine);
 
