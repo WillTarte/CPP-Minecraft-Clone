@@ -14,7 +14,7 @@
 #if defined(__unix__) || _MSC_VER >= 1914
 namespace fs = std::filesystem;
 #else
-namespace fs = std::experimental::filesystem::v1;
+namespace fs = std::filesystem;
 #endif
 
 /// The Model Database loads models in the resources/models/ folder to be available at run time.
@@ -30,7 +30,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
 
 public:
-
     /// Initializes the Model Database. Should only be called once during program execution.
     static void init();
 

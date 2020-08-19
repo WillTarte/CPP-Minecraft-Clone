@@ -9,13 +9,11 @@
 /// Class that holds transform information: position, scale and rotation
 class Transform {
 private:
-
     glm::vec3 scale{};
     glm::quat rotation{};
-
-public:
     glm::vec3 position{};
 
+public:
     Transform() {
         this->position = {0.0f, 0.0f, 0.0f};
         this->scale = {1.0f, 1.0f, 1.0f};
@@ -38,13 +36,6 @@ public:
      */
     void translate(glm::vec3 displacement) {
         this->position += displacement;
-    }
-
-    /** Sets the position
-     * @param pos
-     */
-    void setPosition(glm::vec3 pos) {
-        this->position = pos;
     }
 
     /** Applies scaling component-wise
@@ -87,15 +78,27 @@ public:
                glm::scale(glm::mat4(1.0f), this->scale);
     }
 
-    const glm::vec3 getPosition() {
+    glm::vec3 &getPosition() {
         return position;
     }
 
-    const glm::quat getRotation() const {
+    glm::quat &getRotation() {
         return rotation;
     }
 
-    const glm::vec3 getScale() const {
+    glm::vec3 &getScale() {
         return scale;
+    }
+
+    void setScale(glm::vec3 s) {
+        Transform::scale = s;
+    }
+
+    void setRotation(glm::quat r) {
+        Transform::rotation = r;
+    }
+
+    void setPosition(glm::vec3 p) {
+        Transform::position = p;
     }
 };

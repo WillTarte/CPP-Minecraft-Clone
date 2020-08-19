@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 #if defined __unix__ || _MSC_VER >= 1914
 namespace fs = std::filesystem;
 #else
-namespace fs = std::experimental::filesystem::v1;
+namespace fs = std::filesystem;
 #endif
 
 /// The Texture Database loads available textures according to the defined blocks and stores them for easy access.
@@ -34,7 +34,6 @@ private:
     std::unordered_map<BlockID, std::shared_ptr<TextureInterface>> textures;
 
 public:
-
     /// Initializes the texture database. Should only be called once during program execution.
     static void init();
 

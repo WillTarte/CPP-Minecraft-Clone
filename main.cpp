@@ -31,7 +31,6 @@ int main(int argc, char *argv[]) {
         auto *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
         engine->mouseCallbackFunc(window, x, y);
     });
-
     engine.runLoop();
 }
 
