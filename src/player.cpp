@@ -54,7 +54,17 @@ void Player::update(Engine *engine, float dt) {
     acceleration = {0, velocity.y, 0};
 
     if (!onGround) {
-        acceleration.y -= 50 * dt;
+        std::cout << 200 * dt << std::endl;
+        acceleration.y -= 20;
+    }
+    if (closeToGround) {
+        acceleration.y -= 5;
+    }
+    else {
+        auto pos = getTransform().getPosition();
+        if (pos.y != ceil(pos.y)) {
+            setPosition(glm::vec3(pos.x, ceil(pos.y), pos.z));
+        }
     }
 
     if (currentChunk.has_value()) {
@@ -209,6 +219,13 @@ void Player::collide(const std::shared_ptr<Chunk> &currentChunk) {
         velocity.z = 0.0f;
     }
 
+}
+
+void Player::checkCloseToGround(const std::shared_ptr<Chunk> &currentChunk) {
+    std::optional<std::shared_ptr<Entity>> optEntity = (*currentChunk).getEntityByBoxCollision(
+            this->getTransform().getPosition() + glm::vec3(0.0f, 1.0f, 0.0f), this->box);
+
+    closeToGround = !optEntity.has_value();
 }
 
 void Player::checkOnGround(const std::shared_ptr<Chunk> &currentChunk) {

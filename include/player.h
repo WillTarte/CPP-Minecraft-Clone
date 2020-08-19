@@ -38,6 +38,7 @@ public:
 private:
     Camera camera;
     bool onGround = true;
+    bool closeToGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
     BlockID selectedBlockID = BlockID::DIRT;
@@ -57,6 +58,9 @@ private:
      * @param currentChunk the current chunk
      */
     void checkOnGround(const std::shared_ptr<Chunk> &currentChunk);
+
+    // Slow the player down when they're within a block of the ground so that they don't go through the block
+    void checkCloseToGround(const std::shared_ptr<Chunk> &currentChunk);
 
     /// Tries to remove an entity from the world based on player input
     void removeEntity(Engine *engine) const;
