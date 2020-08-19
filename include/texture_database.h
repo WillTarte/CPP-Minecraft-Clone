@@ -42,5 +42,5 @@ public:
      * @param id the block to fetch a texture for.
      * @return NULL if blockId is not registered. Otherwise returns a pointer to a texture.
      */
-    static std::shared_ptr<TextureInterface> getTextureByBlockId(BlockID id);
+    static std::shared_ptr<TextureInterface> &getTextureByBlockId(BlockID id);
 };

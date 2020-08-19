@@ -35,8 +35,8 @@ public:
         this->transform.setPosition(position);
     }
 
-private:
     Camera camera;
+private:
     bool onGround = true;
     bool closeToGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};

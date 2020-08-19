@@ -4,7 +4,6 @@
 #include "../include/player.h"
 #include "../include/engine.h"
 
-
 //.23 makes it approximatly 3 tall
 Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
                           Transform({20.0, 30.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
