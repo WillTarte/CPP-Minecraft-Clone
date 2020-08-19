@@ -28,6 +28,9 @@ private:
     BlockID blockId;
     EntityID entityID;
 
+    std::shared_ptr<TextureInterface> tex;
+    std::shared_ptr<Model> model;
+
 protected:
     Transform transform;
     static EntityID entityIDCounter;
@@ -46,15 +49,20 @@ public:
         this->blockId = std::move(other.blockId);
         this->transform = std::move(other.transform);
         this->box = std::move(other.box);
+        this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+        this->model = ModelDatabase::getModelByName(this->modelName);
         return *this;
     }
 
     ///move constructor
     Entity(Entity &&other) {
-        this->modelName = other.modelName;
-        this->entityID = other.entityID;
-        this->blockId = other.blockId;
-        this->transform = other.transform;
+        this->entityID = std::move(other.entityID);
+        this->modelName = std::move(other.modelName);
+        this->blockId = std::move(other.blockId);
+        this->transform = std::move(other.transform);
+        this->box = std::move(other.box);
+        this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+        this->model = ModelDatabase::getModelByName(this->modelName);
         this->box = other.box;
     }
 

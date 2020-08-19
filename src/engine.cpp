@@ -70,7 +70,11 @@ Engine::Engine(Config config) {
     LOG(INFO) << "Using OpenGL version " << glMajor << "." << glMinor << ".";
     LOG(INFO) << "Successfully initialized GLEW version " << glewGetString(GLEW_VERSION) << ".";
 
-    LOG(INFO) << "Generating World ... ";
+}
+
+void Engine::init() {
+
+    LOG(INFO) << "\nGenerating World ... ";
     this->worldInfo = WorldInfo{};
     this->chunkManager = std::make_unique<ChunkManager>(this->worldInfo);
 
@@ -84,9 +88,10 @@ Engine::Engine(Config config) {
     this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
 
     LOG(INFO) << "Creating Skybox";
-    skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
-                                                (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
-    skybox.getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 2, CHUNK_LENGTH * 4));
+    skybox = std::make_unique<Entity>(ModelType::SKYBOX, BlockID::SKYBOX);
+    skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
+                                                 (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+    skybox->getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 4, CHUNK_LENGTH * 4));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -110,6 +115,10 @@ void Engine::runLoop() {
     double lastTime = glfwGetTime();
     int nbFrames = 0;
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -119,12 +128,12 @@ void Engine::runLoop() {
         double frameTime = newTime - currentTime;
         currentTime = newTime;
 
-        /*nbFrames++;
+        nbFrames++;
         if (newTime - lastTime >= 1.0f) {
-            std::cout << "\n" << 1000.0 / double(nbFrames) << "\n";
+            std::cout << "\nms/frame " << 1000.0 / double(nbFrames) << "\n";
             nbFrames = 0;
             lastTime += 1.0;
-        }*/
+        }
 
         while (frameTime > 0.0f) {
             double deltaTime = frameTime < dt ? frameTime : dt;
@@ -155,9 +164,13 @@ void Engine::runLoop() {
         }
 
         player->draw(basicShader);
-        skybox.draw(basicShader);
-        skybox.getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
-                                                    (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+
+        skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), -1,
+                                                     (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+        glDisable(GL_CULL_FACE);
+        skybox->draw(basicShader);
+        glEnable(GL_CULL_FACE);
+
         // --------------------
 
         glfwSwapBuffers(window);

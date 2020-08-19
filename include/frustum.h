@@ -11,7 +11,7 @@ struct Plane {
 
     Plane() = default;
 
-    [[nodiscard]] inline float distanceToPoint(const glm::vec3 &point) const {
+    inline float distanceToPoint(const glm::vec3 &point) const {
         return glm::dot(point, normal) + distanceToOrigin;
     }
 
@@ -24,7 +24,7 @@ public:
 
     void update(const glm::mat4 &proj, const glm::mat4 &view);
 
-    [[nodiscard]] bool isBoxInFrustum(glm::vec3 position, BoundingBox box) const;
+    bool isBoxInFrustum(glm::vec3 position, BoundingBox box) const;
 
 private:
     std::array<Plane, 6> planes;

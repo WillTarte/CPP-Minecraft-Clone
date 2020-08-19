@@ -49,7 +49,7 @@ bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
 
 void Chunk::renderChunk(Shader &shader, const ViewFrustum &frustum) {
     for (auto &ent : entities) {
-        if (frustum.isBoxInFrustum(ent.second->getTransform().getPosition(), ent->second.box)) {
+        if (frustum.isBoxInFrustum(ent.second->getTransform().getPosition(), ent.second->box)) {
             ent.second->draw(shader);
         }
     }
