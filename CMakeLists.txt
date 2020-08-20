@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
+file(GLOB IRRKLANG_INCLUDE "${CMAKE_SOURCE_DIR}/irrKLang/include/*.h")
+
 set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/block.h include/texture.h include/texture_database.h include/entity.h include/model_database.h include/transform.h include/player.h include/chunks.h)
 set(SOURCE_FILES src/engine.cpp src/model.cpp src/texture.cpp src/texture_database.cpp src/entity.cpp src/model_database.cpp src/player.cpp src/chunks.cpp)
-set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp libs/easylogging++.h libs/easylogging++.cpp libs/FastNoise.cpp libs/FastNoise.h)
+set(LIB_FILES libs/stb_image.h libs/stb_image_impl.cpp libs/tiny_obj_loader.h libs/tiny_obj_loader.cpp libs/easylogging++.h libs/easylogging++.cpp libs/FastNoise.cpp libs/FastNoise.h ${IRRKLANG_INCLUDE})
 
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM.cmake")
 set(CPM_DOWNLOAD_VERSION 0.27)
@@ -59,19 +61,21 @@ CPMAddPackage(
 
 if (MSVC)
     # warning level 4 and all warnings as errors
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4 /WX /O3)
 else()
     # lots of warnings and all warnings as errors
-    add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -lstdc++fs)
-    target_link_libraries(${PROJECT_NAME} PUBLIC stdc++fs)
+    add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -O3)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC
-            glfw
-            libglew_static
-            glm
-)
+        glfw
+        libglew_static
+        glm
+        ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKLang.lib
+        )
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/easylogging.config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrKLang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
