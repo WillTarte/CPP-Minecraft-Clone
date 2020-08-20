@@ -7,10 +7,11 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
+#include "engine_constants.h"
 #include "frustum.h"
 #include "shader.h"
-#include "chunks.h"
 #include "player.h"
+#include "chunks.h"
 
 #if defined __unix__ || _MSC_VER >= 1914
 namespace fs = std::filesystem;
@@ -18,19 +19,13 @@ namespace fs = std::filesystem;
 namespace fs = std::experimental::filesystem::v1;
 #endif
 
-/// Config for the application
-struct Config {
-    int windowWidth = 1024;
-    int windowHeight = 768;
-    float fov = 45.0f;
-};
 
 /// Basically the entry point into the game. Orchestrates all the systems.
 class Engine {
 private:
-    GLFWwindow *window;
-    unsigned int windowWidth;
-    unsigned int windowHeight;
+    GLFWwindow *window{};
+    unsigned int windowWidth = EngineConstants::DEFAULT_WINDOW_WIDTH;
+    unsigned int windowHeight = EngineConstants::DEFAULT_WINDOW_HEIGHT;
     Config config;
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
@@ -54,15 +49,15 @@ public:
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
-    inline GLFWwindow *getWindow() const { return window; };
+    [[nodiscard]] inline GLFWwindow *getWindow() const { return window; };
 
-    inline unsigned int getWindowWidth() const { return windowWidth; }
+    [[nodiscard]] inline unsigned int getWindowWidth() const { return windowWidth; }
 
-    inline unsigned int getWindowHeight() const { return windowHeight; }
+    [[nodiscard]] inline unsigned int getWindowHeight() const { return windowHeight; }
 
-    inline Config getConfig() { return config; }
+    inline Config &getConfig() { return config; }
 
-    inline WorldInfo getWorldInfo() { return worldInfo; };
+    WorldInfo &getWorldInfo() { return worldInfo; };
 
     inline std::unique_ptr<ChunkManager> &getChunkManager() { return chunkManager; }
 

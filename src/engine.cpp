@@ -8,13 +8,15 @@
 #include "../libs/FastNoise.h"
 #include "../include/engine.h"
 
-
 Engine::Engine(Config config) {
 
     LOG(INFO) << "Initializing Engine ...";
     //do some processing based on config
-    LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
+    LOG(INFO) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << ", fov="
+              << config.fov << "}";
     this->config = config;
+    this->worldInfo = WorldInfo(config);
+
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
 
@@ -74,8 +76,7 @@ Engine::Engine(Config config) {
 
 void Engine::init() {
 
-    LOG(INFO) << "\nGenerating World ... ";
-    this->worldInfo = WorldInfo{};
+    LOG(INFO) << "Generating World with size " << this->worldInfo.getWidth() << "x" << this->worldInfo.getLength();
     this->chunkManager = std::make_unique<ChunkManager>(this->worldInfo);
 
     LOG(INFO) << "Inserting Entities into the World ...";
@@ -85,13 +86,16 @@ void Engine::init() {
     LOG(INFO) << "Number of Chunks: " << this->chunkManager->getNumberOfChunks();
 
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
-    this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
+    this->player = std::make_unique<Player>(
+            glm::vec3(this->worldInfo.getWidth() / 2, 32.0f, this->worldInfo.getLength() / 2));
 
     LOG(INFO) << "Creating Skybox";
     skybox = std::make_unique<Skybox>(ModelType::SKYBOX, BlockID::SKYBOX);
-    skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
-                                                 (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
-    skybox->getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 4, CHUNK_LENGTH * 4));
+    skybox->getTransform().setPosition(
+            glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), 10,
+                      (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
+    skybox->getTransform().scaleBy(glm::vec3(EngineConstants::CHUNK_WIDTH * 4, EngineConstants::CHUNK_HEIGHT * 4,
+                                             EngineConstants::CHUNK_LENGTH * 4));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -135,11 +139,11 @@ void Engine::runLoop() {
             lastTime += 1.0;
         }
 
-        /*while (frameTime > 0.0f) {
+        while (frameTime > 0.0f) {
             double deltaTime = frameTime < dt ? frameTime : dt;
             frameTime -= deltaTime;
             t += deltaTime;
-        }*/
+        }
 
         player->processInput(this);
         player->update(this, static_cast<float>(dt));
@@ -166,8 +170,9 @@ void Engine::runLoop() {
         player->draw(basicShader);
 
 
-        skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), -1,
-                                                     (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+        skybox->getTransform().setPosition(
+                glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,
+                          (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
         glDisable(GL_CULL_FACE);
         skybox->draw(basicShader);
         glEnable(GL_CULL_FACE);
@@ -221,6 +226,7 @@ void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
 }
 
 void Engine::generateWorld() {
+
     auto noiseGen = FastNoise(worldInfo.getSeed());
     noiseGen.SetNoiseType(FastNoise::Simplex);
 
@@ -273,33 +279,42 @@ void Engine::generateWorld() {
     }
 
     //spawn platform
-    auto chunk = this->chunkManager->getChunkByXZ({WORLD_WIDTH / 2, WORLD_LENGTH / 2});
+    auto chunk = this->chunkManager->getChunkByXZ({this->worldInfo.getWidth() / 2, this->worldInfo.getLength() / 2});
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
 
 }
