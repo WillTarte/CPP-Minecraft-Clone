@@ -4,7 +4,6 @@
 #include "../include/player.h"
 #include "../include/engine.h"
 
-
 //.23 makes it approximatly 3 tall
 Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
                           Transform({20.0, 30.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
@@ -54,7 +53,7 @@ void Player::update(Engine *engine, float dt) {
     acceleration = {0, velocity.y, 0};
 
     if (!onGround) {
-        acceleration.y -= 50 * dt;
+        acceleration.y -= 70 * dt;
     }
 
     if (currentChunk.has_value()) {
@@ -260,4 +259,22 @@ void Player::placeBlock(Engine *engine) {
             return;
         }
     }
+}
+
+void Player::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    // Get texture and bind
+    this->tex->bindTexture();
+    if (this->tex->getTextureType() == CUBEMAP) {
+        shader.setBool("isCubeMap", true);
+        shader.setInt("textureCubeMap", 1);
+    } else {
+        shader.setBool("isCubeMap", false);
+        shader.setInt("texture2D", 0);
+    }
+
+    // Get Model and draw
+    this->model->draw();
 }

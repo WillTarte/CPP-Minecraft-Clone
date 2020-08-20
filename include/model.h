@@ -16,8 +16,6 @@ private:
     GLuint numVertices;
     std::string modelName;
 
-    /// Binds this model's buffers for rendering
-    void bindBuffers() const;
 
 public:
     Model(Mesh &mesh);
@@ -29,4 +27,7 @@ public:
     void draw() const;
 
     inline std::string getModelName() const { return this->modelName; }
+
+    /// Binds this model's buffers for rendering
+    void bindBuffers() const;
 };

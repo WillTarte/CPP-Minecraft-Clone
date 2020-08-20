@@ -10,10 +10,11 @@
 #include <unordered_map>
 #include "block.h"
 #include "entity.h"
+#include "frustum.h"
 
-constexpr unsigned int CHUNK_WIDTH = 32;
+constexpr unsigned int CHUNK_WIDTH = 16;
 constexpr unsigned int CHUNK_HEIGHT = 16;
-constexpr unsigned int CHUNK_LENGTH = 32;
+constexpr unsigned int CHUNK_LENGTH = 16;
 
 constexpr unsigned int WORLD_WIDTH = 512;
 constexpr unsigned int WORLD_HEIGHT = 16;
@@ -46,6 +47,7 @@ public:
 class Chunk {
 private:
     std::map<EntityID, std::shared_ptr<Entity>> entities{};
+    std::map<BlockID, std::vector<std::shared_ptr<Entity>>> entitiesByBlockID{};
     std::pair<unsigned int, unsigned int> origin; // X / CHUNK_WIDTH, Z / CHUNK_LENGTH
 
     /** Checks if the given XZ coordinates are outside this Chunk
@@ -66,7 +68,10 @@ public:
                        << origin.second * CHUNK_LENGTH << " that is out of bounds at "
                        << entity.getTransform().getPosition().x << " " << entity.getTransform().getPosition().z;
         }
-        entities[entity.getEntityID()] = std::make_shared<Entity>(std::move(entity));
+
+        std::shared_ptr<Entity> ent = std::make_shared<Entity>(std::move(entity));
+        entities[ent->getEntityID()] = ent;
+        entitiesByBlockID[ent->getBlockID()].push_back(ent);
     }
 
     /// Returns a reference to this chunk's entities
@@ -78,7 +83,7 @@ public:
      *
      * @param shader the shader to use to draw the entities
      */
-    void renderChunk(Shader &shader);
+    void renderChunk(Shader &shader, const ViewFrustum &frustum);
 
     /** Returns an entity in absolute world position
      *

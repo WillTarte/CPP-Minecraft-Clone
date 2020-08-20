@@ -47,9 +47,23 @@ bool Chunk::isBlockOutOfBounds(glm::vec2 xzCoords) const {
            xzCoords.y<(float) (origin.second * CHUNK_LENGTH) || xzCoords.y>(float)(origin.second * (CHUNK_LENGTH + 1));
 }
 
-void Chunk::renderChunk(Shader &shader) {
-    for (auto &ent : entities) {
-        ent.second->draw(shader);
+void Chunk::renderChunk(Shader &shader, const ViewFrustum &frustum) {
+
+    for (auto &pair : entitiesByBlockID) {
+        std::shared_ptr<TextureInterface> tex = TextureDatabase::getTextureByBlockId(pair.first);
+        tex->bindTexture();
+        if (tex->getTextureType() == CUBEMAP) {
+            shader.setBool("isCubeMap", true);
+            shader.setInt("textureCubeMap", 1);
+        } else {
+            shader.setBool("isCubeMap", false);
+            shader.setInt("texture2D", 0);
+        }
+        for (auto &ent : pair.second) {
+            if (frustum.isBoxInFrustum(ent->getTransform().getPosition(), ent->box)) {
+                ent->draw(shader);
+            }
+        }
     }
 }
 
@@ -82,6 +96,7 @@ std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZ(const glm::vec2
 }
 
 std::optional<std::shared_ptr<Chunk>> ChunkManager::getChunkByXZIndex(unsigned int xInd, unsigned int zInd) {
+
     std::pair<unsigned int, unsigned int> findKey = std::make_pair(xInd, zInd);
 
     if (chunks.find(findKey) == chunks.end()) {

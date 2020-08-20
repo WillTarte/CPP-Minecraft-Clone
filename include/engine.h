@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
+#include "frustum.h"
 #include "shader.h"
 #include "chunks.h"
 #include "player.h"
@@ -34,7 +35,7 @@ private:
     WorldInfo worldInfo;
     std::unique_ptr<Player> player;
     std::unique_ptr<ChunkManager> chunkManager;
-    Entity skybox = Entity(ModelType::SKYBOX, BlockID::SKYBOX);
+    std::unique_ptr<Skybox> skybox;
 
     /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();
@@ -54,6 +55,9 @@ public:
 
     /// Runs the main game loop.
     void runLoop();
+
+    ///
+    void init();
 
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
