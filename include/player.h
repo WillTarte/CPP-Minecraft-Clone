@@ -9,7 +9,8 @@
 #include <array>
 #include "entity.h"
 #include "camera.h"
-#include "chunks.h"
+
+class Chunk;
 
 class Engine;
 

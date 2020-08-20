@@ -50,25 +50,32 @@ void initLogging() {
 
 Config cliConfig() {
     Config conf{};
-    std::cout << "Window size? (default " << DEFAULT_WINDOW_WIDTH << "x" << DEFAULT_WINDOW_HEIGHT << "): ";
+    std::cout << "Window size? (default " << EngineConstants::DEFAULT_WINDOW_WIDTH << "x"
+              << EngineConstants::DEFAULT_WINDOW_HEIGHT << "): ";
     std::string winSize;
     std::getline(std::cin, winSize, '\n');
     if (!winSize.empty()) {
         int seperator = winSize.find('x');
-        conf.windowWidth = stoi(winSize.substr(0,seperator));
-        conf.windowHeight = stoi(winSize.substr(seperator));
+        conf.windowWidth = stoi(winSize.substr(0, seperator));
+        conf.windowHeight = stoi(winSize.substr(seperator + 1, winSize.size()));
     }
 
-    std::cout << "World size? (s/M/l): ";
+    std::cout << "World size? (s/m/l): ";
     std::string worldSize;
     std::getline(std::cin, worldSize);
     if (!worldSize.empty()) {
         switch(worldSize[0]) {
-            case 's': conf.worldSize = SMALL_WORLD;
-            case 'm': conf.worldSize = MEDIUM_WORLD;
-            case 'l': conf.worldSize = LARGE_WORLD;
+            case 's':
+                conf.worldSize = EngineConstants::SMALL_WORLD;
+                break;
+            case 'm':
+                conf.worldSize = EngineConstants::MEDIUM_WORLD;
+                break;
+            case 'l':
+                conf.worldSize = EngineConstants::LARGE_WORLD;
+                break;
             default: {
-                conf.worldSize = MEDIUM_WORLD;
+                conf.worldSize = EngineConstants::MEDIUM_WORLD;
             }
         }
     }
@@ -84,8 +91,9 @@ Config cliConfig() {
     std::string fov;
     std::getline(std::cin, fov);
     if (!fov.empty()) {
-        conf.fov = stoi(fov);
+        conf.fov = stof(fov);
     }
 
+    std::cout.flush();
     return conf;
 }
