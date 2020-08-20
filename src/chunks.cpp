@@ -72,9 +72,18 @@ size_t Chunk::getNumberOfEntities() const {
 }
 
 bool Chunk::removeEntityByID(EntityID id) {
+
+    auto lambda = [id](const std::shared_ptr <Entity> &e) { return e->getEntityID() == id; };
+
     for (auto &ent : entities) {
         if (ent.second->getEntityID() == id) {
+            // remove from blockID map
+            auto &vec = entitiesByBlockID[ent.second->getBlockID()];
+            vec.erase(std::remove_if(vec.begin(), vec.end(), lambda), vec.end());
+
+            // remove from entityID map
             entities.erase(id);
+
             return true;
         }
     }
