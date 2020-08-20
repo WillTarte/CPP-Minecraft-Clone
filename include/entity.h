@@ -32,6 +32,8 @@ protected:
     Transform transform;
     static EntityID entityIDCounter;
 
+    std::shared_ptr<TextureInterface> tex;
+    std::shared_ptr<Model> model;
 public:
     BoundingBox box{};
 
@@ -41,23 +43,32 @@ public:
 
     ///move assignment
     Entity &operator=(Entity &&other) {
-        std::swap(*this, other);
+        this->entityID = std::move(other.entityID);
+        this->modelName = std::move(other.modelName);
+        this->blockId = std::move(other.blockId);
+        this->transform = std::move(other.transform);
+        this->box = std::move(other.box);
+        this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+        this->model = ModelDatabase::getModelByName(this->modelName);
         return *this;
     }
 
     ///move constructor
     Entity(Entity &&other) {
-        this->modelName = other.modelName;
-        this->entityID = other.entityID;
-        this->blockId = other.blockId;
-        this->transform = other.transform;
+        this->entityID = std::move(other.entityID);
+        this->modelName = std::move(other.modelName);
+        this->blockId = std::move(other.blockId);
+        this->transform = std::move(other.transform);
+        this->box = std::move(other.box);
+        this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+        this->model = ModelDatabase::getModelByName(this->modelName);
         this->box = other.box;
     }
 
     /** Draws the entity into the world
      * @param shader the shader used to customize the render pipeline
      */
-    void draw(Shader &shader);
+    virtual void draw(Shader &shader);
 
     /// Gets the blockID of this entity
     inline BlockID getBlockID() const { return this->blockId; }
@@ -67,4 +78,11 @@ public:
 
     /// Gets this entities unique ID
     inline EntityID getEntityID() { return entityID; }
+};
+
+class Skybox : public Entity {
+public:
+    Skybox(const std::string &str, BlockID id);
+
+    void draw(Shader &shader) override;
 };

@@ -25,6 +25,8 @@ public:
     /// Updates the player (movement physics and collision physics)
     void update(Engine *engine, float dt);
 
+    void draw(Shader &shader) override;
+
     /// Processes the player's inputs
     void processInput(Engine *engine);
 
@@ -35,8 +37,8 @@ public:
         this->transform.setPosition(position);
     }
 
-private:
     Camera camera;
+private:
     bool onGround = true;
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};

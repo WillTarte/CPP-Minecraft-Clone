@@ -11,6 +11,8 @@ Entity::Entity(std::string modelName, BlockID blockId) {
     this->transform = Transform();
     this->box = BoundingBox({1.0, 1.0, 1.0});
     this->entityID = Entity::entityIDCounter++;
+    this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+    this->model = ModelDatabase::getModelByName(this->modelName);
 }
 
 Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
@@ -19,16 +21,27 @@ Entity::Entity(std::string modelName, BlockID blockId1, Transform transform1) {
     this->transform = transform1;
     this->box = BoundingBox({1.0, 1.0, 1.0});
     this->entityID = Entity::entityIDCounter++;
+    this->tex = TextureDatabase::getTextureByBlockId(this->blockId);
+    this->model = ModelDatabase::getModelByName(this->modelName);
 }
 
 void Entity::draw(Shader &shader) {
 
     shader.setMat4("model", this->transform.getModelMatrix());
 
+    // Get Model through ModelDatabase and draw
+    this->model->draw();
+}
+
+Skybox::Skybox(const std::string &str, BlockID id) : Entity(str, id) {}
+
+void Skybox::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
     // Get texture and bind
-    std::shared_ptr<TextureInterface> texture = TextureDatabase::getTextureByBlockId(blockId);
-    texture->bindTexture();
-    if (texture->getTextureType() == CUBEMAP) {
+    this->tex->bindTexture();
+    if (this->tex->getTextureType() == CUBEMAP) {
         shader.setBool("isCubeMap", true);
         shader.setInt("textureCubeMap", 1);
     } else {
@@ -36,9 +49,8 @@ void Entity::draw(Shader &shader) {
         shader.setInt("texture2D", 0);
     }
 
-    // Get Model through ModelDatabase and draw
-    ModelDatabase::getModelByName(this->modelName)->draw();
+    // Get Model and draw
+    this->model->draw();
 }
-
 
 

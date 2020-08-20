@@ -45,6 +45,8 @@ int main(int argc, char *argv[]) {
 
     LOG(INFO) << "Primary initialization done.";
 
+    engine.init();
+
     //TODO: Would it be possible to move this to the engine constructor?
     glfwSetCursorPosCallback(engine.getWindow(), [](GLFWwindow *window, double x, double y) {
         auto *engine = static_cast<Engine *>( glfwGetWindowUserPointer(window));
