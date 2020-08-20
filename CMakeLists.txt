@@ -62,14 +62,24 @@ CPMAddPackage(
 
 # warning level 4 and all warnings as errors
 add_compile_options(-W4 -WX -O3)
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC
-        glfw
-        libglew_static
-        glm
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKLang.lib
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/lib/Win32-gcc/libirrKLang.a
-        )
+if (MSVC)
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC
+            glfw
+            libglew_static
+            glm
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKLang.lib
+            )
+else()
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC
+            glfw
+            libglew_static
+            glm
+            #${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/bin/linux-gcc/ikpMP3.so
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/bin/linux-gcc/libIrrKlang.so
+            )
+endif()
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/easylogging.config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
