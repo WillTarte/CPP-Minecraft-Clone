@@ -8,13 +8,15 @@
 #include "../libs/FastNoise.h"
 #include "../include/engine.h"
 
-
 Engine::Engine(Config config) {
 
     LOG(INFO) << "Initializing Engine ...";
     //do some processing based on config
-    LOG(DEBUG) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << "}";
+    LOG(INFO) << "Config {windowHeight=" << config.windowHeight << ", windowWidth=" << config.windowWidth << ", fov="
+              << config.fov << "}";
     this->config = config;
+    this->worldInfo = WorldInfo(config);
+
     this->windowWidth = config.windowWidth;
     this->windowHeight = config.windowHeight;
 
@@ -74,8 +76,7 @@ Engine::Engine(Config config) {
 
 void Engine::init() {
 
-    LOG(INFO) << "\nGenerating World ... ";
-    this->worldInfo = WorldInfo{};
+    LOG(INFO) << "Generating World with size " << this->worldInfo.getWidth() << "x" << this->worldInfo.getLength();
     this->chunkManager = std::make_unique<ChunkManager>(this->worldInfo);
 
     LOG(INFO) << "Inserting Entities into the World ...";
@@ -85,13 +86,16 @@ void Engine::init() {
     LOG(INFO) << "Number of Chunks: " << this->chunkManager->getNumberOfChunks();
 
     LOG(INFO) << "Generated world using seed " << worldInfo.getSeed() << ".";
-    this->player = std::make_unique<Player>(glm::vec3(WORLD_WIDTH / 2, 32.0f, WORLD_LENGTH / 2));
+    this->player = std::make_unique<Player>(
+            glm::vec3(this->worldInfo.getWidth() / 2, 32.0f, this->worldInfo.getLength() / 2));
 
     LOG(INFO) << "Creating Skybox";
-    skybox = std::make_unique<Entity>(ModelType::SKYBOX, BlockID::SKYBOX);
-    skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), 10,
-                                                 (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
-    skybox->getTransform().scaleBy(glm::vec3(CHUNK_WIDTH * 4, CHUNK_HEIGHT * 4, CHUNK_LENGTH * 4));
+    skybox = std::make_unique<Skybox>(ModelType::SKYBOX, BlockID::SKYBOX);
+    skybox->getTransform().setPosition(
+            glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), 10,
+                      (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
+    skybox->getTransform().scaleBy(glm::vec3(EngineConstants::CHUNK_WIDTH * 4, EngineConstants::CHUNK_HEIGHT * 4,
+                                             EngineConstants::CHUNK_LENGTH * 4));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -165,8 +169,10 @@ void Engine::runLoop() {
 
         player->draw(basicShader);
 
-        skybox->getTransform().setPosition(glm::vec3((player->getTransform().getPosition().x - CHUNK_WIDTH * 2), -1,
-                                                     (player->getTransform().getPosition().z - CHUNK_LENGTH * 2)));
+
+        skybox->getTransform().setPosition(
+                glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,
+                          (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
         glDisable(GL_CULL_FACE);
         skybox->draw(basicShader);
         glEnable(GL_CULL_FACE);
@@ -219,7 +225,9 @@ void Engine::addTree(unsigned int x, unsigned int y, unsigned int z) const {
             Entity(ModelType::CUBE, BlockID::OAK_LEAVES, Transform({x, y + 7, z}, {1, 1, 1}, {0, 0, 0})));
 }
 
+
 void Engine::generateWorld() {
+
     auto noiseGen = FastNoise(worldInfo.getSeed());
     noiseGen.SetNoiseType(FastNoise::Simplex);
 
@@ -271,34 +279,289 @@ void Engine::generateWorld() {
         }
     }
 
+    for (unsigned int j = 0; j < 5; j++) {
+        while (true) {
+            int x = (rand() % 32) + static_cast<int>(this->worldInfo.getWidth()) / 2;
+            int z = (rand() % 32) + static_cast<int>(this->worldInfo.getLength()) / 2;
+            int height[6];
+            for (unsigned int i = 0; i < 6; i++) {
+                height[i] = static_cast<int>(round(((noiseGen.GetNoise(x + i, 0, z) + 1) * 10.0f) + 1.0f) + 10.0f);
+            }
+
+            if (height[0] >= 14 && height[5] == height[0] &&
+                ((((x + 5) * height[5] * z) ^ worldInfo.getSeed()) % 61 != 0) &&
+                ((((x + 4) * height[4] * z) ^ worldInfo.getSeed()) % 61 != 0) &&
+                ((((x + 3) * height[3] * z) ^ worldInfo.getSeed()) % 61 != 0) &&
+                ((((x + 2) * height[2] * z) ^ worldInfo.getSeed()) % 61 != 0) &&
+                ((((x + 1) * height[1] * z) ^ worldInfo.getSeed()) % 61 != 0) &&
+                (((x * height[0] * z) ^ worldInfo.getSeed()) % 61 != 0)) {
+                if (j == 0) {
+                    addA2(x, height[0], z);
+                } else if (j == 1) {
+                    addP8(x, height[0], z);
+                }
+                else if(j==2){
+                    addL8(x, height[0], z);
+                }else if(j==3){
+                    addH7(x, height[0], z);
+                } else if(j==4) {
+                    addH3(x, height[0], z);
+                }
+
+
+                break;
+            }
+        }
+    }
+
+
     //spawn platform
-    auto chunk = this->chunkManager->getChunkByXZ({WORLD_WIDTH / 2, WORLD_LENGTH / 2});
+    auto chunk = this->chunkManager->getChunkByXZ({this->worldInfo.getWidth() / 2, this->worldInfo.getLength() / 2});
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 + 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2 + 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 - 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 - 1, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
     (*chunk)->addEntity(
             Entity(ModelType::CUBE, BlockID::STONE,
-                   Transform({WORLD_WIDTH / 2 + 1, 30, WORLD_LENGTH / 2 - 1}, {1, 1, 1}, {0, 0, 0})));
+                   Transform({this->worldInfo.getWidth() / 2 + 1, 30, this->worldInfo.getLength() / 2 - 1}, {1, 1, 1},
+                             {0, 0, 0})));
+
+}
+
+
+
+void Engine::addH3(unsigned int x, unsigned int y, unsigned int z) const {
+
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
+
+    //make H
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+    //make 3
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1, z}, {1, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 2.1, z}, {1, 0.75, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 3.2, z}, {1, 0.8, 1}, {0, 0, 0})));
+
+
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+}
+
+void Engine::addH7(unsigned int x, unsigned int y, unsigned int z) const {
+
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
+
+    //make H
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+    //make 7
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 3.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 3.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+6, y + 3.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+6, y + 2.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 1.75, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+
+}
+
+void Engine::addA2(unsigned int x, unsigned int y, unsigned int z) const {
+
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
+
+    //make A
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1, y + 3.25, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1, y + 2, z}, {1, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+2, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+    //make 2
+     (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 3.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 3.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 2.5, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1.75, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1, z}, {1, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 1, z}, {1, 0.8, 1}, {0, 0, 0})));
+
+}
+
+void Engine::addL8(unsigned int x, unsigned int y, unsigned int z) const {
+
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
+
+    //make L
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+
+    //make 8
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1, z}, {1, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 2.1, z}, {1, 0.75, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 3.2, z}, {1, 0.8, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+}
+
+
+void Engine::addP8(unsigned int x, unsigned int y, unsigned int z) const {
+
+    auto chunk = this->chunkManager->getChunkByXZ({x, z});
+
+    //make P
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+0.975, y + 3.2, z}, {0.8, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+0.975, y + 2, z}, {0.8, 0.75, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1.8, y + 3, z}, {0.8, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::RUBY, Transform({x+1.8, y + 2, z}, {0.8, 1, 1}, {0, 0, 0})));
+
+    //make 8
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+3, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
+
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 1, z}, {1, 0.8, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 2.1, z}, {1, 0.75, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+4, y + 3.2, z}, {1, 0.8, 1}, {0, 0, 0})));
+
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 1, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 2, z}, {1, 1, 1}, {0, 0, 0})));
+    (*chunk)->addEntity(
+            Entity(ModelType::CUBE, BlockID::GOLD, Transform({x+5, y + 3, z}, {1, 1, 1}, {0, 0, 0})));
 
 }

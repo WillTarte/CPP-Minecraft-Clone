@@ -72,17 +72,14 @@ void Player::update(Engine *engine, float dt) {
     } else {
         auto pos = this->getTransform().getPosition();
         // Automatically replace the player so that they're inside the world bounds.
-        if (pos.x > WORLD_WIDTH) {
-            this->setPosition(glm::vec3(pos.x-2, pos.y, pos.z));
-        }
-        else if (pos.x < 0) {
-            this->setPosition(glm::vec3(pos.x+2, pos.y, pos.z));
-        }
-        else if (pos.z > WORLD_LENGTH) {
-            this->setPosition(glm::vec3(pos.x, pos.y, pos.z-2));
-        }
-        else if (pos.z < 0) {
-            this->setPosition(glm::vec3(pos.x, pos.y, pos.z+2));
+        if (pos.x > engine->getWorldInfo().getWidth()) {
+            this->setPosition(glm::vec3(pos.x - 2, pos.y, pos.z));
+        } else if (pos.x < 0) {
+            this->setPosition(glm::vec3(pos.x + 2, pos.y, pos.z));
+        } else if (pos.z > engine->getWorldInfo().getLength()) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z - 2));
+        } else if (pos.z < 0) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z + 2));
         }
 
         // Out of bounds!
@@ -276,4 +273,22 @@ void Player::placeBlock(Engine *engine) {
             return;
         }
     }
+}
+
+void Player::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    // Get texture and bind
+    this->tex->bindTexture();
+    if (this->tex->getTextureType() == CUBEMAP) {
+        shader.setBool("isCubeMap", true);
+        shader.setInt("textureCubeMap", 1);
+    } else {
+        shader.setBool("isCubeMap", false);
+        shader.setInt("texture2D", 0);
+    }
+
+    // Get Model and draw
+    this->model->draw();
 }

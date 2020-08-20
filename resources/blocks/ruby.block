@@ -1,0 +1,7 @@
+name: ruby
+
+ID: 9
+
+model: cube.obj
+
+all: ruby.png

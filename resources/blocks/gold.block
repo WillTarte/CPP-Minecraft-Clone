@@ -1,0 +1,7 @@
+name: gold
+
+ID: 10
+
+model: cube.obj
+
+all: gold.png

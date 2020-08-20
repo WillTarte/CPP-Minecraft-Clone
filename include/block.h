@@ -18,8 +18,10 @@ enum BlockID {
     OAK_LEAVES = 6,
     WATER = 7,
     SKYBOX = 8,
+    RUBY = 9,
+    GOLD = 10,
 };
-static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS, BEDROCK, STONE, OAK_LOG, OAK_LEAVES, WATER};
+static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS, BEDROCK, STONE, OAK_LOG, OAK_LEAVES, WATER,RUBY,GOLD};
 
 inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
     switch (blockId) {
@@ -46,6 +48,12 @@ inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
             break;
         case WATER:
             os << "WATER";
+            break;
+        case RUBY:
+            os << "RUBY";
+            break;
+        case GOLD:
+            os << "GOLD";
             break;
     }
     return os;
