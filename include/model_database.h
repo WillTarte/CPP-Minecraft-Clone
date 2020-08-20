@@ -30,6 +30,9 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Model>> models;
 
 public:
+
+    ~ModelDatabase();
+
     /// Initializes the Model Database. Should only be called once during program execution.
     static void init();
 

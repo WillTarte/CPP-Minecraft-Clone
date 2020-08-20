@@ -227,12 +227,13 @@ void Player::removeEntity(Engine *engine) const {
 
         if (closestEnt.has_value()) {
             if (engine->getChunkManager()->removeEntityFromChunk(*closestEnt.value())) {
+                SoundDatabase::playSoundByName("pop.mp3");
+            } else {
                 LOG(DEBUG) << "Unable to remove entity from world.";
             }
             return;
         }
     }
-
 }
 
 void Player::placeBlock(Engine *engine) {
@@ -253,6 +254,28 @@ void Player::placeBlock(Engine *engine) {
                                           glm::floor(newBlockPlacement.z));
             (*chunk)->addEntity(Entity(ModelType::CUBE, selectedBlockID,
                                        Transform(newBlockPlacement, glm::vec3(1, 1, 1), glm::vec3(0, 0, 0))));
+
+            switch (selectedBlockID) {
+                case DIRT:
+                case DIRT_GRASS:
+                    SoundDatabase::playSoundByName("place-block-grass.mp3");
+                    break;
+                case OAK_LOG:
+                    SoundDatabase::playSoundByName("place-block-wood.mp3");
+                    break;
+                case OAK_LEAVES:
+                    SoundDatabase::playSoundByName("place-block-cloth.mp3");
+                    break;
+                case WATER:
+                    SoundDatabase::playSoundByName("water-splash.mp3");
+                    break;
+                case STONE:
+                case RUBY:
+                case GOLD:
+                default:
+                    SoundDatabase::playSoundByName("place-block-stone.mp3");
+                    break;
+            }
             return;
         }
     }

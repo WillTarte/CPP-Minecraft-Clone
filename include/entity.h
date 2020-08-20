@@ -37,6 +37,8 @@ protected:
 public:
     BoundingBox box{};
 
+    virtual ~Entity() = default;
+
     Entity(std::string modelName, BlockID blockId1);
 
     Entity(std::string modelName, BlockID blockId1, Transform transform1);

@@ -19,15 +19,31 @@ void SoundDatabase::init() {
     }
 }
 
-void SoundDatabase::playSoundByName(const std::string &name) {
+void SoundDatabase::playSoundByName(const std::string &name, bool looped) {
 
+    if (instance.sounds.find(name) == instance.sounds.end()) {
+        LOG(INFO) << "Did not find sound by name " << name;
+        return;
+    } else {
+        instance.soundEngine->play2D(instance.sounds[name].get(), looped);
+    }
 }
 
-std::shared_ptr<irrklang::ISoundSource> SoundDatabase::getSoundSourceByName(const std::string &name) {
-    return std::shared_ptr<irrklang::ISoundSource>();
+std::optional<std::shared_ptr<irrklang::ISoundSource>> SoundDatabase::getSoundSourceByName(const std::string &name) {
+    if (instance.sounds.find(name) == instance.sounds.end()) {
+        return {};
+    } else {
+        return {instance.sounds[name]};
+    }
 }
 
 SoundDatabase::SoundDatabase() {
     LOG(INFO) << "Creating irrKLang device";
     this->soundEngine = std::unique_ptr<irrklang::ISoundEngine>(irrklang::createIrrKlangDevice());
+}
+
+SoundDatabase::~SoundDatabase() {
+    for (auto &pair : sounds) {
+        pair.second->drop();
+    }
 }

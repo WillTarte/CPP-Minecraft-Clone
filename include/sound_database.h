@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <unordered_map>
+#include <optional>
 #include "../libs/easylogging++.h"
 #include "../libs/irrKLang/include/irrKlang.h"
 
@@ -29,10 +30,11 @@ private:
     std::unique_ptr<irrklang::ISoundEngine> soundEngine;
 
 public:
+    ~SoundDatabase();
 
     static void init();
 
-    static void playSoundByName(const std::string &name);
+    static void playSoundByName(const std::string &name, bool looped = false);
 
-    static std::shared_ptr<irrklang::ISoundSource> getSoundSourceByName(const std::string &name);
+    static std::optional<std::shared_ptr<irrklang::ISoundSource>> getSoundSourceByName(const std::string &name);
 };

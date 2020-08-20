@@ -33,3 +33,9 @@ std::shared_ptr<Model> &ModelDatabase::getModelByName(const std::string &modelNa
     return instance.models[modelName];
 }
 
+ModelDatabase::~ModelDatabase() {
+    for (auto &pair : models) {
+        pair.second->destroyBuffers();
+    }
+}
+
