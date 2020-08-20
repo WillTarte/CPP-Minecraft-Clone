@@ -38,6 +38,13 @@ private:
     /// Takes in a set of coordinates and renders a tree on top of that block
     void addTree(unsigned int x, unsigned int y, unsigned int z) const;
 
+    /// Takes in a set of coordinates and renders the model H3 top of that block
+    void addH3(unsigned int x, unsigned int y, unsigned int z) const;
+    void addL8(unsigned int x, unsigned int y, unsigned int z) const;
+    void addP8(unsigned int x, unsigned int y, unsigned int z) const;
+    void addH7(unsigned int x, unsigned int y, unsigned int z) const;
+    void addA2(unsigned int x, unsigned int y, unsigned int z) const;
+
 public:
     explicit Engine(Config config);
 
