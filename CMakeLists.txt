@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-file(GLOB IRRKLANG_INCLUDE "${CMAKE_SOURCE_DIR}/irrKLang/include/*.h")
+file(GLOB IRRKLANG_INCLUDE "${CMAKE_SOURCE_DIR}/libs/irrKLang/include/*.h")
 
 set(HEADER_FILES include/camera.h include/engine.h include/mesh.h include/model.h include/objloader.h include/shader.h include/block.h include/texture.h include/texture_database.h include/entity.h include/model_database.h include/transform.h include/player.h include/chunks.h)
 set(SOURCE_FILES src/engine.cpp src/model.cpp src/texture.cpp src/texture_database.cpp src/entity.cpp src/model_database.cpp src/player.cpp src/chunks.cpp)
@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME} main.cpp ${LIB_FILES} ${HEADER_FILES} ${SOURCE_FILES})
+target_include_directories("./libs" "./include/" "./src")
 
 #glfw
 CPMAddPackage(
@@ -62,20 +63,47 @@ CPMAddPackage(
 if (MSVC)
     # warning level 4 and all warnings as errors
     add_compile_options(/W4 /WX /O3)
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC
+            glfw
+            libglew_static
+            glm
+            ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKlang.lib
+            )
 else()
     # lots of warnings and all warnings as errors
     add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -O3)
-endif()
-
-target_link_libraries(${PROJECT_NAME}
-        PUBLIC
-        glfw
-        libglew_static
-        glm
-        ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKLang.lib
-        )
+    if (WIN32)
+        if (GNU)
+            target_link_libraries(${PROJECT_NAME}
+                    PUBLIC
+                    glfw
+                    libglew_static
+                    glm
+                    ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-gcc/libirrKlang.a
+                    )
+        endif ()
+    else ()
+        target_link_libraries(${PROJECT_NAME}
+                PUBLIC
+                glfw
+                libglew_static
+                glm
+                )
+    endif ()
+endif ()
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/easylogging.config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrKLang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# windows msvc irrklang .dll files
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_msvc/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_msvc/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# windows gcc irrklang .dll files
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_windows_gcc/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_windows_gcc/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# linux gcc irrklang .so files
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_linux_gcc/ikpMP3.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_linux_gcc/libIrrKlang.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

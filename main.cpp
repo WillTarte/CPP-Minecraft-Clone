@@ -27,7 +27,6 @@ int main(int argc, char *argv[]) {
 
     initLogging();
 
-
     irrklang::ISoundEngine *soundEngine = irrklang::createIrrKlangDevice();
 
     if (!soundEngine) {
