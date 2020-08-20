@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <filesystem>
-#include "libs/irrKLang/include/irrKlang.h"
 #include "libs/easylogging++.h"
 #include "include/engine.h"
 
@@ -12,6 +11,9 @@ INITIALIZE_EASYLOGGINGPP
 
 #ifdef __unix__
 namespace fs = std::filesystem;
+#else
+// Don't include sound stuff on Linux because it doesn't work
+#include "libs/irrKLang/include/irrKlang.h"
 #endif
 
 #if defined __unix__ || _MSC_VER >= 1914
@@ -28,6 +30,10 @@ int main(int argc, char *argv[]) {
 
     initLogging();
 
+    auto config = cliConfig();
+    auto engine = Engine(config);
+
+#if !defined __unix__
     irrklang::ISoundEngine *soundEngine = irrklang::createIrrKlangDevice();
 
     if (!soundEngine) {
@@ -35,11 +41,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    auto config = cliConfig();
-
-    auto engine = Engine(config);
-
     soundEngine->play2D((fs::current_path().string() + "./resources/sounds/calm.mp3").c_str(), true);
+#endif
 
     LOG(INFO) << "Initializing resource databases.";
 
