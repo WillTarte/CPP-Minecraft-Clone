@@ -8,23 +8,26 @@
 #include <vector>
 #include <optional>
 #include <unordered_map>
+#include "engine_constants.h"
 #include "block.h"
 #include "entity.h"
+#include "frustum.h"
 
-constexpr unsigned int CHUNK_WIDTH = 32;
-constexpr unsigned int CHUNK_HEIGHT = 16;
-constexpr unsigned int CHUNK_LENGTH = 32;
-
-constexpr unsigned int WORLD_WIDTH = 512;
-constexpr unsigned int WORLD_HEIGHT = 16;
-constexpr unsigned int WORLD_LENGTH = 512;
+/// Config for the application
+struct Config {
+    int windowWidth = EngineConstants::DEFAULT_WINDOW_WIDTH;
+    int windowHeight = EngineConstants::DEFAULT_WINDOW_HEIGHT;
+    int seed = EngineConstants::RANDOM_SEED;
+    int worldSize = EngineConstants::SMALL_WORLD;
+    float fov = 45.0f;
+};
 
 /// Contains basic world info (size and seed)
 class WorldInfo {
 private:
-    unsigned int width = WORLD_WIDTH;   //x
-    unsigned int height = WORLD_HEIGHT; //y
-    unsigned int length = WORLD_LENGTH; //z
+    unsigned int width = EngineConstants::DEFAULT_WORLD_WIDTH;   //x
+    unsigned int height = EngineConstants::DEFAULT_WORLD_HEIGHT; //y
+    unsigned int length = EngineConstants::DEFAULT_WORLD_LENGTH; //z
     int seed;
 
     /// Generates a random seed for the world that's fed to the simplex noise generator
@@ -33,19 +36,22 @@ private:
 public:
     WorldInfo();
 
-    unsigned int getWidth() const { return width; }
+    explicit WorldInfo(Config config);
 
-    unsigned int getHeight() const { return height; }
+    [[nodiscard]] unsigned int getWidth() const { return width; }
 
-    unsigned int getLength() const { return length; }
+    [[nodiscard]] unsigned int getHeight() const { return height; }
 
-    int getSeed() const { return seed; }
+    [[nodiscard]] unsigned int getLength() const { return length; }
+
+    [[nodiscard]] int getSeed() const { return seed; }
 };
 
 /// A Chunk starts at some XZ index (from 0 to WORLD_LENGTH / CHUNK_LENGTH ...) and contains entities
 class Chunk {
 private:
     std::map<EntityID, std::shared_ptr<Entity>> entities{};
+    std::map<BlockID, std::vector<std::shared_ptr<Entity>>> entitiesByBlockID{};
     std::pair<unsigned int, unsigned int> origin; // X / CHUNK_WIDTH, Z / CHUNK_LENGTH
 
     /** Checks if the given XZ coordinates are outside this Chunk
@@ -53,7 +59,7 @@ private:
      * @param xzCoords the coordinates to check, xz components
      * @return
      */
-    bool isBlockOutOfBounds(glm::vec2 xzCoords) const;
+    [[nodiscard]] bool isBlockOutOfBounds(glm::vec2 xzCoords) const;
 
 public:
     Chunk(unsigned int xInd, unsigned int zInd);
@@ -62,11 +68,14 @@ public:
     /// <br/><br/>In other words, this method gives ownership of the entity to the Chunk.
     inline void addEntity(Entity &&entity) {
         if (isBlockOutOfBounds({entity.getTransform().getPosition().x, entity.getTransform().getPosition().z})) {
-            LOG(DEBUG) << "Adding an entity to Chunk at " << origin.first * CHUNK_WIDTH << " "
-                       << origin.second * CHUNK_LENGTH << " that is out of bounds at "
+            LOG(DEBUG) << "Adding an entity to Chunk at " << origin.first * EngineConstants::CHUNK_WIDTH << " "
+                       << origin.second * EngineConstants::CHUNK_LENGTH << " that is out of bounds at "
                        << entity.getTransform().getPosition().x << " " << entity.getTransform().getPosition().z;
         }
-        entities[entity.getEntityID()] = std::make_shared<Entity>(std::move(entity));
+
+        std::shared_ptr<Entity> ent = std::make_shared<Entity>(std::move(entity));
+        entities[ent->getEntityID()] = ent;
+        entitiesByBlockID[ent->getBlockID()].push_back(ent);
     }
 
     /// Returns a reference to this chunk's entities
@@ -78,14 +87,14 @@ public:
      *
      * @param shader the shader to use to draw the entities
      */
-    void renderChunk(Shader &shader);
+    void renderChunk(Shader &shader, const ViewFrustum &frustum);
 
     /** Returns an entity in absolute world position
      *
      * @param worldPos the world pos (truncates to integers)
      * @return an optional pointer to an entity
      */
-    std::optional<std::shared_ptr<Entity>> getEntityByWorldPos(const glm::vec3 worldPos);
+    std::optional<std::shared_ptr<Entity>> getEntityByWorldPos(glm::vec3 worldPos);
 
     /** Returns an entity based on a bounding box overlap
      *
@@ -103,9 +112,11 @@ public:
     bool removeEntityByID(EntityID id);
 
     /// Returns the chunk's origin in world coordinates for the X and Z components
-    glm::vec2 getChunkOrigin() const { return {origin.first * CHUNK_WIDTH, origin.second * CHUNK_LENGTH}; }
+    [[nodiscard]] glm::vec2 getChunkOrigin() const {
+        return {origin.first * EngineConstants::CHUNK_WIDTH, origin.second * EngineConstants::CHUNK_LENGTH};
+    }
 
-    inline size_t getNumberOfEntities() const;
+    [[nodiscard]] inline size_t getNumberOfEntities() const;
 };
 
 /// The ChunkManager manages all the chunks in the world. The number of chunks depend on the world and chunk sizes.
@@ -113,21 +124,21 @@ class ChunkManager {
 private:
     std::map<std::pair<unsigned int, unsigned int>, std::shared_ptr<Chunk>> chunks;
 public:
-    ChunkManager(const WorldInfo &worldInfo);
+    explicit ChunkManager(const WorldInfo &worldInfo);
 
     /** Returns a specific chunk based on given XZ coordinates
      *
      * @param xzCoords the XZ coordinates
      * @return shared_ptr to a Chunk
      */
-    std::optional<std::shared_ptr<Chunk>> getChunkByXZ(const glm::vec2 xzCoords);
+    std::optional<std::shared_ptr<Chunk>> getChunkByXZ(glm::vec2 xzCoords);
 
     /** Returns surrounding chunks (max of 9) in a square for given XZ coordinates
      *
      * @param xzCoords the xz coordinates
      * @return a vector
      */
-    std::vector<std::shared_ptr<Chunk>> getSurroundingChunksByXZ(const glm::vec2 xzCoords);
+    std::vector<std::shared_ptr<Chunk>> getSurroundingChunksByXZ(glm::vec2 xzCoords);
 
     /** Gets a chunk bases off a X and Z index (X * CHUNK_WIDTH, Z * CHUNK_LENGTH)
      *
@@ -144,7 +155,7 @@ public:
      */
     bool removeEntityFromChunk(Entity &entity);
 
-    size_t getNumberOfEntities() const;
+    [[nodiscard]] size_t getNumberOfEntities() const;
 
-    inline size_t getNumberOfChunks() const { return this->chunks.size(); };
+    [[nodiscard]] inline size_t getNumberOfChunks() const { return this->chunks.size(); };
 };

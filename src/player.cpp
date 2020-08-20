@@ -4,7 +4,6 @@
 #include "../include/player.h"
 #include "../include/engine.h"
 
-
 //.23 makes it approximatly 3 tall
 Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
                           Transform({20.0, 30.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
@@ -54,7 +53,7 @@ void Player::update(Engine *engine, float dt) {
     acceleration = {0, velocity.y, 0};
 
     if (!onGround) {
-        acceleration.y -= 50 * dt;
+        acceleration.y -= 70 * dt;
     }
 
     if (currentChunk.has_value()) {
@@ -63,17 +62,14 @@ void Player::update(Engine *engine, float dt) {
     } else {
         auto pos = this->getTransform().getPosition();
         // Automatically replace the player so that they're inside the world bounds.
-        if (pos.x > WORLD_WIDTH) {
-            this->setPosition(glm::vec3(pos.x-2, pos.y, pos.z));
-        }
-        else if (pos.x < 0) {
-            this->setPosition(glm::vec3(pos.x+2, pos.y, pos.z));
-        }
-        else if (pos.z > WORLD_LENGTH) {
-            this->setPosition(glm::vec3(pos.x, pos.y, pos.z-2));
-        }
-        else if (pos.z < 0) {
-            this->setPosition(glm::vec3(pos.x, pos.y, pos.z+2));
+        if (pos.x > engine->getWorldInfo().getWidth()) {
+            this->setPosition(glm::vec3(pos.x - 2, pos.y, pos.z));
+        } else if (pos.x < 0) {
+            this->setPosition(glm::vec3(pos.x + 2, pos.y, pos.z));
+        } else if (pos.z > engine->getWorldInfo().getLength()) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z - 2));
+        } else if (pos.z < 0) {
+            this->setPosition(glm::vec3(pos.x, pos.y, pos.z + 2));
         }
 
         // Out of bounds!
@@ -260,4 +256,22 @@ void Player::placeBlock(Engine *engine) {
             return;
         }
     }
+}
+
+void Player::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    // Get texture and bind
+    this->tex->bindTexture();
+    if (this->tex->getTextureType() == CUBEMAP) {
+        shader.setBool("isCubeMap", true);
+        shader.setInt("textureCubeMap", 1);
+    } else {
+        shader.setBool("isCubeMap", false);
+        shader.setInt("texture2D", 0);
+    }
+
+    // Get Model and draw
+    this->model->draw();
 }
