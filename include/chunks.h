@@ -51,6 +51,7 @@ public:
 class Chunk {
 private:
     std::map<EntityID, std::shared_ptr<Entity>> entities{};
+    std::map<BlockID, std::vector<std::shared_ptr<Entity>>> entitiesByBlockID{};
     std::pair<unsigned int, unsigned int> origin; // X / CHUNK_WIDTH, Z / CHUNK_LENGTH
 
     /** Checks if the given XZ coordinates are outside this Chunk
@@ -71,8 +72,10 @@ public:
                        << origin.second * EngineConstants::CHUNK_LENGTH << " that is out of bounds at "
                        << entity.getTransform().getPosition().x << " " << entity.getTransform().getPosition().z;
         }
-        EntityID id = entity.getEntityID();
-        entities[id] = std::make_shared<Entity>(std::move(entity));
+
+        std::shared_ptr<Entity> ent = std::make_shared<Entity>(std::move(entity));
+        entities[ent->getEntityID()] = ent;
+        entitiesByBlockID[ent->getBlockID()].push_back(ent);
     }
 
     /// Returns a reference to this chunk's entities

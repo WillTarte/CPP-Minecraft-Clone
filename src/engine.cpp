@@ -90,7 +90,7 @@ void Engine::init() {
             glm::vec3(this->worldInfo.getWidth() / 2, 32.0f, this->worldInfo.getLength() / 2));
 
     LOG(INFO) << "Creating Skybox";
-    skybox = std::make_unique<Entity>(ModelType::SKYBOX, BlockID::SKYBOX);
+    skybox = std::make_unique<Skybox>(ModelType::SKYBOX, BlockID::SKYBOX);
     skybox->getTransform().setPosition(
             glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), 10,
                       (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
@@ -168,6 +168,7 @@ void Engine::runLoop() {
         }
 
         player->draw(basicShader);
+
 
         skybox->getTransform().setPosition(
                 glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,

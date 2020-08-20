@@ -29,6 +29,16 @@ void Entity::draw(Shader &shader) {
 
     shader.setMat4("model", this->transform.getModelMatrix());
 
+    // Get Model through ModelDatabase and draw
+    this->model->draw();
+}
+
+Skybox::Skybox(const std::string &str, BlockID id) : Entity(str, id) {}
+
+void Skybox::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
     // Get texture and bind
     this->tex->bindTexture();
     if (this->tex->getTextureType() == CUBEMAP) {
@@ -39,9 +49,8 @@ void Entity::draw(Shader &shader) {
         shader.setInt("texture2D", 0);
     }
 
-    // Get Model through ModelDatabase and draw
+    // Get Model and draw
     this->model->draw();
 }
-
 
 
