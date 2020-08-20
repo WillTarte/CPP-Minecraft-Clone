@@ -27,7 +27,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME} main.cpp ${LIB_FILES} ${HEADER_FILES} ${SOURCE_FILES})
-target_include_directories("./libs" "./include/" "./src")
 
 #glfw
 CPMAddPackage(
@@ -60,50 +59,32 @@ CPMAddPackage(
         GIT_TAG 0.9.9.8
 )
 
-if (MSVC)
-    # warning level 4 and all warnings as errors
-    add_compile_options(/W4 /WX /O3)
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC
-            glfw
-            libglew_static
-            glm
-            ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKlang.lib
-            )
-else()
-    # lots of warnings and all warnings as errors
-    add_compile_options(-Wno-dev -Wall -Wextra -pedantic -Werror -O3)
-    if (WIN32)
-        if (GNU)
-            target_link_libraries(${PROJECT_NAME}
-                    PUBLIC
-                    glfw
-                    libglew_static
-                    glm
-                    ${CMAKE_SOURCE_DIR}/libs/irrKLang/lib/Win32-gcc/libirrKlang.a
-                    )
-        endif ()
-    else ()
-        target_link_libraries(${PROJECT_NAME}
-                PUBLIC
-                glfw
-                libglew_static
-                glm
-                )
-    endif ()
-endif ()
+# warning level 4 and all warnings as errors
+add_compile_options(-W4 -WX -O3)
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC
+        glfw
+        libglew_static
+        glm
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/lib/Win32-visualStudio/irrKLang.lib
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/irrKLang/lib/Win32-gcc/libirrKLang.a
+        )
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/easylogging.config DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # windows msvc irrklang .dll files
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_msvc/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_msvc/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/win32-visualStudio/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/win32-visualStudio/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # windows gcc irrklang .dll files
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_windows_gcc/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_windows_gcc/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/win32-gcc/ikpMP3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/win32-gcc/irrKlang.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # linux gcc irrklang .so files
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_linux_gcc/ikpMP3.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/irrklang_linux_gcc/libIrrKlang.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/linux-gcc/ikpMP3.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/linux-gcc/libIrrKlang.so DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+# macos gcc irrklang .dylib files
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/macosx-gcc/ikpMP3.dylib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/libs/irrKLang/bin/macosx-gcc/libirrklang.dylib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
