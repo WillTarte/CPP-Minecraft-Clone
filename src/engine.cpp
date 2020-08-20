@@ -250,13 +250,12 @@ void Engine::generateWorld() {
         while (true) {
             int x = (rand() % 32) + WORLD_WIDTH / 2;
             int z = (rand() % 32) + WORLD_LENGTH / 2;
-            int height[2];
-            for (unsigned int i = 0; i < 2; i++) {
-                float tempHeight = noiseGen.GetNoise(x + i, 0, z) + 1;
-                height[i] = static_cast<int>(round((tempHeight * 10.0f) + 1.0f) + 10.0f);
-
+            int height[6];
+            for (unsigned int i = 0; i < 6; i++) {
+            height[i] = static_cast<int>(round(((noiseGen.GetNoise(x + i, 0, z) + 1) * 10.0f) + 1.0f) + 10.0f);
             }
-            if (height[0] >= 14 && height[1] == height[0]) {
+
+            if (height[0] >= 14 && height[5] == height[0] && ((((x+5) * height[5] * z) ^worldInfo.getSeed()) % 61 != 0)&& ((((x+4) * height[4] * z) ^worldInfo.getSeed()) % 61 != 0) && ((((x+3) * height[3] * z) ^worldInfo.getSeed()) % 61 != 0) && ((((x+2) * height[2] * z) ^worldInfo.getSeed()) % 61 != 0) && ((((x+1) * height[1] * z) ^worldInfo.getSeed()) % 61 != 0) && (((x * height[0] * z) ^worldInfo.getSeed()) % 61 != 0)) {
                 if(j==0) {
                     addA2(x, height[0], z);
                 } else if(j==1){
