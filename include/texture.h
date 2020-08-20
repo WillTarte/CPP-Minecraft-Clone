@@ -24,6 +24,11 @@ protected:
     GLuint texID;
 
 public:
+
+    virtual ~TextureInterface() = default;
+
+    virtual void destroyTexture() { glDeleteTextures(1, &texID); }
+
     /** Loads a texture from a single file
      *
      * @param filePath the path to the texture file (an image).

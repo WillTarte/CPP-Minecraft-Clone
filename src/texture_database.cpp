@@ -28,6 +28,12 @@ void TextureDatabase::init() {
     }
 }
 
-std::shared_ptr<TextureInterface> &TextureDatabase::getTextureByBlockId(BlockID id) {
+std::shared_ptr <TextureInterface> &TextureDatabase::getTextureByBlockId(BlockID id) {
     return instance.textures[id];
+}
+
+TextureDatabase::~TextureDatabase() {
+    for (auto &pair : textures) {
+        pair.second->destroyTexture();
+    }
 }
