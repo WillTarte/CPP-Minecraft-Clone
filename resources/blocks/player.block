@@ -2,6 +2,16 @@ name: player
 
 ID: 0
 
-model: steve.obj
+model: cube.obj
 
-all: Steve.png
+right: slime_block.png
+
+left: slime_block.png
+
+top: slime_block.png
+
+bottom: slime_block.png
+
+back: slime_block.png
+
+front: slime_face.png

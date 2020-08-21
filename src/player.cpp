@@ -5,12 +5,12 @@
 #include "../include/engine.h"
 
 //.23 makes it approximatly 3 tall
-Player::Player() : Entity(ModelType::CUBE, BlockID::DIRT,
+Player::Player() : Entity(ModelType::CUBE, BlockID::PLAYER,
                           Transform({20.0, 30.0, 20.0}, {1, 1, 1}, {0, 0, 0})) {
     this->camera = Camera{};
 }
 
-Player::Player(glm::vec3 spawnPoint) : Entity(ModelType::CUBE, BlockID::DIRT,
+Player::Player(glm::vec3 spawnPoint) : Entity(ModelType::CUBE, BlockID::PLAYER,
                                               Transform(spawnPoint, {1, 1, 1}, {0, 0, 0})) {
     this->camera = Camera{};
 }
@@ -84,7 +84,8 @@ void Player::update(Engine *engine, float dt) {
         this->transform.getPosition().y = 30.0f;
     }
 
-    this->camera.Position = this->getTransform().getPosition() + glm::vec3(0.5f, 1.5f, 0.5f);
+    //adding third person glmVector
+    this->camera.Position = this->getTransform().getPosition() + cameraDisplacement;
 }
 
 static bool pressedLMB = false;
@@ -118,6 +119,33 @@ void Player::processInput(Engine *engine) {
     if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::WATER;
     }
+
+
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
+
+        if(firstPerson){
+           cameraDisplacement =  glm::vec3(0.5f, 5.5f, 5.5f);
+            firstPerson = false;
+        }
+        else{
+            cameraDisplacement =  glm::vec3(0.5f, 1.5f, 0.5f);
+            firstPerson = true;
+        }
+
+    }
+
+
+
+    //if in third person rotates around model
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+
+        if(!firstPerson){
+            float newX = cos(glm::radians(10.0f))* (cameraDisplacement.x) - sin(glm::radians(10.0f))* cameraDisplacement.z;
+            float newZ = sin(glm::radians(10.0f))* (cameraDisplacement.x) + cos(glm::radians(10.0f))* cameraDisplacement.z;
+            cameraDisplacement =  glm::vec3(newX, cameraDisplacement.y, newZ);
+        }
+    }
+
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         glm::vec3 dirVec = glm::normalize(camera.Front + camera.Right);
