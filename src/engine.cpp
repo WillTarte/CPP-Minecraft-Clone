@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <glm/ext.hpp>
+#include <thread>
 #include "../libs/easylogging++.h"
 #include "../libs/FastNoise.h"
 #include "../include/engine.h"
@@ -114,6 +115,7 @@ void Engine::runLoop() {
 
     double t = 0.0f;
     double dt = 1.0f / 30.0f;
+    double tickRate = 1000.0 / 30.0;
     double currentTime = glfwGetTime();
 
     double lastTime = glfwGetTime();
@@ -123,28 +125,17 @@ void Engine::runLoop() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
 
+    SoundDatabase::playSoundByName("calm.mp3", true);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
-        // per-frame time logic
-        // --------------------
         double newTime = glfwGetTime();
-        double frameTime = newTime - currentTime;
+        double frameTime = (newTime - currentTime) * 1000.0f; // in ms
         currentTime = newTime;
 
-        nbFrames++;
-        if (newTime - lastTime >= 1.0f) {
-            std::cout << "\nms/frame " << 1000.0 / double(nbFrames) << "\n";
-            nbFrames = 0;
-            lastTime += 1.0;
-        }
-
-        while (frameTime > 0.0f) {
-            double deltaTime = frameTime < dt ? frameTime : dt;
-            frameTime -= deltaTime;
-            t += deltaTime;
-        }
-
+        // per-frame time logic
+        // --------------------
         player->processInput(this);
         player->update(this, static_cast<float>(dt));
         // --------------------
@@ -168,7 +159,6 @@ void Engine::runLoop() {
         }
 
         player->draw(basicShader);
-
 
         skybox->getTransform().setPosition(
                 glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,

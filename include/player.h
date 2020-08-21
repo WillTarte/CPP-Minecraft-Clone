@@ -8,6 +8,7 @@
 #include <optional>
 #include <array>
 #include "entity.h"
+#include "sound_database.h"
 #include "camera.h"
 
 class Chunk;

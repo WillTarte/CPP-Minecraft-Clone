@@ -40,5 +40,10 @@ void Model::bindBuffers() const {
 void Model::draw() const {
     bindBuffers();
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
-    //glBindVertexArray(0);
+}
+
+void Model::destroyBuffers() {
+    glDeleteBuffers(1, &vboID);
+    glDeleteBuffers(1, &iboId);
+    glDeleteVertexArrays(1, &vaoID);
 }
