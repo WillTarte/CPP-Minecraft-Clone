@@ -13,6 +13,7 @@ const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
+/// Simulates the player's view point
 struct Camera {
     float Yaw = YAW;
     float Pitch = PITCH;

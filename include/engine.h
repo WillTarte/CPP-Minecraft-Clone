@@ -51,9 +51,10 @@ public:
     /// Runs the main game loop.
     void runLoop();
 
-    ///
+    /// initializes the game world
     void init();
 
+    /// callback for mouse movement, used for user input
     void mouseCallbackFunc(GLFWwindow *windowParam, double xpos, double ypos);
 
     [[nodiscard]] inline GLFWwindow *getWindow() const { return window; };

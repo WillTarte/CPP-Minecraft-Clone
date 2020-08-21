@@ -11,6 +11,7 @@
 
 typedef unsigned long long int EntityID;
 
+/// AABB box used for collisions
 struct BoundingBox {
     BoundingBox(glm::vec3 dim) {
         this->dimensions = dim;
