@@ -37,9 +37,15 @@ __Method 2: Install Script__
 
 ![Release mode run](./screenshots-doc/release-selection.png)
 
-## Controls - SOME TODO once Player is implemented
- - WS/AD moves the camera forwards/backwards and left/right.
- - Using the mouse, you can change the direction/orientation of the camera.
+## Controls 
+ - WS/AD moves the character forwards/backwards and left/right.
+ - Using the mouse, you can change where you are looking.
+ - Pressing 0 changes the perspective to Third Person.
+ - In third person, pressing E rotates the view.
+ - Pressing the number keys 1 to 9 changes the currently selected block type.
+    - Pressing RMB will place the currently selected block type into the world, if the player is aiming at a close enough surface.
+ - Pressing the LMB will break the block the player is currently facing, if it is close enough.
+ - Pressing space will make the player jump.
 
 ## Adding Blocks to the game
  - When adding new blocks to the game, you need to create a new <block_name>.block file under `resources/blocks` based off `dirt.block`. You then need to add the ID of your block (has to be unique) to the `BlockID` enum in `block.h`.

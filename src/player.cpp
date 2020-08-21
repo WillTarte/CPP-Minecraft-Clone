@@ -95,14 +95,12 @@ void Player::processInput(Engine *engine) {
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::DIRT;
     }
-
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::DIRT_GRASS;
     }
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::BEDROCK;
     }
-
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::STONE;
     }
@@ -115,16 +113,21 @@ void Player::processInput(Engine *engine) {
     if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS) {
         this->selectedBlockID = BlockID::WATER;
     }
+    if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS) {
+        this->selectedBlockID = BlockID::RUBY;
+    }
+    if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS) {
+        this->selectedBlockID = BlockID::GOLD;
+    }
 
 
     if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
 
-        if(firstPerson){
-           cameraDisplacement =  glm::vec3(0.5f, 5.5f, 5.5f);
+        if (firstPerson) {
+            cameraDisplacement = glm::vec3(0.5f, 5.5f, 5.5f);
             firstPerson = false;
-        }
-        else{
-            cameraDisplacement =  glm::vec3(0.5f, 1.5f, 0.5f);
+        } else {
+            cameraDisplacement = glm::vec3(0.5f, 1.5f, 0.5f);
             firstPerson = true;
         }
 
