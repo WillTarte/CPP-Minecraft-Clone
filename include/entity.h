@@ -82,9 +82,23 @@ public:
     inline EntityID getEntityID() { return entityID; }
 };
 
-class Skybox : public Entity {
+class Skybox {
+private:
+    std::shared_ptr<TextureInterface> tex;
+    std::shared_ptr<Model> model;
+    std::string modelName;
+    BlockID blockId;
 public:
     Skybox(const std::string &str, BlockID id);
 
+    void draw(Shader &shader);
+};
+
+class Sun : public Entity {
+public:
+    Sun(const std::string &str, BlockID id);
+
     void draw(Shader &shader) override;
+
+    void update(float dt);
 };

@@ -1,0 +1,52 @@
+\hypertarget{class_model}{}\doxysection{Model Class Reference}
+\label{class_model}\index{Model@{Model}}
+
+
+A model is an object that is renderable by Open\+GL.  
+
+
+
+
+{\ttfamily \#include $<$model.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_model_a2d75f8b251721463ff0edb88528bdda4}\label{class_model_a2d75f8b251721463ff0edb88528bdda4}} 
+{\bfseries Model} (\mbox{\hyperlink{struct_mesh}{Mesh}} \&mesh)
+\item 
+void \mbox{\hyperlink{class_model_aba60faeb7822e2c2e5cd41df0a2be630}{draw}} () const
+\item 
+\mbox{\Hypertarget{class_model_ad15f2258e4d79d8f17d2dac2a6f27e99}\label{class_model_ad15f2258e4d79d8f17d2dac2a6f27e99}} 
+std\+::string {\bfseries get\+Model\+Name} () const
+\item 
+\mbox{\Hypertarget{class_model_ae1675386f0f4194d5214416fb025a866}\label{class_model_ae1675386f0f4194d5214416fb025a866}} 
+void \mbox{\hyperlink{class_model_ae1675386f0f4194d5214416fb025a866}{bind\+Buffers}} () const
+\begin{DoxyCompactList}\small\item\em Binds this model\textquotesingle{}s buffers for rendering. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_model_a0f771f62ff66e43312f270b99d897fcb}\label{class_model_a0f771f62ff66e43312f270b99d897fcb}} 
+void {\bfseries destroy\+Buffers} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A model is an object that is renderable by Open\+GL. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_model_aba60faeb7822e2c2e5cd41df0a2be630}\label{class_model_aba60faeb7822e2c2e5cd41df0a2be630}} 
+\index{Model@{Model}!draw@{draw}}
+\index{draw@{draw}!Model@{Model}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void Model\+::draw (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Draws this model with the given shader.
+
+
+\begin{DoxyParams}{Parameters}
+{\em shader} & the shader \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+model.\+h\end{DoxyCompactItemize}

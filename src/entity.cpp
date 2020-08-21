@@ -33,24 +33,38 @@ void Entity::draw(Shader &shader) {
     this->model->draw();
 }
 
-Skybox::Skybox(const std::string &str, BlockID id) : Entity(str, id) {}
+Skybox::Skybox(const std::string &str, BlockID id) {
+    this->blockId = id;
+    this->modelName = str;
+    this->tex = TextureDatabase::getTextureByBlockId(id);
+    this->model = ModelDatabase::getModelByName(str);
+}
 
 void Skybox::draw(Shader &shader) {
-
-    shader.setMat4("model", this->transform.getModelMatrix());
-
-    // Get texture and bind
+    glDepthFunc(GL_LEQUAL);
     this->tex->bindTexture();
-    if (this->tex->getTextureType() == CUBEMAP) {
-        shader.setBool("isCubeMap", true);
-        shader.setInt("textureCubeMap", 1);
-    } else {
-        shader.setBool("isCubeMap", false);
-        shader.setInt("texture2D", 0);
-    }
-
+    shader.setInt("skybox", 1);
     // Get Model and draw
     this->model->draw();
+    glDepthFunc(GL_LESS);
 }
 
 
+Sun::Sun(const std::string &str, BlockID id) : Entity(str, id) {}
+
+void Sun::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    this->model->draw();
+}
+
+void Sun::update(float dt) {
+
+    glm::quat rotatioQuat = glm::quat(glm::vec3(0.0f, 0.0f, dt / 60.0f));
+
+    glm::mat4 translation = glm::translate(glm::mat4(1.0f), this->getTransform().getPosition());
+
+    glm::mat4 out = glm::toMat4(rotatioQuat) * translation;
+    this->getTransform().setPosition(glm::vec3(out[3]));
+}

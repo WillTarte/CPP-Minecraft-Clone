@@ -20,6 +20,7 @@ enum BlockID {
     SKYBOX = 8,
     RUBY = 9,
     GOLD = 10,
+    SUN = 11
 };
 static constexpr BlockID allBlockIDs[] = {DIRT, DIRT_GRASS, BEDROCK, STONE, OAK_LOG, OAK_LEAVES, WATER,RUBY,GOLD};
 
@@ -54,6 +55,12 @@ inline std::ostream &operator<<(std::ostream &os, BlockID blockId) {
             break;
         case GOLD:
             os << "GOLD";
+            break;
+        case SKYBOX:
+            os << "SKYBOX";
+            break;
+        case SUN:
+            os << "SUN";
             break;
     }
     return os;

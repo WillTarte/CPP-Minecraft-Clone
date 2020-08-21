@@ -1,0 +1,46 @@
+\hypertarget{class_texture_database}{}\doxysection{Texture\+Database Class Reference}
+\label{class_texture_database}\index{TextureDatabase@{TextureDatabase}}
+
+
+The Texture Database loads available textures according to the defined blocks and stores them for easy access.  
+
+
+
+
+{\ttfamily \#include $<$texture\+\_\+database.\+h$>$}
+
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_texture_database_a664a26d454ef76a942627326728ddead}\label{class_texture_database_a664a26d454ef76a942627326728ddead}} 
+static void \mbox{\hyperlink{class_texture_database_a664a26d454ef76a942627326728ddead}{init}} ()
+\begin{DoxyCompactList}\small\item\em Initializes the texture database. Should only be called once during program execution. \end{DoxyCompactList}\item 
+static std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_texture_interface}{Texture\+Interface}} $>$ \& \mbox{\hyperlink{class_texture_database_a214172dcfe37fabf4336dcfe9d90c52b}{get\+Texture\+By\+Block\+Id}} (Block\+ID id)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Texture Database loads available textures according to the defined blocks and stores them for easy access. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_texture_database_a214172dcfe37fabf4336dcfe9d90c52b}\label{class_texture_database_a214172dcfe37fabf4336dcfe9d90c52b}} 
+\index{TextureDatabase@{TextureDatabase}!getTextureByBlockId@{getTextureByBlockId}}
+\index{getTextureByBlockId@{getTextureByBlockId}!TextureDatabase@{TextureDatabase}}
+\doxysubsubsection{\texorpdfstring{getTextureByBlockId()}{getTextureByBlockId()}}
+{\footnotesize\ttfamily static std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_texture_interface}{Texture\+Interface}}$>$\& Texture\+Database\+::get\+Texture\+By\+Block\+Id (\begin{DoxyParamCaption}\item[{Block\+ID}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Returns a texture based on the block ID provided.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the block to fetch a texture for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+N\+U\+LL if block\+Id is not registered. Otherwise returns a pointer to a texture. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+texture\+\_\+database.\+h\end{DoxyCompactItemize}

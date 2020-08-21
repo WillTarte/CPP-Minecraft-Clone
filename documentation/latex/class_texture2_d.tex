@@ -1,0 +1,79 @@
+\hypertarget{class_texture2_d}{}\doxysection{Texture2D Class Reference}
+\label{class_texture2_d}\index{Texture2D@{Texture2D}}
+
+
+A simple 2D texture.  
+
+
+
+
+{\ttfamily \#include $<$texture.\+h$>$}
+
+Inheritance diagram for Texture2D\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_texture2_d}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_texture2_d_aa116c90a573e90db9e5312a1a22a14b2}\label{class_texture2_d_aa116c90a573e90db9e5312a1a22a14b2}} 
+{\bfseries Texture2D} (const std\+::string \&file\+Path)
+\item 
+void \mbox{\hyperlink{class_texture2_d_ad932ba12c87472cac2b79f320ec9f0bd}{load\+From\+File}} (const std\+::string \&file\+Paths) override
+\item 
+void \mbox{\hyperlink{class_texture2_d_a2eac5a1c7f01c25413a6bcdb0c65cd9c}{load\+From\+Face\+Files}} (const std\+::vector$<$ std\+::string $>$ \&file\+Paths) override
+\item 
+\mbox{\Hypertarget{class_texture2_d_a04078b34e1bb02f0ec08a5a3aa3ecff7}\label{class_texture2_d_a04078b34e1bb02f0ec08a5a3aa3ecff7}} 
+void \mbox{\hyperlink{class_texture2_d_a04078b34e1bb02f0ec08a5a3aa3ecff7}{bind\+Texture}} () override
+\begin{DoxyCompactList}\small\item\em Binds this texture for rendering. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_texture2_d_a9bee1521ace149459d81868330c1bb4f}\label{class_texture2_d_a9bee1521ace149459d81868330c1bb4f}} 
+Texture\+Type \mbox{\hyperlink{class_texture2_d_a9bee1521ace149459d81868330c1bb4f}{get\+Texture\+Type}} () const override
+\begin{DoxyCompactList}\small\item\em Gets the type of texture (Currently 2D texture or \mbox{\hyperlink{class_cube_map}{Cube\+Map}}) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+A simple 2D texture. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_texture2_d_a2eac5a1c7f01c25413a6bcdb0c65cd9c}\label{class_texture2_d_a2eac5a1c7f01c25413a6bcdb0c65cd9c}} 
+\index{Texture2D@{Texture2D}!loadFromFaceFiles@{loadFromFaceFiles}}
+\index{loadFromFaceFiles@{loadFromFaceFiles}!Texture2D@{Texture2D}}
+\doxysubsubsection{\texorpdfstring{loadFromFaceFiles()}{loadFromFaceFiles()}}
+{\footnotesize\ttfamily void Texture2\+D\+::load\+From\+Face\+Files (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{file\+Paths }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Loads multiple files into a texture (cubemap)
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Paths} & the set of texture file paths to generate the texture from. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_texture_interface_a9162320a9cff1335059a1887a3dd97e1}{Texture\+Interface}}.
+
+\mbox{\Hypertarget{class_texture2_d_ad932ba12c87472cac2b79f320ec9f0bd}\label{class_texture2_d_ad932ba12c87472cac2b79f320ec9f0bd}} 
+\index{Texture2D@{Texture2D}!loadFromFile@{loadFromFile}}
+\index{loadFromFile@{loadFromFile}!Texture2D@{Texture2D}}
+\doxysubsubsection{\texorpdfstring{loadFromFile()}{loadFromFile()}}
+{\footnotesize\ttfamily void Texture2\+D\+::load\+From\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+Path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Loads a texture from a single file
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Path} & the path to the texture file (an image). \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_texture_interface_a4f581a3275b96c79993046e4446ac6cc}{Texture\+Interface}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+texture.\+h\end{DoxyCompactItemize}

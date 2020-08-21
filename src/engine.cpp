@@ -92,11 +92,11 @@ void Engine::init() {
 
     LOG(INFO) << "Creating Skybox";
     skybox = std::make_unique<Skybox>(ModelType::SKYBOX, BlockID::SKYBOX);
-    skybox->getTransform().setPosition(
-            glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), 10,
-                      (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
-    skybox->getTransform().scaleBy(glm::vec3(EngineConstants::CHUNK_WIDTH * 4, EngineConstants::CHUNK_HEIGHT * 4,
-                                             EngineConstants::CHUNK_LENGTH * 4));
+
+    LOG(INFO) << "Creating Sun";
+    sun = std::make_unique<Sun>(ModelType::CUBE, BlockID::SUN);
+    sun->getTransform().setPosition(glm::vec3(this->worldInfo.getWidth() / 2, 45.0f,
+                                              this->worldInfo.getLength() / 2));
 
     LOG(INFO) << "Engine is primed and ready.";
 }
@@ -106,7 +106,17 @@ void Engine::runLoop() {
     //TODO should this be here?
     Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
                                 (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
-    basicShader.use();
+    Shader lightShader = Shader(
+            (fs::current_path().string() + "/resources/shaders/BasicLightingVertexShader.glsl").c_str(),
+            (fs::current_path().string() + "/resources/shaders/BasicLightingFragmentShader.glsl").c_str());
+
+    Shader sunShader = Shader((fs::current_path().string() + "/resources/shaders/LightCubeVertexShader.glsl").c_str(),
+                              (fs::current_path().string() +
+                               "/resources/shaders/LightCubeFragmentShader.glsl").c_str());
+
+    Shader skyboxShader = Shader((fs::current_path().string() + "/resources/shaders/SkyboxVertexShader.glsl").c_str(),
+                                 (fs::current_path().string() +
+                                  "/resources/shaders/SkyboxFragmentShader.glsl").c_str());
 
     ViewFrustum frustum = ViewFrustum();
     // ***********
@@ -114,7 +124,7 @@ void Engine::runLoop() {
     glfwSwapInterval(1);
 
     double t = 0.0f;
-    double dt = 1.0f / 30.0f;
+    double dt = 1.0f / 30.0f; // 1s per 30frames
     double tickRate = 1000.0 / 30.0;
     double currentTime = glfwGetTime();
 
@@ -148,24 +158,38 @@ void Engine::runLoop() {
 
         // rendering stuff here
         // --------------------
-        basicShader.setMat4("view", player->getPlayerView());
-        basicShader.setMat4("projection", projection);
+        lightShader.use();
+        lightShader.setMat4("view", player->getPlayerView());
+        lightShader.setMat4("projection", projection);
+        lightShader.setVec3("lightPos", sun->getTransform().getPosition());
+        lightShader.setVec3("viewPos", player->camera.Position);
 
         auto chunksToDraw = chunkManager->getSurroundingChunksByXZ(
                 {player->getTransform().getPosition().x, player->getTransform().getPosition().z});
         LOG(DEBUG) << "Rendering " << chunksToDraw.size() << " Chunks.";
         for (const auto &chunk : chunksToDraw) {
-            chunk->renderChunk(basicShader, frustum);
+            chunk->renderChunk(lightShader, frustum);
         }
 
+        basicShader.use();
+        basicShader.setMat4("view", player->getPlayerView());
+        basicShader.setMat4("projection", projection);
         player->draw(basicShader);
 
-        skybox->getTransform().setPosition(
-                glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,
-                          (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
+        skyboxShader.use();
+        skyboxShader.setMat4("view", glm::mat4(glm::mat3(player->getPlayerView())));
+        skyboxShader.setMat4("projection", projection);
+
         glDisable(GL_CULL_FACE);
-        skybox->draw(basicShader);
+        skybox->draw(skyboxShader);
         glEnable(GL_CULL_FACE);
+
+        sunShader.use();
+        sunShader.setMat4("view", player->getPlayerView());
+        sunShader.setMat4("projection", projection);
+
+        sun->update(static_cast<float>(dt));
+        sun->draw(sunShader);
 
         // --------------------
 
