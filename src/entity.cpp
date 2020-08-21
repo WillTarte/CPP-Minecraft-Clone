@@ -54,3 +54,20 @@ void Skybox::draw(Shader &shader) {
 }
 
 
+Sun::Sun(const std::string &str, BlockID id) : Entity(str, id) {}
+
+void Sun::draw(Shader &shader) {
+
+    shader.setMat4("model", this->transform.getModelMatrix());
+
+    this->model->draw();
+}
+
+void Sun::update(float dt, glm::vec3 rotationCenter) {
+
+    glm::quat rotatioQuat = glm::quat(glm::vec3(0.0f, 0.0f, dt / 60.0f));
+    glm::mat4 tr = glm::translate(glm::mat4(1.0f), this->getTransform().getPosition());
+
+    glm::mat4 out = glm::toMat4(rotatioQuat) * tr;
+    this->getTransform().setPosition(out[3]);
+}

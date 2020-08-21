@@ -1,0 +1,46 @@
+\hypertarget{class_model_database}{}\doxysection{Model\+Database Class Reference}
+\label{class_model_database}\index{ModelDatabase@{ModelDatabase}}
+
+
+The \mbox{\hyperlink{class_model}{Model}} Database loads models in the resources/models/ folder to be available at run time.  
+
+
+
+
+{\ttfamily \#include $<$model\+\_\+database.\+h$>$}
+
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_model_database_a1f8f0927e53d79d3c79b931a3a42f0bb}\label{class_model_database_a1f8f0927e53d79d3c79b931a3a42f0bb}} 
+static void \mbox{\hyperlink{class_model_database_a1f8f0927e53d79d3c79b931a3a42f0bb}{init}} ()
+\begin{DoxyCompactList}\small\item\em Initializes the \mbox{\hyperlink{class_model}{Model}} Database. Should only be called once during program execution. \end{DoxyCompactList}\item 
+static std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_model}{Model}} $>$ \& \mbox{\hyperlink{class_model_database_ae410703c1bab42df2fc414b6fc3fa8e9}{get\+Model\+By\+Name}} (const std\+::string \&model\+Name)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The \mbox{\hyperlink{class_model}{Model}} Database loads models in the resources/models/ folder to be available at run time. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_model_database_ae410703c1bab42df2fc414b6fc3fa8e9}\label{class_model_database_ae410703c1bab42df2fc414b6fc3fa8e9}} 
+\index{ModelDatabase@{ModelDatabase}!getModelByName@{getModelByName}}
+\index{getModelByName@{getModelByName}!ModelDatabase@{ModelDatabase}}
+\doxysubsubsection{\texorpdfstring{getModelByName()}{getModelByName()}}
+{\footnotesize\ttfamily static std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_model}{Model}}$>$\& Model\+Database\+::get\+Model\+By\+Name (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{model\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Returns a pointer to a \mbox{\hyperlink{class_model}{Model}} based on its name
+
+
+\begin{DoxyParams}{Parameters}
+{\em model\+Name} & the model to look for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a pointer to the model if it exists, otherwise a nullptr. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+model\+\_\+database.\+h\end{DoxyCompactItemize}

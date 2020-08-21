@@ -1,0 +1,58 @@
+\hypertarget{class_engine}{}\doxysection{Engine Class Reference}
+\label{class_engine}\index{Engine@{Engine}}
+
+
+Basically the entry point into the game. Orchestrates all the systems.  
+
+
+
+
+{\ttfamily \#include $<$engine.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_engine_a1a65f31c14282afb2a4772b1d5329517}\label{class_engine_a1a65f31c14282afb2a4772b1d5329517}} 
+{\bfseries Engine} (\mbox{\hyperlink{struct_config}{Config}} config)
+\item 
+\mbox{\Hypertarget{class_engine_a5dcf2d69a08ccbfde8d5f099f41a8cea}\label{class_engine_a5dcf2d69a08ccbfde8d5f099f41a8cea}} 
+void \mbox{\hyperlink{class_engine_a5dcf2d69a08ccbfde8d5f099f41a8cea}{run\+Loop}} ()
+\begin{DoxyCompactList}\small\item\em Runs the main game loop. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_engine_ab44d76e2ff6057e73d6210cf9af0d89e}\label{class_engine_ab44d76e2ff6057e73d6210cf9af0d89e}} 
+void {\bfseries init} ()
+\item 
+\mbox{\Hypertarget{class_engine_a73a4bcbf2cce7de7fd7ff5a73055836d}\label{class_engine_a73a4bcbf2cce7de7fd7ff5a73055836d}} 
+void {\bfseries mouse\+Callback\+Func} (G\+L\+F\+Wwindow $\ast$window\+Param, double xpos, double ypos)
+\item 
+\mbox{\Hypertarget{class_engine_a654d051feea97e263fc7bbb0ba5eeb4f}\label{class_engine_a654d051feea97e263fc7bbb0ba5eeb4f}} 
+G\+L\+F\+Wwindow $\ast$ {\bfseries get\+Window} () const
+\item 
+\mbox{\Hypertarget{class_engine_a714108e16480341f47ca4fa841509f8f}\label{class_engine_a714108e16480341f47ca4fa841509f8f}} 
+unsigned int {\bfseries get\+Window\+Width} () const
+\item 
+\mbox{\Hypertarget{class_engine_a9961b4736ada007756edc938c144d617}\label{class_engine_a9961b4736ada007756edc938c144d617}} 
+unsigned int {\bfseries get\+Window\+Height} () const
+\item 
+\mbox{\Hypertarget{class_engine_ac4c67d88f45b7fb7f46f1fce25edb353}\label{class_engine_ac4c67d88f45b7fb7f46f1fce25edb353}} 
+\mbox{\hyperlink{struct_config}{Config}} \& {\bfseries get\+Config} ()
+\item 
+\mbox{\Hypertarget{class_engine_a3700db485887250f9d37c08a97ca03ce}\label{class_engine_a3700db485887250f9d37c08a97ca03ce}} 
+\mbox{\hyperlink{class_world_info}{World\+Info}} \& {\bfseries get\+World\+Info} ()
+\item 
+\mbox{\Hypertarget{class_engine_ab5f5f7b7e420ade1a4b60fbebd25476b}\label{class_engine_ab5f5f7b7e420ade1a4b60fbebd25476b}} 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{class_chunk_manager}{Chunk\+Manager}} $>$ \& {\bfseries get\+Chunk\+Manager} ()
+\item 
+\mbox{\Hypertarget{class_engine_ab9ee0ddff1237cf61eb482bfce9ab480}\label{class_engine_ab9ee0ddff1237cf61eb482bfce9ab480}} 
+{\bfseries Engine} (const \mbox{\hyperlink{class_engine}{Engine}} \&)=delete
+\item 
+\mbox{\Hypertarget{class_engine_aa47d31dddf21d300e5e0498016bdbf33}\label{class_engine_aa47d31dddf21d300e5e0498016bdbf33}} 
+\mbox{\hyperlink{class_engine}{Engine}} \& {\bfseries operator=} (const \mbox{\hyperlink{class_engine}{Engine}} \&)=delete
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Basically the entry point into the game. Orchestrates all the systems. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+engine.\+h\end{DoxyCompactItemize}

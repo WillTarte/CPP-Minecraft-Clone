@@ -1,0 +1,99 @@
+\hypertarget{md__r_e_a_d_m_e_autotoc_md1}{}\doxysection{Requirements}\label{md__r_e_a_d_m_e_autotoc_md1}
+
+\begin{DoxyItemize}
+\item For the first build, requires an active internet connection to fetch dependencies.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{Royal Octopi Team Members}\label{md__r_e_a_d_m_e_autotoc_md2}
+
+\begin{DoxyItemize}
+\item Zahra Nikbakht 40138253
+\item Philip Dumaresq 40082638
+\item William Tarte 40087900
+\item Mohammad Ali Zahir 40077619
+\item Ewan Mc\+Neil 40021787
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysection{Library Versions}\label{md__r_e_a_d_m_e_autotoc_md3}
+
+\begin{DoxyItemize}
+\item glfw-\/3.\+3.\+2
+\item glew-\/2.\+1.\+0
+\item glm-\/0.\+9.\+9.\+8
+\item Minimum Openg\+GL version = 3.\+3
+\item Minimum C\+Make version = 3.\+14
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysection{Installation Guide}\label{md__r_e_a_d_m_e_autotoc_md4}
+{\itshape This project has been successfully compiled on both Arch Linux Manjaro using G\+CC ~\newline
+ and on Windows 10 using Microsoft Visual Studio 2017\textquotesingle{}s compiler (M\+S\+VC)}
+
+{\bfseries{Method 1}}
+\begin{DoxyEnumerate}
+\item Clone the repository or download the zip file and unzip it.
+\item Open the project in either C\+Lion or V\+S2017.
+\item If Using C\+Lion on Windows, go to File $>$ Settings $>$ {\bfseries{Build, Execution, Deployment}} $>$ Toolchain; and set the current toolchain to Visual Studio.
+\item Build/\+Run the project. ~\newline
+
+\end{DoxyEnumerate}
+
+{\bfseries{Method 2\+: Install Script}}
+\begin{DoxyEnumerate}
+\item \href{https://cmake.org/download/}{\texttt{ Download/\+Run C\+Make .msi installer}} and make sure to link it to P\+A\+TH (might require restart).
+\item Clone the repository or download the zip file and unzip it.
+\item Open the project folder, and right-\/click on install.\+bat $>$ run as administrator and accept.
+\item If there are no errors, there should be a new folder called \char`\"{}build\char`\"{}. Open it and the .exe should be there.
+\end{DoxyEnumerate}\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysection{Building \& Running in Release Mode}\label{md__r_e_a_d_m_e_autotoc_md5}
+ \+\_\+\+\_\+
+
+\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysection{Controls -\/ S\+O\+M\+E T\+O\+D\+O once Player is implemented}\label{md__r_e_a_d_m_e_autotoc_md6}
+
+\begin{DoxyItemize}
+\item W\+S/\+AD moves the camera forwards/backwards and left/right.
+\item Using the mouse, you can change the direction/orientation of the camera.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md7}{}\doxysection{Adding Blocks to the game}\label{md__r_e_a_d_m_e_autotoc_md7}
+
+\begin{DoxyItemize}
+\item When adding new blocks to the game, you need to create a new $<$block\+\_\+name$>$.block file under {\ttfamily resources/blocks} based off {\ttfamily dirt.\+block}. You then need to add the ID of your block (has to be unique) to the {\ttfamily Block\+ID} enum in {\ttfamily block.\+h}. Also, make sure to add the appropriate switch case to the {\ttfamily operator$<$$<$} overload for debugging purposes.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md8}{}\doxysection{Resources}\label{md__r_e_a_d_m_e_autotoc_md8}
+
+\begin{DoxyItemize}
+\item \href{https://learnopengl.com/}{\texttt{ https\+://learnopengl.\+com/}}
+\item \href{https://en.cppreference.com/w/}{\texttt{ https\+://en.\+cppreference.\+com/w/}}
+\item \href{https://www.khronos.org/registry/OpenGL-Refpages/gl4/}{\texttt{ https\+://www.\+khronos.\+org/registry/\+Open\+G\+L-\/\+Refpages/gl4/}}
+\item \href{http://devernay.free.fr/cours/opengl/materials.html}{\texttt{ http\+://devernay.\+free.\+fr/cours/opengl/materials.\+html}}
+\item \href{https://github.com/amrayn/easyloggingpp}{\texttt{ https\+://github.\+com/amrayn/easyloggingpp}}
+\item \href{https://github.com/tinyobjloader/tinyobjloader}{\texttt{ https\+://github.\+com/tinyobjloader/tinyobjloader}}
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md9}{}\doxysection{Logging}\label{md__r_e_a_d_m_e_autotoc_md9}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{c++\}}
+\DoxyCodeLine{\#include "{}easylogging++.h"{}}
+\DoxyCodeLine{[...]}
+\DoxyCodeLine{void someMethod() \{}
+\DoxyCodeLine{   LOG(INFO) << "{}My first info log using default logger"{};}
+\DoxyCodeLine{   return;}
+\DoxyCodeLine{\}}
+\end{DoxyCode}
+
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Level  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description   }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Level  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description   }\\\cline{1-2}
+\endhead
+Global  &Generic level that represents all levels. Useful when setting global configuration for all levels.   \\\cline{1-2}
+Trace  &Information that can be useful to back-\/trace certain events -\/ mostly useful than debug logs.   \\\cline{1-2}
+Debug  &Informational events most useful for developers to debug application. Only applicable if N\+D\+E\+B\+UG is not defined (for non-\/\+V\+C++) or \+\_\+\+D\+E\+B\+UG is defined (for V\+C++).   \\\cline{1-2}
+Fatal  &Very severe error event that will presumably lead the application to abort.   \\\cline{1-2}
+Error  &Error information but will continue application to keep running.   \\\cline{1-2}
+Warning  &Information representing errors in application but application will keep running.   \\\cline{1-2}
+Info  &Mainly useful to represent current progress of application.   \\\cline{1-2}
+Verbose  &Information that can be highly useful and vary with verbose logging level. Verbose logging is not applicable to hierarchical logging.   \\\cline{1-2}
+Unknown  &Only applicable to hierarchical logging and is used to turn off logging completely.   \\\cline{1-2}
+\end{longtabu}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md10}{}\doxysection{A few Gotchas with C++}\label{md__r_e_a_d_m_e_autotoc_md10}
+
+\begin{DoxyItemize}
+\item For Singletons\+: Once you write the implementation in the .cpp file, make sure you declare the singleton instance at the top of the file. See texture\+\_\+database.\+cpp for an example.
+\item If you define a function (not a class method) in a header file, make sure it is defined as {\ttfamily inline}. 
+\end{DoxyItemize}

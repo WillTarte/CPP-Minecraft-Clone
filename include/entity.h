@@ -88,3 +88,12 @@ public:
 
     void draw(Shader &shader) override;
 };
+
+class Sun : public Entity {
+public:
+    Sun(const std::string &str, BlockID id);
+
+    void draw(Shader &shader) override;
+
+    void update(float dt, glm::vec3 rotationCenter);
+};

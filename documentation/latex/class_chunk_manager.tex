@@ -1,0 +1,108 @@
+\hypertarget{class_chunk_manager}{}\doxysection{Chunk\+Manager Class Reference}
+\label{class_chunk_manager}\index{ChunkManager@{ChunkManager}}
+
+
+The \mbox{\hyperlink{class_chunk_manager}{Chunk\+Manager}} manages all the chunks in the world. The number of chunks depend on the world and chunk sizes.  
+
+
+
+
+{\ttfamily \#include $<$chunks.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_chunk_manager_a2e97988248fdfbd3e5b9a5ae821ff7bc}\label{class_chunk_manager_a2e97988248fdfbd3e5b9a5ae821ff7bc}} 
+{\bfseries Chunk\+Manager} (const \mbox{\hyperlink{class_world_info}{World\+Info}} \&world\+Info)
+\item 
+std\+::optional$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chunk}{Chunk}} $>$ $>$ \mbox{\hyperlink{class_chunk_manager_af644df1967ffb5a9e78d052ea221fbb5}{get\+Chunk\+By\+XZ}} (glm\+::vec2 xz\+Coords)
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chunk}{Chunk}} $>$ $>$ \mbox{\hyperlink{class_chunk_manager_a8636f3c84089e5fc382b88cf48e914dd}{get\+Surrounding\+Chunks\+By\+XZ}} (glm\+::vec2 xz\+Coords)
+\item 
+std\+::optional$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_chunk}{Chunk}} $>$ $>$ \mbox{\hyperlink{class_chunk_manager_aadb5a4f0bd0fda40ff8c989ba909eb45}{get\+Chunk\+By\+X\+Z\+Index}} (unsigned int x\+Ind, unsigned int z\+Ind)
+\item 
+bool \mbox{\hyperlink{class_chunk_manager_a382e24a8226d34aaa15e5fd89252d95c}{remove\+Entity\+From\+Chunk}} (\mbox{\hyperlink{class_entity}{Entity}} \&entity)
+\item 
+\mbox{\Hypertarget{class_chunk_manager_a3fc904b47225b451bca12715eb2bf400}\label{class_chunk_manager_a3fc904b47225b451bca12715eb2bf400}} 
+size\+\_\+t {\bfseries get\+Number\+Of\+Entities} () const
+\item 
+\mbox{\Hypertarget{class_chunk_manager_ae560bdf8a0738a1f9810f778b8a37f73}\label{class_chunk_manager_ae560bdf8a0738a1f9810f778b8a37f73}} 
+size\+\_\+t {\bfseries get\+Number\+Of\+Chunks} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The \mbox{\hyperlink{class_chunk_manager}{Chunk\+Manager}} manages all the chunks in the world. The number of chunks depend on the world and chunk sizes. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_chunk_manager_af644df1967ffb5a9e78d052ea221fbb5}\label{class_chunk_manager_af644df1967ffb5a9e78d052ea221fbb5}} 
+\index{ChunkManager@{ChunkManager}!getChunkByXZ@{getChunkByXZ}}
+\index{getChunkByXZ@{getChunkByXZ}!ChunkManager@{ChunkManager}}
+\doxysubsubsection{\texorpdfstring{getChunkByXZ()}{getChunkByXZ()}}
+{\footnotesize\ttfamily std\+::optional$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chunk}{Chunk}}$>$ $>$ Chunk\+Manager\+::get\+Chunk\+By\+XZ (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{xz\+Coords }\end{DoxyParamCaption})}
+
+Returns a specific chunk based on given XZ coordinates
+
+
+\begin{DoxyParams}{Parameters}
+{\em xz\+Coords} & the XZ coordinates \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+shared\+\_\+ptr to a \mbox{\hyperlink{class_chunk}{Chunk}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_manager_aadb5a4f0bd0fda40ff8c989ba909eb45}\label{class_chunk_manager_aadb5a4f0bd0fda40ff8c989ba909eb45}} 
+\index{ChunkManager@{ChunkManager}!getChunkByXZIndex@{getChunkByXZIndex}}
+\index{getChunkByXZIndex@{getChunkByXZIndex}!ChunkManager@{ChunkManager}}
+\doxysubsubsection{\texorpdfstring{getChunkByXZIndex()}{getChunkByXZIndex()}}
+{\footnotesize\ttfamily std\+::optional$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chunk}{Chunk}}$>$ $>$ Chunk\+Manager\+::get\+Chunk\+By\+X\+Z\+Index (\begin{DoxyParamCaption}\item[{unsigned int}]{x\+Ind,  }\item[{unsigned int}]{z\+Ind }\end{DoxyParamCaption})}
+
+Gets a chunk bases off a X and Z index (X $\ast$ C\+H\+U\+N\+K\+\_\+\+W\+I\+D\+TH, Z $\ast$ C\+H\+U\+N\+K\+\_\+\+L\+E\+N\+G\+TH)
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Ind} & the x index \\
+\hline
+{\em z\+Ind} & the z index \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a shared\+\_\+ptr to a \mbox{\hyperlink{class_chunk}{Chunk}} if found, or an empty optional 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_manager_a8636f3c84089e5fc382b88cf48e914dd}\label{class_chunk_manager_a8636f3c84089e5fc382b88cf48e914dd}} 
+\index{ChunkManager@{ChunkManager}!getSurroundingChunksByXZ@{getSurroundingChunksByXZ}}
+\index{getSurroundingChunksByXZ@{getSurroundingChunksByXZ}!ChunkManager@{ChunkManager}}
+\doxysubsubsection{\texorpdfstring{getSurroundingChunksByXZ()}{getSurroundingChunksByXZ()}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_chunk}{Chunk}}$>$ $>$ Chunk\+Manager\+::get\+Surrounding\+Chunks\+By\+XZ (\begin{DoxyParamCaption}\item[{glm\+::vec2}]{xz\+Coords }\end{DoxyParamCaption})}
+
+Returns surrounding chunks (max of 9) in a square for given XZ coordinates
+
+
+\begin{DoxyParams}{Parameters}
+{\em xz\+Coords} & the xz coordinates \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_manager_a382e24a8226d34aaa15e5fd89252d95c}\label{class_chunk_manager_a382e24a8226d34aaa15e5fd89252d95c}} 
+\index{ChunkManager@{ChunkManager}!removeEntityFromChunk@{removeEntityFromChunk}}
+\index{removeEntityFromChunk@{removeEntityFromChunk}!ChunkManager@{ChunkManager}}
+\doxysubsubsection{\texorpdfstring{removeEntityFromChunk()}{removeEntityFromChunk()}}
+{\footnotesize\ttfamily bool Chunk\+Manager\+::remove\+Entity\+From\+Chunk (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \&}]{entity }\end{DoxyParamCaption})}
+
+Removes the given entity from the world (if found). Invalidates any references to that entity.
+
+
+\begin{DoxyParams}{Parameters}
+{\em entity} & the entity to try remove from the world. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if succeeded, false otherwise. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+chunks.\+h\end{DoxyCompactItemize}
