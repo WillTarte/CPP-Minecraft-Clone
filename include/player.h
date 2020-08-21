@@ -42,6 +42,8 @@ public:
     Camera camera;
 private:
     bool onGround = true;
+    bool firstPerson = true;
+    glm::vec3 cameraDisplacement = glm::vec3(0.5f, 1.5f, 0.5f);
     glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
     glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
     BlockID selectedBlockID = BlockID::DIRT;
