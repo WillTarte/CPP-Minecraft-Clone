@@ -1,0 +1,118 @@
+\hypertarget{class_chunk}{}\doxysection{Chunk Class Reference}
+\label{class_chunk}\index{Chunk@{Chunk}}
+
+
+A \mbox{\hyperlink{class_chunk}{Chunk}} starts at some XZ index (from 0 to W\+O\+R\+L\+D\+\_\+\+L\+E\+N\+G\+TH / C\+H\+U\+N\+K\+\_\+\+L\+E\+N\+G\+TH ...) and contains entities.  
+
+
+
+
+{\ttfamily \#include $<$chunks.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_chunk_a591d6b1c172d8b17a3e1b8618d8dd8a5}\label{class_chunk_a591d6b1c172d8b17a3e1b8618d8dd8a5}} 
+{\bfseries Chunk} (unsigned int x\+Ind, unsigned int z\+Ind)
+\item 
+void \mbox{\hyperlink{class_chunk_a6ce4211dfa3965d9b0ef3ee6b93e49bc}{add\+Entity}} (\mbox{\hyperlink{class_entity}{Entity}} \&\&entity)
+\item 
+\mbox{\Hypertarget{class_chunk_afb249ac5f8bef0e8de153080cfd169bf}\label{class_chunk_afb249ac5f8bef0e8de153080cfd169bf}} 
+std\+::map$<$ Entity\+ID, std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_entity}{Entity}} $>$ $>$ \& \mbox{\hyperlink{class_chunk_afb249ac5f8bef0e8de153080cfd169bf}{get\+Entities}} ()
+\begin{DoxyCompactList}\small\item\em Returns a reference to this chunk\textquotesingle{}s entities. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_chunk_a7f6c217abe489a64eac6564dd22efde7}{render\+Chunk}} (\mbox{\hyperlink{class_shader}{Shader}} \&shader, const \mbox{\hyperlink{class_view_frustum}{View\+Frustum}} \&frustum)
+\item 
+std\+::optional$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_entity}{Entity}} $>$ $>$ \mbox{\hyperlink{class_chunk_a72cb74862ba6e51073723ca151095b82}{get\+Entity\+By\+World\+Pos}} (glm\+::vec3 world\+Pos)
+\item 
+std\+::optional$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_entity}{Entity}} $>$ $>$ \mbox{\hyperlink{class_chunk_a59e420e40fcf995a8a4c7c409a7b432b}{get\+Entity\+By\+Box\+Collision}} (glm\+::vec3 world\+Pos, \mbox{\hyperlink{struct_bounding_box}{Bounding\+Box}} box)
+\item 
+bool \mbox{\hyperlink{class_chunk_a30a032ec24234d9bd21aebcfce598b47}{remove\+Entity\+By\+ID}} (Entity\+ID id)
+\item 
+\mbox{\Hypertarget{class_chunk_a97529072b35387340260e204929f2833}\label{class_chunk_a97529072b35387340260e204929f2833}} 
+glm\+::vec2 \mbox{\hyperlink{class_chunk_a97529072b35387340260e204929f2833}{get\+Chunk\+Origin}} () const
+\begin{DoxyCompactList}\small\item\em Returns the chunk\textquotesingle{}s origin in world coordinates for the X and Z components. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_chunk_a3fec3c0232ef456e5646267ab3387561}\label{class_chunk_a3fec3c0232ef456e5646267ab3387561}} 
+size\+\_\+t {\bfseries get\+Number\+Of\+Entities} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A \mbox{\hyperlink{class_chunk}{Chunk}} starts at some XZ index (from 0 to W\+O\+R\+L\+D\+\_\+\+L\+E\+N\+G\+TH / C\+H\+U\+N\+K\+\_\+\+L\+E\+N\+G\+TH ...) and contains entities. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_chunk_a6ce4211dfa3965d9b0ef3ee6b93e49bc}\label{class_chunk_a6ce4211dfa3965d9b0ef3ee6b93e49bc}} 
+\index{Chunk@{Chunk}!addEntity@{addEntity}}
+\index{addEntity@{addEntity}!Chunk@{Chunk}}
+\doxysubsubsection{\texorpdfstring{addEntity()}{addEntity()}}
+{\footnotesize\ttfamily void Chunk\+::add\+Entity (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_entity}{Entity}} \&\&}]{entity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Adds an entity to the world. NB\+: the entity should be an rvalue. If it is an lvalue, its ownership should be moved using std\+::move. ~\newline
+~\newline
+In other words, this method gives ownership of the entity to the \mbox{\hyperlink{class_chunk}{Chunk}}. \mbox{\Hypertarget{class_chunk_a59e420e40fcf995a8a4c7c409a7b432b}\label{class_chunk_a59e420e40fcf995a8a4c7c409a7b432b}} 
+\index{Chunk@{Chunk}!getEntityByBoxCollision@{getEntityByBoxCollision}}
+\index{getEntityByBoxCollision@{getEntityByBoxCollision}!Chunk@{Chunk}}
+\doxysubsubsection{\texorpdfstring{getEntityByBoxCollision()}{getEntityByBoxCollision()}}
+{\footnotesize\ttfamily std\+::optional$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_entity}{Entity}}$>$ $>$ Chunk\+::get\+Entity\+By\+Box\+Collision (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{world\+Pos,  }\item[{\mbox{\hyperlink{struct_bounding_box}{Bounding\+Box}}}]{box }\end{DoxyParamCaption})}
+
+Returns an entity based on a bounding box overlap
+
+
+\begin{DoxyParams}{Parameters}
+{\em world\+Pos} & the world position \\
+\hline
+{\em box} & the bounding box \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an optional pointer to an entity 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_a72cb74862ba6e51073723ca151095b82}\label{class_chunk_a72cb74862ba6e51073723ca151095b82}} 
+\index{Chunk@{Chunk}!getEntityByWorldPos@{getEntityByWorldPos}}
+\index{getEntityByWorldPos@{getEntityByWorldPos}!Chunk@{Chunk}}
+\doxysubsubsection{\texorpdfstring{getEntityByWorldPos()}{getEntityByWorldPos()}}
+{\footnotesize\ttfamily std\+::optional$<$std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{class_entity}{Entity}}$>$ $>$ Chunk\+::get\+Entity\+By\+World\+Pos (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{world\+Pos }\end{DoxyParamCaption})}
+
+Returns an entity in absolute world position
+
+
+\begin{DoxyParams}{Parameters}
+{\em world\+Pos} & the world pos (truncates to integers) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+an optional pointer to an entity 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_a30a032ec24234d9bd21aebcfce598b47}\label{class_chunk_a30a032ec24234d9bd21aebcfce598b47}} 
+\index{Chunk@{Chunk}!removeEntityByID@{removeEntityByID}}
+\index{removeEntityByID@{removeEntityByID}!Chunk@{Chunk}}
+\doxysubsubsection{\texorpdfstring{removeEntityByID()}{removeEntityByID()}}
+{\footnotesize\ttfamily bool Chunk\+::remove\+Entity\+By\+ID (\begin{DoxyParamCaption}\item[{Entity\+ID}]{id }\end{DoxyParamCaption})}
+
+Removes an entity from this chunk (and therefore from the world). Invalidates any references to this entity.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & the entity to remove\textquotesingle{}s ID \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if sucessfull, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_chunk_a7f6c217abe489a64eac6564dd22efde7}\label{class_chunk_a7f6c217abe489a64eac6564dd22efde7}} 
+\index{Chunk@{Chunk}!renderChunk@{renderChunk}}
+\index{renderChunk@{renderChunk}!Chunk@{Chunk}}
+\doxysubsubsection{\texorpdfstring{renderChunk()}{renderChunk()}}
+{\footnotesize\ttfamily void Chunk\+::render\+Chunk (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader,  }\item[{const \mbox{\hyperlink{class_view_frustum}{View\+Frustum}} \&}]{frustum }\end{DoxyParamCaption})}
+
+Renders the entities in this \mbox{\hyperlink{class_chunk}{Chunk}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em shader} & the shader to use to draw the entities \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+chunks.\+h\end{DoxyCompactItemize}

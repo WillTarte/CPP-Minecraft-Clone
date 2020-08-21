@@ -1,0 +1,93 @@
+\hypertarget{class_entity}{}\doxysection{Entity Class Reference}
+\label{class_entity}\index{Entity@{Entity}}
+
+
+An entity is an object that exists within the world.  
+
+
+
+
+{\ttfamily \#include $<$entity.\+h$>$}
+
+Inheritance diagram for Entity\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_entity}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_entity_a032f1e0a27c6921e31b119dd1a714bee}\label{class_entity_a032f1e0a27c6921e31b119dd1a714bee}} 
+{\bfseries Entity} (std\+::string model\+Name, Block\+ID block\+Id1)
+\item 
+\mbox{\Hypertarget{class_entity_a1d959d870e49c65b95f1bc67089954a0}\label{class_entity_a1d959d870e49c65b95f1bc67089954a0}} 
+{\bfseries Entity} (std\+::string model\+Name, Block\+ID block\+Id1, \mbox{\hyperlink{class_transform}{Transform}} transform1)
+\item 
+\mbox{\Hypertarget{class_entity_ab12f89dca3b34c6705c21b854a2eea48}\label{class_entity_ab12f89dca3b34c6705c21b854a2eea48}} 
+\mbox{\hyperlink{class_entity}{Entity}} \& \mbox{\hyperlink{class_entity_ab12f89dca3b34c6705c21b854a2eea48}{operator=}} (\mbox{\hyperlink{class_entity}{Entity}} \&\&other)
+\begin{DoxyCompactList}\small\item\em move assignment \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_entity_a82ac83656798971def44aa3b2862d92f}\label{class_entity_a82ac83656798971def44aa3b2862d92f}} 
+\mbox{\hyperlink{class_entity_a82ac83656798971def44aa3b2862d92f}{Entity}} (\mbox{\hyperlink{class_entity}{Entity}} \&\&other)
+\begin{DoxyCompactList}\small\item\em move constructor \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{class_entity_abff068edfc256c6d7ab01f21940c9c89}{draw}} (\mbox{\hyperlink{class_shader}{Shader}} \&shader)
+\item 
+\mbox{\Hypertarget{class_entity_add0a8a692183772059ce33929c8145d3}\label{class_entity_add0a8a692183772059ce33929c8145d3}} 
+Block\+ID \mbox{\hyperlink{class_entity_add0a8a692183772059ce33929c8145d3}{get\+Block\+ID}} () const
+\begin{DoxyCompactList}\small\item\em Gets the block\+ID of this entity. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_entity_aefd26c0099a25913f57e743dd53658ce}\label{class_entity_aefd26c0099a25913f57e743dd53658ce}} 
+\mbox{\hyperlink{class_transform}{Transform}} \& \mbox{\hyperlink{class_entity_aefd26c0099a25913f57e743dd53658ce}{get\+Transform}} ()
+\begin{DoxyCompactList}\small\item\em Gets this entity\textquotesingle{}s transform by reference. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_entity_a3e94f45e1dda05ce17153d5bd94f31d7}\label{class_entity_a3e94f45e1dda05ce17153d5bd94f31d7}} 
+Entity\+ID \mbox{\hyperlink{class_entity_a3e94f45e1dda05ce17153d5bd94f31d7}{get\+Entity\+ID}} ()
+\begin{DoxyCompactList}\small\item\em Gets this entities unique ID. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_entity_a057dd1f5c5def22174122a5d01fcd5e6}\label{class_entity_a057dd1f5c5def22174122a5d01fcd5e6}} 
+\mbox{\hyperlink{struct_bounding_box}{Bounding\+Box}} {\bfseries box} \{\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_entity_a7766644984b868ccecf24b3aede7279f}\label{class_entity_a7766644984b868ccecf24b3aede7279f}} 
+\mbox{\hyperlink{class_transform}{Transform}} {\bfseries transform}
+\item 
+\mbox{\Hypertarget{class_entity_a2faa92fceac7038063cd371635213780}\label{class_entity_a2faa92fceac7038063cd371635213780}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_texture_interface}{Texture\+Interface}} $>$ {\bfseries tex}
+\item 
+\mbox{\Hypertarget{class_entity_a326e6425a3067a3438c6936c6d18d4be}\label{class_entity_a326e6425a3067a3438c6936c6d18d4be}} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{class_model}{Model}} $>$ {\bfseries model}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_entity_a2f8b8e4d28a4ae0e812a3d98c37b3a3c}\label{class_entity_a2f8b8e4d28a4ae0e812a3d98c37b3a3c}} 
+static Entity\+ID {\bfseries entity\+I\+D\+Counter}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+An entity is an object that exists within the world. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_entity_abff068edfc256c6d7ab01f21940c9c89}\label{class_entity_abff068edfc256c6d7ab01f21940c9c89}} 
+\index{Entity@{Entity}!draw@{draw}}
+\index{draw@{draw}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily virtual void Entity\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Draws the entity into the world 
+\begin{DoxyParams}{Parameters}
+{\em shader} & the shader used to customize the render pipeline \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{class_player_a07a50fbca6d4e019af989c10fd7538cb}{Player}}, and \mbox{\hyperlink{class_skybox_a47af78ec99023f559b68f6fc57541118}{Skybox}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+entity.\+h\end{DoxyCompactItemize}

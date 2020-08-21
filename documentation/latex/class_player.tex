@@ -1,0 +1,61 @@
+\hypertarget{class_player}{}\doxysection{Player Class Reference}
+\label{class_player}\index{Player@{Player}}
+Inheritance diagram for Player\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_player}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_player_a26298ca8aedec0203a83e0a546ae68b7}\label{class_player_a26298ca8aedec0203a83e0a546ae68b7}} 
+{\bfseries Player} (glm\+::vec3 spawn\+Point)
+\item 
+\mbox{\Hypertarget{class_player_a2b3ccced6ba865209f0f21ef31f38841}\label{class_player_a2b3ccced6ba865209f0f21ef31f38841}} 
+glm\+::mat4 \mbox{\hyperlink{class_player_a2b3ccced6ba865209f0f21ef31f38841}{get\+Player\+View}} ()
+\begin{DoxyCompactList}\small\item\em Returns the player\textquotesingle{}s current view matrix. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_player_aae99f30e40984416383bdedface3fcb5}\label{class_player_aae99f30e40984416383bdedface3fcb5}} 
+void \mbox{\hyperlink{class_player_aae99f30e40984416383bdedface3fcb5}{update}} (\mbox{\hyperlink{class_engine}{Engine}} $\ast$engine, float dt)
+\begin{DoxyCompactList}\small\item\em Updates the player (movement physics and collision physics) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_player_a07a50fbca6d4e019af989c10fd7538cb}{draw}} (\mbox{\hyperlink{class_shader}{Shader}} \&shader) override
+\item 
+\mbox{\Hypertarget{class_player_aa67729f92edaa1f6dd222f51d027501a}\label{class_player_aa67729f92edaa1f6dd222f51d027501a}} 
+void \mbox{\hyperlink{class_player_aa67729f92edaa1f6dd222f51d027501a}{process\+Input}} (\mbox{\hyperlink{class_engine}{Engine}} $\ast$engine)
+\begin{DoxyCompactList}\small\item\em Processes the player\textquotesingle{}s inputs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_player_adb603c31137adb8a0b3e434f25b5032b}\label{class_player_adb603c31137adb8a0b3e434f25b5032b}} 
+void \mbox{\hyperlink{class_player_adb603c31137adb8a0b3e434f25b5032b}{look}} (G\+L\+F\+Wwindow $\ast$window, double xpos, double ypos)
+\begin{DoxyCompactList}\small\item\em Manipulates the camera\textquotesingle{}s view based on the player\textquotesingle{}s mouse input. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_player_a034473c72a902fb4488b90c5b39aeb70}\label{class_player_a034473c72a902fb4488b90c5b39aeb70}} 
+void {\bfseries set\+Position} (glm\+::vec3 position)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_player_a199c0ef1389a964c378b2fcc4f1cd30f}\label{class_player_a199c0ef1389a964c378b2fcc4f1cd30f}} 
+\mbox{\hyperlink{struct_camera}{Camera}} {\bfseries camera}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_player_a07a50fbca6d4e019af989c10fd7538cb}\label{class_player_a07a50fbca6d4e019af989c10fd7538cb}} 
+\index{Player@{Player}!draw@{draw}}
+\index{draw@{draw}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void Player\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_shader}{Shader}} \&}]{shader }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Draws the entity into the world 
+\begin{DoxyParams}{Parameters}
+{\em shader} & the shader used to customize the render pipeline \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{class_entity_abff068edfc256c6d7ab01f21940c9c89}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+player.\+h\end{DoxyCompactItemize}

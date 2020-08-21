@@ -1,0 +1,136 @@
+\hypertarget{class_transform}{}\doxysection{Transform Class Reference}
+\label{class_transform}\index{Transform@{Transform}}
+
+
+Class that holds transform information\+: position, scale and rotation.  
+
+
+
+
+{\ttfamily \#include $<$transform.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_transform_ae4fc6a00f3c7d3f758edc6912b3a2c4e}{Transform}} (glm\+::vec3 pos, glm\+::vec3 scale, glm\+::vec3 rotation)
+\item 
+void \mbox{\hyperlink{class_transform_ad2ed813ede82f66912b84529926b3e3a}{translate}} (glm\+::vec3 displacement)
+\item 
+void \mbox{\hyperlink{class_transform_afe5eec600cefb1dd8aab69b18122e651}{scale\+By}} (glm\+::vec3 scaling)
+\item 
+void \mbox{\hyperlink{class_transform_a3204e0c277eddc1421503bd5aef9bce2}{scale\+By}} (float scaling\+Factor)
+\item 
+void \mbox{\hyperlink{class_transform_a9caf2befcfe3bc5de6400e79f97858d3}{rotate}} (glm\+::quat rotation\+Quat)
+\item 
+void \mbox{\hyperlink{class_transform_a6d5093ee552be5218f4117bc5ccb7fd9}{rotate}} (glm\+::vec3 rotation\+Axis, float angle)
+\item 
+\mbox{\Hypertarget{class_transform_aabfe31d2185d525dfeb9aa815b69bfdf}\label{class_transform_aabfe31d2185d525dfeb9aa815b69bfdf}} 
+void {\bfseries reset} ()
+\item 
+\mbox{\Hypertarget{class_transform_aabed2411767bc0ba5c2580cf5b4b597c}\label{class_transform_aabed2411767bc0ba5c2580cf5b4b597c}} 
+glm\+::mat4 \& {\bfseries get\+Model\+Matrix} ()
+\item 
+\mbox{\Hypertarget{class_transform_ad827fdfc722236746b5da8bef2ea610d}\label{class_transform_ad827fdfc722236746b5da8bef2ea610d}} 
+glm\+::vec3 \& {\bfseries get\+Position} ()
+\item 
+\mbox{\Hypertarget{class_transform_a591fc51689fb9d17c57aa10e44f7e040}\label{class_transform_a591fc51689fb9d17c57aa10e44f7e040}} 
+glm\+::quat \& {\bfseries get\+Rotation} ()
+\item 
+\mbox{\Hypertarget{class_transform_af921f68280e8bdd7d6a12c15a0944ae5}\label{class_transform_af921f68280e8bdd7d6a12c15a0944ae5}} 
+glm\+::vec3 \& {\bfseries get\+Scale} ()
+\item 
+\mbox{\Hypertarget{class_transform_ab4927f1ccb6548c878c5522feb912479}\label{class_transform_ab4927f1ccb6548c878c5522feb912479}} 
+void {\bfseries set\+Scale} (glm\+::vec3 s)
+\item 
+\mbox{\Hypertarget{class_transform_a9c0bb3c909ac7ea936d342e488332ea6}\label{class_transform_a9c0bb3c909ac7ea936d342e488332ea6}} 
+void {\bfseries set\+Rotation} (glm\+::quat r)
+\item 
+\mbox{\Hypertarget{class_transform_ac9ae16e42b13f1c1862d145809709e4a}\label{class_transform_ac9ae16e42b13f1c1862d145809709e4a}} 
+void {\bfseries set\+Position} (glm\+::vec3 p)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class that holds transform information\+: position, scale and rotation. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_transform_ae4fc6a00f3c7d3f758edc6912b3a2c4e}\label{class_transform_ae4fc6a00f3c7d3f758edc6912b3a2c4e}} 
+\index{Transform@{Transform}!Transform@{Transform}}
+\index{Transform@{Transform}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{Transform()}{Transform()}}
+{\footnotesize\ttfamily Transform\+::\+Transform (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{pos,  }\item[{glm\+::vec3}]{scale,  }\item[{glm\+::vec3}]{rotation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Parameterized constructor 
+\begin{DoxyParams}{Parameters}
+{\em pos} & the position in world space of this transform \\
+\hline
+{\em scale} & the scale of this transform \\
+\hline
+{\em rotation} & the rotation to apply to each axis for this transform \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_transform_a9caf2befcfe3bc5de6400e79f97858d3}\label{class_transform_a9caf2befcfe3bc5de6400e79f97858d3}} 
+\index{Transform@{Transform}!rotate@{rotate}}
+\index{rotate@{rotate}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{rotate()}{rotate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Transform\+::rotate (\begin{DoxyParamCaption}\item[{glm\+::quat}]{rotation\+Quat }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Applies a rotation 
+\begin{DoxyParams}{Parameters}
+{\em rotation\+Quat} & the quaternion representing the rotation \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_transform_a6d5093ee552be5218f4117bc5ccb7fd9}\label{class_transform_a6d5093ee552be5218f4117bc5ccb7fd9}} 
+\index{Transform@{Transform}!rotate@{rotate}}
+\index{rotate@{rotate}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{rotate()}{rotate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Transform\+::rotate (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{rotation\+Axis,  }\item[{float}]{angle }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Rotates around the given axis by some amount 
+\begin{DoxyParams}{Parameters}
+{\em rotation\+Axis} & the rotation axis \\
+\hline
+{\em angle} & the rotation angle given in radians \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_transform_a3204e0c277eddc1421503bd5aef9bce2}\label{class_transform_a3204e0c277eddc1421503bd5aef9bce2}} 
+\index{Transform@{Transform}!scaleBy@{scaleBy}}
+\index{scaleBy@{scaleBy}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{scaleBy()}{scaleBy()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Transform\+::scale\+By (\begin{DoxyParamCaption}\item[{float}]{scaling\+Factor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Applies the same scaling factor to all components 
+\begin{DoxyParams}{Parameters}
+{\em scaling\+Factor} & the amount to scale by \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_transform_afe5eec600cefb1dd8aab69b18122e651}\label{class_transform_afe5eec600cefb1dd8aab69b18122e651}} 
+\index{Transform@{Transform}!scaleBy@{scaleBy}}
+\index{scaleBy@{scaleBy}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{scaleBy()}{scaleBy()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Transform\+::scale\+By (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{scaling }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Applies scaling component-\/wise 
+\begin{DoxyParams}{Parameters}
+{\em scaling} & the component-\/wise scaling factors \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_transform_ad2ed813ede82f66912b84529926b3e3a}\label{class_transform_ad2ed813ede82f66912b84529926b3e3a}} 
+\index{Transform@{Transform}!translate@{translate}}
+\index{translate@{translate}!Transform@{Transform}}
+\doxysubsubsection{\texorpdfstring{translate()}{translate()}}
+{\footnotesize\ttfamily void Transform\+::translate (\begin{DoxyParamCaption}\item[{glm\+::vec3}]{displacement }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Translates the current position by the given displacement 
+\begin{DoxyParams}{Parameters}
+{\em displacement} & the displacement vector \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+transform.\+h\end{DoxyCompactItemize}

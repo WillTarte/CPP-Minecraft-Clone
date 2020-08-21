@@ -1,0 +1,79 @@
+\hypertarget{class_cube_map}{}\doxysection{Cube\+Map Class Reference}
+\label{class_cube_map}\index{CubeMap@{CubeMap}}
+
+
+A cubemap\+: composed of 6 textures, 1 for each face.  
+
+
+
+
+{\ttfamily \#include $<$texture.\+h$>$}
+
+Inheritance diagram for Cube\+Map\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_cube_map}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_cube_map_aec397a585af369f9d0ad6fd9c0a38312}\label{class_cube_map_aec397a585af369f9d0ad6fd9c0a38312}} 
+{\bfseries Cube\+Map} (const std\+::vector$<$ std\+::string $>$ \&file\+Paths)
+\item 
+void \mbox{\hyperlink{class_cube_map_a798d06f7650dd234f6c308750d001362}{load\+From\+File}} (const std\+::string \&file\+Paths) override
+\item 
+void \mbox{\hyperlink{class_cube_map_aa5d07e9c63a736f648757cde3df5b5be}{load\+From\+Face\+Files}} (const std\+::vector$<$ std\+::string $>$ \&file\+Paths) override
+\item 
+\mbox{\Hypertarget{class_cube_map_ae7af718e0e9d3b0e579d98140a82c35b}\label{class_cube_map_ae7af718e0e9d3b0e579d98140a82c35b}} 
+void \mbox{\hyperlink{class_cube_map_ae7af718e0e9d3b0e579d98140a82c35b}{bind\+Texture}} () override
+\begin{DoxyCompactList}\small\item\em Binds this texture for rendering. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_cube_map_a682d3c7a1727df84cba5d1b3c7cdc096}\label{class_cube_map_a682d3c7a1727df84cba5d1b3c7cdc096}} 
+Texture\+Type \mbox{\hyperlink{class_cube_map_a682d3c7a1727df84cba5d1b3c7cdc096}{get\+Texture\+Type}} () const override
+\begin{DoxyCompactList}\small\item\em Gets the type of texture (Currently 2D texture or \mbox{\hyperlink{class_cube_map}{Cube\+Map}}) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+A cubemap\+: composed of 6 textures, 1 for each face. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_cube_map_aa5d07e9c63a736f648757cde3df5b5be}\label{class_cube_map_aa5d07e9c63a736f648757cde3df5b5be}} 
+\index{CubeMap@{CubeMap}!loadFromFaceFiles@{loadFromFaceFiles}}
+\index{loadFromFaceFiles@{loadFromFaceFiles}!CubeMap@{CubeMap}}
+\doxysubsubsection{\texorpdfstring{loadFromFaceFiles()}{loadFromFaceFiles()}}
+{\footnotesize\ttfamily void Cube\+Map\+::load\+From\+Face\+Files (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{file\+Paths }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Loads multiple files into a texture (cubemap)
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Paths} & the set of texture file paths to generate the texture from. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_texture_interface_a9162320a9cff1335059a1887a3dd97e1}{Texture\+Interface}}.
+
+\mbox{\Hypertarget{class_cube_map_a798d06f7650dd234f6c308750d001362}\label{class_cube_map_a798d06f7650dd234f6c308750d001362}} 
+\index{CubeMap@{CubeMap}!loadFromFile@{loadFromFile}}
+\index{loadFromFile@{loadFromFile}!CubeMap@{CubeMap}}
+\doxysubsubsection{\texorpdfstring{loadFromFile()}{loadFromFile()}}
+{\footnotesize\ttfamily void Cube\+Map\+::load\+From\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+Path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Loads a texture from a single file
+
+
+\begin{DoxyParams}{Parameters}
+{\em file\+Path} & the path to the texture file (an image). \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{class_texture_interface_a4f581a3275b96c79993046e4446ac6cc}{Texture\+Interface}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+texture.\+h\end{DoxyCompactItemize}

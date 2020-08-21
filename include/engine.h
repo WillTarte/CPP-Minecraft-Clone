@@ -31,6 +31,7 @@ private:
     std::unique_ptr<Player> player;
     std::unique_ptr<ChunkManager> chunkManager;
     std::unique_ptr<Skybox> skybox;
+    std::unique_ptr<Sun> sun;
 
     /// Generates the heightmap for the world using simplex method and renders it
     void generateWorld();

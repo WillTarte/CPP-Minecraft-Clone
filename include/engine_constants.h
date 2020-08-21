@@ -17,7 +17,5 @@ namespace EngineConstants {
     static constexpr size_t CHUNK_HEIGHT = 16;
     static constexpr size_t CHUNK_LENGTH = 16;
 
-    static constexpr size_t DEFAULT_WORLD_WIDTH = 256;
     static constexpr size_t DEFAULT_WORLD_HEIGHT = 16;
-    static constexpr size_t DEFAULT_WORLD_LENGTH = 256;
 }

@@ -1,0 +1,40 @@
+\hypertarget{struct_block_file_data}{}\doxysection{Block\+File\+Data Struct Reference}
+\label{struct_block_file_data}\index{BlockFileData@{BlockFileData}}
+
+
+{\ttfamily \#include $<$block.\+h$>$}
+
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_a08537bf5363f3d77f32db19dd43c19e0}\label{struct_block_file_data_a08537bf5363f3d77f32db19dd43c19e0}} 
+Block\+ID {\bfseries ID}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_aa009a5bdb05b926a12d69daceddebf5d}\label{struct_block_file_data_aa009a5bdb05b926a12d69daceddebf5d}} 
+Texture\+Type {\bfseries texture\+Type}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_ace51ef8235618cb4c9c0ba70315cf5d4}\label{struct_block_file_data_ace51ef8235618cb4c9c0ba70315cf5d4}} 
+std\+::vector$<$ std\+::string $>$ {\bfseries cube\+Face\+Files} \{\}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_ab09ca3247656e494865f375d88f2b89b}\label{struct_block_file_data_ab09ca3247656e494865f375d88f2b89b}} 
+std\+::string {\bfseries texture\+File}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_aa64c860bf79466dd34e9bb141c1b5b0d}\label{struct_block_file_data_aa64c860bf79466dd34e9bb141c1b5b0d}} 
+std\+::string {\bfseries block\+Name}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_a9e93aa3cddf9d7b58c390d3ba1d17ceb}\label{struct_block_file_data_a9e93aa3cddf9d7b58c390d3ba1d17ceb}} 
+std\+::string {\bfseries model\+File}
+\item 
+\mbox{\Hypertarget{struct_block_file_data_a9ef7a0983b16634af232ee73f02b2fa5}\label{struct_block_file_data_a9ef7a0983b16634af232ee73f02b2fa5}} 
+bool {\bfseries breakable} = true
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Struct that holds the data read from a .block file.
+
+Depending on what value texture\+Type holds, either use cube\+Face\+Files or texture\+File to create a Texture. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+block.\+h\end{DoxyCompactItemize}

@@ -25,9 +25,9 @@ struct Config {
 /// Contains basic world info (size and seed)
 class WorldInfo {
 private:
-    unsigned int width = EngineConstants::DEFAULT_WORLD_WIDTH;   //x
+    unsigned int width = EngineConstants::SMALL_WORLD;   //x
     unsigned int height = EngineConstants::DEFAULT_WORLD_HEIGHT; //y
-    unsigned int length = EngineConstants::DEFAULT_WORLD_LENGTH; //z
+    unsigned int length = EngineConstants::SMALL_WORLD; //z
     int seed;
 
     /// Generates a random seed for the world that's fed to the simplex noise generator
