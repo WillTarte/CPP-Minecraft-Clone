@@ -31,7 +31,8 @@
 *.app
 
 # Cmake build file
-cmake-build-*
+cmake-build-debug
+cmake-build-release
 
 # JetBrains project files
 .idea

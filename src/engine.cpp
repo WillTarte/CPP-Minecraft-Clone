@@ -92,15 +92,10 @@ void Engine::init() {
 
     LOG(INFO) << "Creating Skybox";
     skybox = std::make_unique<Skybox>(ModelType::SKYBOX, BlockID::SKYBOX);
-    skybox->getTransform().setPosition(
-            glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), 10,
-                      (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
-    skybox->getTransform().scaleBy(glm::vec3(EngineConstants::CHUNK_WIDTH * 4, EngineConstants::CHUNK_HEIGHT * 4,
-                                             EngineConstants::CHUNK_LENGTH * 4));
 
     LOG(INFO) << "Creating Sun";
     sun = std::make_unique<Sun>(ModelType::CUBE, BlockID::SUN);
-    sun->getTransform().setPosition(glm::vec3(this->worldInfo.getWidth() / 2, EngineConstants::DEFAULT_WORLD_HEIGHT,
+    sun->getTransform().setPosition(glm::vec3(this->worldInfo.getWidth() / 2, 45.0f,
                                               this->worldInfo.getLength() / 2));
 
     LOG(INFO) << "Engine is primed and ready.";
@@ -111,8 +106,6 @@ void Engine::runLoop() {
     //TODO should this be here?
     Shader basicShader = Shader((fs::current_path().string() + "/resources/shaders/ModelVertexShader.glsl").c_str(),
                                 (fs::current_path().string() + "/resources/shaders/ModelFragmentShader.glsl").c_str());
-    //basicShader.use();
-
     Shader lightShader = Shader(
             (fs::current_path().string() + "/resources/shaders/BasicLightingVertexShader.glsl").c_str(),
             (fs::current_path().string() + "/resources/shaders/BasicLightingFragmentShader.glsl").c_str());
@@ -120,6 +113,10 @@ void Engine::runLoop() {
     Shader sunShader = Shader((fs::current_path().string() + "/resources/shaders/LightCubeVertexShader.glsl").c_str(),
                               (fs::current_path().string() +
                                "/resources/shaders/LightCubeFragmentShader.glsl").c_str());
+
+    Shader skyboxShader = Shader((fs::current_path().string() + "/resources/shaders/SkyboxVertexShader.glsl").c_str(),
+                                 (fs::current_path().string() +
+                                  "/resources/shaders/SkyboxFragmentShader.glsl").c_str());
 
     ViewFrustum frustum = ViewFrustum();
     // ***********
@@ -153,10 +150,6 @@ void Engine::runLoop() {
         player->update(this, static_cast<float>(dt));
         // --------------------
 
-        //std::cout << player->getTransform().getPosition().x << " " << player->getTransform().getPosition().y << " " << player->getTransform().getPosition().z << std::endl;
-        std::cout << sun->getTransform().getPosition().x << " " << sun->getTransform().getPosition().y << " "
-                  << sun->getTransform().getPosition().z << std::endl;
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -178,23 +171,24 @@ void Engine::runLoop() {
             chunk->renderChunk(lightShader, frustum);
         }
 
-        player->draw(lightShader);
-
         basicShader.use();
         basicShader.setMat4("view", player->getPlayerView());
         basicShader.setMat4("projection", projection);
-        skybox->getTransform().setPosition(
-                glm::vec3((player->getTransform().getPosition().x - EngineConstants::CHUNK_WIDTH * 2), -1,
-                          (player->getTransform().getPosition().z - EngineConstants::CHUNK_LENGTH * 2)));
+        player->draw(basicShader);
+
+        skyboxShader.use();
+        skyboxShader.setMat4("view", glm::mat4(glm::mat3(player->getPlayerView())));
+        skyboxShader.setMat4("projection", projection);
+
         glDisable(GL_CULL_FACE);
-        //skybox->draw(basicShader);
+        skybox->draw(skyboxShader);
         glEnable(GL_CULL_FACE);
 
         sunShader.use();
         sunShader.setMat4("view", player->getPlayerView());
         sunShader.setMat4("projection", projection);
 
-        sun->update(dt, glm::vec3(this->worldInfo.getWidth() / 2, 16.0f, this->worldInfo.getLength() / 2));
+        sun->update(static_cast<float>(dt));
         sun->draw(sunShader);
 
         // --------------------
