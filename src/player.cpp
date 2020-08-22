@@ -256,6 +256,7 @@ void Player::removeEntity(Engine *engine) const {
             if (toRemoveID != BEDROCK && engine->getChunkManager()->removeEntityFromChunk(*closestEnt.value())) {
                 SoundDatabase::playSoundByName("pop.mp3");
                 LOG(DEBUG) << "Removed " << toRemoveID << " from the world.";
+                return;
             } else {
                 LOG(DEBUG) << "Unable to remove entity from world.";
                 return;
