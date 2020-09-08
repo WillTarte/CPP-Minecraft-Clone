@@ -1,13 +1,6 @@
 # COMP-371-Proj
 ## Requirements
- - For the first build, requires an active internet connection to fetch dependencies.
- 
-## Royal Octopi Team Members
- - Zahra Nikbakht 40138253
- - Philip Dumaresq 40082638
- - William Tarte 40087900
- - Mohammad Ali Zahir 40077619
- - Ewan McNeil 40021787
+ - For the first build, requires an active internet connection to fetch dependencies
  
 ## Library Versions
  - glfw-3.3.2
